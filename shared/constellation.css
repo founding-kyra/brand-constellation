@@ -339,7 +339,7 @@ body.noscroll { overflow: hidden; }
 .day:hover .front, .day:focus-visible .front { box-shadow: 0 0 0 1.5px var(--accent), 0 12px 24px -16px var(--shadow); }
 .day:focus-visible { outline: none; }
 .day.empty .front { background: transparent; border: 1.5px dashed var(--line); }
-.back { background: var(--ink); color: var(--bg); transform: rotateY(180deg); }
+.face.back { background: var(--ink); color: var(--bg); transform: rotateY(180deg); }
 .day-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .day-n { font-family: var(--font-display); font-weight: 700; font-size: 26px; line-height: 1; color: var(--accent); min-width: 32px; }
 .day-kind { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-label); font-stretch: 112.5%; font-weight: 700; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); }
@@ -349,7 +349,7 @@ body.noscroll { overflow: hidden; }
 .back-stamp { font-family: var(--font-label); font-stretch: 112.5%; font-weight: 800; font-size: 14px; letter-spacing: .1em; text-transform: uppercase; border: 1.5px solid currentColor; border-radius: 999px; padding: 3px 10px; }
 .back-hook { font-size: 15px; line-height: 1.4; opacity: .72; }
 .back-date { margin-top: auto; font-size: 14px; opacity: .8; }
-.back .day-n { color: var(--bg); opacity: .9; }
+.face.back .day-n { color: var(--bg); opacity: .9; }
 @media (max-width: 560px) { .face { padding: 14px; min-height: 150px; } .day-n { font-size: 22px; } .day-hook { font-size: 15px; } .back-hook { display: none; } }
 .day-cta { margin: 0; padding-top: 12px; border-top: 1px dashed var(--line); font-size: 16px; display: flex; gap: 10px; }
 .day-cta b { font-family: var(--font-label); font-stretch: 112.5%; font-size: 13px; letter-spacing: .08em; color: var(--accent); }
