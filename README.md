@@ -4,29 +4,43 @@ Kyra Aulani's client brand hubs. Each client gets one folder; the design is shar
 
 ```
 shared/                 The Brand Constellation design (Kyra's brand). Same for every client.
+  shell.js              The standard sections and pages, with what each one holds
   constellation.css     Colors, fonts, layout, light and dark mode
-  constellation.js      The orbit map, pages, Back button, image viewer
+  constellation.js      The orbit map, pages, search, Back button, image viewer
   kyra-logo.png         Header logo
 resonant-living/        One client
-  index.html            Page shell (only the <title> changes per client)
-  client.js             All of this client's content: sections, pages, statuses
+  index.html            Page wrapper (only the <title> changes per client)
+  content.js            This client's content, filling the pages from shell.js
   inspo/                Images for the Inspo board
 ```
 
+## The shell
+
+`shared/shell.js` holds the sections every client gets, with plain descriptions:
+
+- **Brand Home** (centre): Origin Story, Ethos & Values, Ethical Framework
+- **Brand Core & Identity**: Messaging, Identity, Art & Photo Direction, Content Library, Inspo
+- **Offers & Funnel Architecture**: Freebies & Lead Magnets, Low Ticket, High Ticket, Programs
+- **Target Audience**: Audience Research, CRM & Lead Tracker
+- **Marketing & Initiatives**: Platforms, Content Plan, Paid Advertising
+- **Vision**: pages still being defined; each client sets its own for now
+
+Change a name or description here and it changes for every client.
+
 ## Edit a client's content
 
-Everything a client sees comes from `client.js`:
+Everything specific to a client lives in `content.js`:
 
-- `SECTIONS`: the five orbits around the centre, each with its pages (`subs`).
-- Each page has `s` for its status: `ready`, `progress` or `planning`.
-- Each page's `blocks` are its content. Block types: `lead`, `text`, `quote`, `quotes`, `list`, `tags`, `facts`, `compare`, `stages`, `pending`, `swatches`, `gallery`, `pipeline`, `section`, `moodboard`.
+- `CLIENT`: the name, and how it breaks onto two lines in the centre circle.
+- `CONTENT[pageId]`: `s` for status (`ready`, `progress` or `planning`) and `blocks` for the page's content. Block types: `lead`, `text`, `quote`, `quotes`, `list`, `tags`, `facts`, `compare`, `stages`, `pending`, `swatches`, `gallery`, `pipeline`, `section`, `moodboard`.
+- `CONTENT[sectionId]`: `{ blocks }` adds an intro to a section; `{ subs }` replaces that section's pages for this client only.
 - `LINKS`: optional rust lines between related pages. Empty for now.
 
 ## Add a new client
 
 1. Copy `resonant-living/` to a new folder, such as `new-client/`.
 2. Change the `<title>` in its `index.html`.
-3. Replace the content in its `client.js`, and swap the images in `inspo/`.
+3. Replace `CLIENT` and `CONTENT` in its `content.js`, and swap the images in `inspo/`.
 4. Push. The hub is live at `https://founding-kyra.github.io/brand-constellation/new-client/`.
 
 ## Hosting

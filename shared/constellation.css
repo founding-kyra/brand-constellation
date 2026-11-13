@@ -183,7 +183,7 @@ a:focus-visible, button:focus-visible, .node:focus-visible { outline: 2px solid 
 .items span { color: var(--ink-soft); font-size: 17px; }
 .tags { display: flex; flex-wrap: wrap; gap: 10px; }
 .tags span { border: 1px solid var(--line); border-radius: 999px; padding: 7px 16px; font-size: 17px; }
-.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
 .facts div { background: var(--surface); border-radius: 16px; padding: 18px 20px; }
 .facts dt { color: var(--ink-soft); font-size: 16px; }
 .facts dd { margin: 4px 0 0; font-size: 22px; font-weight: 700; line-height: 1.3; }
