@@ -27,7 +27,7 @@
      { type: "swatches", heading: "Colors", items: [{ name: "Name", hex: "#000000" }], empty: 2 }
      { type: "gallery", heading: "Photos", folder: "https://drive.google.com/...", tiles: ["Label", "Label"] }
      { type: "section", heading: "A divider inside a long page" }
-     { type: "calendar", weeks: [{ t: "Week 1 · Theme", d: "Goal", days: [{ n: 1, kind: "Profile", format: "Long-form", hook: "Post hook", note: "What it covers", cta: "Call to action" }] }] }
+     { type: "calendar", weeks: [{ t: "Week 1 · Theme", d: "Goal", days: [{ n: 1, kind: "Profile", format: "Long-form", hook: "Post hook", note: "What it covers", cta: "Call to action", text: "Optional full script\nshown when the card opens" }] }] }
      { type: "copy", heading: "Copy-ready posts", items: [{ t: "Post title", meta: "Day 1", text: "Line one\nLine two" }] }
      { type: "moodboard", path: "inspo/brand-", images: [[720, 900], [720, 720]] }
        (images are [width, height] for inspo/brand-01.jpg, inspo/brand-02.jpg, ...)
