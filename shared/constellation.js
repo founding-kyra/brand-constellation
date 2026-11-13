@@ -200,7 +200,7 @@ function blockHTML(b) {
       <p class="gnote">${b.folder ? `<a href="${b.folder}" target="_blank" rel="noopener">Open the Drive folder</a>` : "Drive folder not linked yet. Thumbnails appear here once it's connected."}</p>`;
     case "section": return `<h2 class="subhead">${b.heading}</h2>`;
     case "board": return `${h}<div class="board">${b.frames.map((f, i) => `<div class="frame f${i % 6}"><span>${f}</span></div>`).join("")}</div>
-      <p class="gnote">${b.link ? `<a class="open" href="${b.link}" target="_blank" rel="noopener">Open the whiteboard</a>` : "Whiteboard not linked yet. Pinterest images will appear here."}</p>`;
+      <p class="gnote">${b.link ? `<a class="open" href="${b.link}" target="_blank" rel="noopener">Open the whiteboard</a>` : "Inspiration images will appear here once they’re added."}</p>`;
     case "pipeline": return `${h}<div class="pipeline">${b.stages.map(s => `<div><b>${s.t}</b><span>${s.d}</span><em>No contacts yet</em></div>`).join("")}</div>`;
     case "moodboard": {
       LIGHTBOX.list = b.images.map((_, i) => `${b.path}${String(i + 1).padStart(2, "0")}.jpg`);

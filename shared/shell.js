@@ -19,7 +19,8 @@ const SHELL = {
       { id: "identity", short: "Identity", title: "Identity", note: "Brand guidelines and logo files" },
       { id: "art", short: "Art & Photo", title: "Art & Photo Direction", note: "Visual mood, symbols and photo style" },
       { id: "library", short: "Content Library", title: "Content Library", note: "Finished brand assets, ready to use" },
-      { id: "inspo", short: "Inspo", title: "Inspo", note: "Reference images and colors", wide: true }
+      { id: "inspo", short: "Inspo", title: "Inspo", note: "Reference images for the brand's look and feel", wide: true,
+        placeholder: [{ type: "board", frames: ["Image", "Image", "Image", "Image", "Image", "Image"] }] }
     ] },
     { id: "offers", short: "Offers", title: "Offers & Funnel Architecture", blurb: "Everything the brand sells, from free to premium.", subs: [
       { id: "freebie", short: "Freebies", title: "Freebies & Lead Magnets", note: "Free offers that welcome new people in" },
@@ -49,7 +50,7 @@ const SHELL = {
    CONTENT[pageId] = { s, blocks } fills a page. CONTENT[sectionId] = { blocks }
    adds an intro to a section; { subs: [...] } replaces that section's pages. */
 function buildFromShell(shell, content) {
-  const fill = u => ({ s: "planning", blocks: [], ...u, ...(content[u.id] || {}) });
+  const fill = u => ({ s: "planning", blocks: u.placeholder || [], ...u, ...(content[u.id] || {}) });
   const section = sec => {
     const c = content[sec.id] || {};
     return { ...sec, blocks: c.blocks, subs: (c.subs || sec.subs).map(fill) };
