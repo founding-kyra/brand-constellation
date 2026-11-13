@@ -201,6 +201,17 @@ function blockHTML(b) {
     case "section": return `<h2 class="subhead">${b.heading}</h2>`;
     case "board": return `${h}<div class="board">${b.frames.map((f, i) => `<div class="frame f${i % 6}"><span>${f}</span></div>`).join("")}</div>
       <p class="gnote">${b.link ? `<a class="open" href="${b.link}" target="_blank" rel="noopener">Open the whiteboard</a>` : "Inspiration images will appear here once they’re added."}</p>`;
+    case "calendar": {
+      const kinds = [...new Set(b.weeks.flatMap(w => w.days.map(d => d.kind)).filter(Boolean))];
+      const start = b.start ? new Date(b.start + "T12:00:00") : null;
+      const dateOf = n => { if (!start) return ""; const d = new Date(start); d.setDate(d.getDate() + n - 1); return d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }); };
+      const filters = kinds.length > 1 ? `<div class="cal-filters" role="group" aria-label="Show post types"><button type="button" class="chip-f on" data-kind="">All</button>${kinds.map(k => `<button type="button" class="chip-f" data-kind="${k}"><i class="kdot k-${k.toLowerCase()}"></i>${k}</button>`).join("")}</div>` : "";
+      const day = d => d.hook
+        ? `<article class="day" data-kind="${d.kind || ""}"><div class="day-top"><span class="day-n">${d.n}</span><span class="day-kind"><i class="kdot k-${(d.kind || "").toLowerCase()}"></i>${d.kind || ""}${d.format ? ` · ${d.format}` : ""}</span>${start ? `<span class="day-date">${dateOf(d.n)}</span>` : ""}</div><h4 class="day-hook">${d.hook}</h4>${d.note ? `<p class="day-note">${d.note}</p>` : ""}${d.cta ? `<p class="day-cta"><b>CTA</b>${d.cta}</p>` : ""}</article>`
+        : `<article class="day empty" data-kind=""><div class="day-top"><span class="day-n">${d.n}</span></div><p class="day-note">Open</p></article>`;
+      return `${h}<div class="cal">${filters}${b.weeks.map(w => `<section class="week"><div class="week-head"><h4>${w.t}</h4>${w.d ? `<p>${w.d}</p>` : ""}</div><div class="days">${w.days.map(day).join("")}</div></section>`).join("")}</div>`;
+    }
+    case "copy": return `${h}<div class="copies">${b.items.map(c => `<details class="copy"><summary><span class="copy-t">${c.t}</span>${c.meta ? `<span class="copy-meta">${c.meta}</span>` : ""}</summary><div class="copy-body">${c.text.split("\n").filter(Boolean).map(l => `<p>${l}</p>`).join("")}</div><button type="button" class="theme copybtn">Copy text</button></details>`).join("")}</div>`;
     case "pipeline": return `${h}<div class="pipeline">${b.stages.map(s => `<div><b>${s.t}</b><span>${s.d}</span><em>No contacts yet</em></div>`).join("")}</div>`;
     case "moodboard": {
       LIGHTBOX.list = b.images.map((_, i) => `${b.path}${String(i + 1).padStart(2, "0")}.jpg`);
@@ -415,4 +426,24 @@ document.addEventListener("keydown", e => {
   const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName);
   if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || (e.key === "/" && !typing)) { e.preventDefault(); openSearch(); }
   else if (e.key === "Escape" && !SEARCH.el.hidden) closeSearch();
+});
+
+/* Calendar filters and copy buttons */
+document.addEventListener("click", e => {
+  const f = e.target.closest(".chip-f");
+  if (f) {
+    const cal = f.closest(".cal"), k = f.dataset.kind;
+    cal.querySelectorAll(".chip-f").forEach(b => b.classList.toggle("on", b === f));
+    cal.querySelectorAll(".day").forEach(d => { d.hidden = !!k && d.dataset.kind !== k; });
+    cal.querySelectorAll(".week").forEach(w => { w.hidden = !!k && !w.querySelector(".day:not([hidden])"); });
+    return;
+  }
+  const c = e.target.closest(".copybtn");
+  if (c) {
+    const body = c.closest(".copy").querySelector(".copy-body");
+    const text = [...body.querySelectorAll("p")].map(p => p.textContent).join("\n\n");
+    const done = () => { c.textContent = "Copied"; setTimeout(() => { c.textContent = "Copy text"; }, 1600); };
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents(body); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); c.textContent = "Selected, press copy"; };
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+  }
 });

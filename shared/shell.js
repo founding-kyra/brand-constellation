@@ -34,7 +34,13 @@ const SHELL = {
     ] },
     { id: "marketing", short: "Marketing", title: "Marketing & Initiatives", blurb: "Where the brand shows up and what goes out when.", subs: [
       { id: "platforms", short: "Platforms", title: "Platforms", note: "Where the brand shows up and why" },
-      { id: "plan", short: "Content Plan", title: "Content Plan", note: "Content pillars and the posting calendar" },
+      { id: "plan", short: "30-Day Ramp-Up", title: "30-Day Ramp-Up", note: "The first month of content, day by day", wide: true,
+        placeholder: [{ type: "calendar", weeks: [
+          { t: "Week 1", days: [1, 2, 3, 4, 5, 6, 7].map(n => ({ n })) },
+          { t: "Week 2", days: [8, 9, 10, 11, 12, 13, 14].map(n => ({ n })) },
+          { t: "Week 3", days: [15, 16, 17, 18, 19, 20, 21].map(n => ({ n })) },
+          { t: "Week 4", days: [22, 23, 24, 25, 26, 27, 28].map(n => ({ n })) },
+          { t: "Days 29–30", days: [29, 30].map(n => ({ n })) }] }] },
       { id: "ads", short: "Paid Ads", title: "Paid Advertising", note: "Ad strategy, budget and results" }
     ] },
     { id: "vision", short: "Vision", title: "Vision", blurb: "Where the business is headed, from the long view to the next step.", subs: [

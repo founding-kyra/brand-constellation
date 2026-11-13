@@ -23,7 +23,7 @@ resonant-living/        One client
 - **Brand Core & Identity**: Messaging, Identity, Art & Photo Direction, Content Library, Inspo
 - **Offers & Funnel Architecture**: Freebies & Lead Magnets, Low Ticket, High Ticket, Programs
 - **Target Audience**: Audience Research, CRM & Lead Tracker
-- **Marketing & Initiatives**: Platforms, Content Plan, Paid Advertising
+- **Marketing & Initiatives**: Platforms, 30-Day Ramp-Up (a day-by-day calendar), Paid Advertising
 - **Vision**: Big Picture, This Year, Milestones, Capacity & Lifestyle
 
 Change a name or description here and it changes for every client.

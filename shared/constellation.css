@@ -1,3 +1,4 @@
+[hidden] { display: none !important; }
 /* Layout: Brand Constellation. Home is an orbit map with the client at the centre; section and page views pair a reading column with a small "connected to" map. */
 :root {
   --bg: #EEE8DE;
@@ -14,6 +15,7 @@
   --grain: .38;
   --shadow: rgba(58, 15, 7, .45);
   --veil: rgba(238, 232, 222, .94);
+  --k-profile: #3A0F07; --k-community: #D2541F; --k-reel: #7C7038; --k-live: #7A3B5A;
   --font-display: "Syncopate", "Arial Black", system-ui, sans-serif;
   --font-label: "Inconsolata", ui-monospace, "SF Mono", Menlo, monospace;
   --font-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -22,14 +24,14 @@
   :root:not([data-theme="light"]) {
     --bg: #1D1A18; --surface: #282320; --ink: #EEE8DE; --ink-soft: rgba(238, 232, 222, .7);
     --line: rgba(238, 232, 222, .32); --line-faint: rgba(238, 232, 222, .1); --accent: #E36A3A;
-    --client: #1A3323; --on-client: #EEE8DE; --client-ring: rgba(238, 232, 222, .28); --grain: .16; --shadow: rgba(0, 0, 0, .7); --veil: rgba(29, 26, 24, .95); --on-accent: #1D1A18;
+    --client: #1A3323; --on-client: #EEE8DE; --client-ring: rgba(238, 232, 222, .28); --grain: .16; --shadow: rgba(0, 0, 0, .7); --veil: rgba(29, 26, 24, .95); --k-profile: #EEE8DE; --k-community: #E36A3A; --k-reel: #C4B66E; --k-live: #D294B0; --on-accent: #1D1A18;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #1D1A18; --surface: #282320; --ink: #EEE8DE; --ink-soft: rgba(238, 232, 222, .7);
   --line: rgba(238, 232, 222, .32); --line-faint: rgba(238, 232, 222, .1); --accent: #E36A3A;
-  --client: #1A3323; --on-client: #EEE8DE; --client-ring: rgba(238, 232, 222, .28); --grain: .16; --shadow: rgba(0, 0, 0, .7); --veil: rgba(29, 26, 24, .95); --on-accent: #1D1A18;
+  --client: #1A3323; --on-client: #EEE8DE; --client-ring: rgba(238, 232, 222, .28); --grain: .16; --shadow: rgba(0, 0, 0, .7); --veil: rgba(29, 26, 24, .95); --k-profile: #EEE8DE; --k-community: #E36A3A; --k-reel: #C4B66E; --k-live: #D294B0; --on-accent: #1D1A18;
   color-scheme: dark;
 }
 
@@ -306,3 +308,39 @@ body.noscroll { overflow: hidden; }
 /* Phones: section pills in rust so the five areas stand out */
 .map.compact .planet .pill-bg { fill: var(--accent); stroke: var(--accent); }
 .map.compact .planet .pill-text { fill: var(--on-accent); }
+
+/* Calendar */
+.cal { display: grid; gap: 40px; }
+.cal-filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-f { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-size: 16px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 7px 16px; cursor: pointer; }
+.chip-f.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip-f.on .kdot { box-shadow: 0 0 0 2px var(--bg); }
+.kdot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background: var(--line); flex: none; }
+.k-profile { background: var(--k-profile); } .k-community { background: var(--k-community); } .k-reel { background: var(--k-reel); } .k-live { background: var(--k-live); }
+.week-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid var(--line); }
+.week-head h4 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 18px; letter-spacing: .04em; text-transform: uppercase; }
+.week-head p { margin: 0; color: var(--ink-soft); font-size: 17px; }
+.days { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.day { background: var(--surface); border-radius: 16px; padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.day.empty { background: transparent; border: 1.5px dashed var(--line); }
+.day-top { display: flex; align-items: center; gap: 10px; }
+.day-n { font-family: var(--font-display); font-weight: 700; font-size: 26px; line-height: 1; color: var(--accent); min-width: 34px; }
+.day-kind { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-label); font-stretch: 112.5%; font-weight: 700; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); }
+.day-date { margin-left: auto; font-size: 14px; color: var(--ink-soft); }
+.day-hook { margin: 2px 0 0; font-size: 18px; line-height: 1.35; font-weight: 700; text-wrap: pretty; }
+.day-note { margin: 0; color: var(--ink-soft); font-size: 16px; line-height: 1.5; }
+.day-cta { margin: auto 0 0; padding-top: 10px; border-top: 1px dashed var(--line); font-size: 15px; display: flex; gap: 10px; }
+.day-cta b { font-family: var(--font-label); font-stretch: 112.5%; font-size: 13px; letter-spacing: .08em; color: var(--accent); }
+@media (max-width: 560px) { .days { grid-template-columns: minmax(0, 1fr); } }
+/* Copy-ready text */
+.copies { display: grid; gap: 10px; }
+.copy { background: var(--surface); border-radius: 16px; padding: 0 20px; }
+.copy summary { cursor: pointer; list-style: none; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; padding: 18px 0; }
+.copy summary::-webkit-details-marker { display: none; }
+.copy summary::after { content: "+"; font-family: var(--font-display); font-weight: 700; color: var(--accent); margin-left: auto; }
+.copy[open] summary::after { content: "–"; }
+.copy-t { font-weight: 700; font-size: 18px; }
+.copy-meta { color: var(--ink-soft); font-size: 15px; }
+.copy-body { border-top: 1px solid var(--line-faint); padding-top: 16px; max-width: 62ch; }
+.copy-body p { margin: 0 0 10px; }
+.copybtn { margin: 8px 0 20px; }
