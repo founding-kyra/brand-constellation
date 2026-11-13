@@ -7,6 +7,7 @@
   --line: rgba(58, 15, 7, .34);
   --line-faint: rgba(58, 15, 7, .13);
   --accent: #D2541F;
+  --on-accent: #FFFFFF;
   --client: #1A3323;
   --on-client: #EEE8DE;
   --client-ring: rgba(26, 51, 35, .35);
@@ -21,14 +22,14 @@
   :root:not([data-theme="light"]) {
     --bg: #1D1A18; --surface: #282320; --ink: #EEE8DE; --ink-soft: rgba(238, 232, 222, .7);
     --line: rgba(238, 232, 222, .32); --line-faint: rgba(238, 232, 222, .1); --accent: #E36A3A;
-    --client: #1A3323; --on-client: #EEE8DE; --client-ring: rgba(238, 232, 222, .28); --grain: .16; --shadow: rgba(0, 0, 0, .7); --veil: rgba(29, 26, 24, .95);
+    --client: #1A3323; --on-client: #EEE8DE; --client-ring: rgba(238, 232, 222, .28); --grain: .16; --shadow: rgba(0, 0, 0, .7); --veil: rgba(29, 26, 24, .95); --on-accent: #1D1A18;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #1D1A18; --surface: #282320; --ink: #EEE8DE; --ink-soft: rgba(238, 232, 222, .7);
   --line: rgba(238, 232, 222, .32); --line-faint: rgba(238, 232, 222, .1); --accent: #E36A3A;
-  --client: #1A3323; --on-client: #EEE8DE; --client-ring: rgba(238, 232, 222, .28); --grain: .16; --shadow: rgba(0, 0, 0, .7); --veil: rgba(29, 26, 24, .95);
+  --client: #1A3323; --on-client: #EEE8DE; --client-ring: rgba(238, 232, 222, .28); --grain: .16; --shadow: rgba(0, 0, 0, .7); --veil: rgba(29, 26, 24, .95); --on-accent: #1D1A18;
   color-scheme: dark;
 }
 
@@ -301,3 +302,7 @@ body.noscroll { overflow: hidden; }
 .hit-top em { font-style: normal; font-family: var(--font-label); font-stretch: 112.5%; font-weight: 600; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap; }
 .hit-text { color: var(--ink-soft); font-size: 16px; line-height: 1.5; }
 .results mark { background: transparent; color: var(--accent); font-weight: 700; }
+
+/* Phones: section pills in rust so the five areas stand out */
+.map.compact .planet .pill-bg { fill: var(--accent); stroke: var(--accent); }
+.map.compact .planet .pill-text { fill: var(--on-accent); }

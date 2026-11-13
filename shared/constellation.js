@@ -55,6 +55,7 @@ function renderOrbit(svg, compact, onHover) {
   svg.innerHTML = "";
   const L = layout(compact);
   svg.setAttribute("viewBox", `0 0 ${L.W} ${L.H}`);
+  svg.classList.toggle("compact", compact);
   const back = mk("g", {}, svg), links = mk("g", {}, svg), spokes = mk("g", {}, svg), nodes = mk("g", {}, svg);
   const fs = compact ? { sub: 24, pill: 25, pillH: 56, sun: 17, sunR: 82 } : { sub: 26, pill: 21, pillH: 50, sun: 17, sunR: 98 };
   mk("circle", { cx: L.cx, cy: L.cy, r: L.Rp, class: "ring" }, back);
