@@ -261,7 +261,7 @@ function renderPage(p) {
       <h1 class="title">${p.title}</h1>
       <div class="status">${glyph(p.s)}<span class="st ${p.s}">${STATUS[p.s]}</span></div>
       <p class="intro">${p.note}.</p>
-      ${blocksHTML(p.blocks)}
+      ${blocksHTML(p.blocks && p.blocks.length ? p.blocks : [{ type: "pending", heading: "Not started yet", text: "This page fills in as the work happens." }])}
       <nav class="pager" aria-label="More in ${s.short}">
         ${prev ? `<a href="#${prev.id}"><small>Previous</small><b>${prev.title}</b></a>` : `<a href="#${s.id}"><small>Back to</small><b>${s.title}</b></a>`}
         ${next ? `<a href="#${next.id}"><small>Next</small><b>${next.title}</b></a>` : ""}

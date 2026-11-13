@@ -23,7 +23,7 @@ resonant-living/        One client
 - **Offers & Funnel Architecture**: Freebies & Lead Magnets, Low Ticket, High Ticket, Programs
 - **Target Audience**: Audience Research, CRM & Lead Tracker
 - **Marketing & Initiatives**: Platforms, Content Plan, Paid Advertising
-- **Vision**: pages still being defined; each client sets its own for now
+- **Vision**: Big Picture, This Year, Milestones, Capacity & Lifestyle
 
 Change a name or description here and it changes for every client.
 

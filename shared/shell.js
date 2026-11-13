@@ -36,7 +36,12 @@ const SHELL = {
       { id: "plan", short: "Content Plan", title: "Content Plan", note: "Content pillars and the posting calendar" },
       { id: "ads", short: "Paid Ads", title: "Paid Advertising", note: "Ad strategy, budget and results" }
     ] },
-    { id: "vision", short: "Vision", title: "Vision", blurb: "Where the business is headed and what it's building toward.", subs: [] }
+    { id: "vision", short: "Vision", title: "Vision", blurb: "Where the business is headed, from the long view to the next step.", subs: [
+      { id: "big-picture", short: "Big Picture", title: "Big Picture", note: "The three-to-five-year dream for the business" },
+      { id: "this-year", short: "This Year", title: "This Year", note: "Revenue, client and launch targets for the year" },
+      { id: "milestones", short: "Milestones", title: "Milestones", note: "The quarter-by-quarter roadmap and next steps" },
+      { id: "capacity", short: "Capacity", title: "Capacity & Lifestyle", note: "Hours, pace and what the business fits around" }
+    ] }
   ]
 };
 

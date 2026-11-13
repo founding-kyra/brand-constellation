@@ -122,20 +122,16 @@ const CONTENT = {
     {"type":"text","heading":"Guardrail","body":["Ads follow the brand's ethics: no engineered urgency and no pressing on pain points."]}
   ] },
 
-  vision: { subs: [
-    { id: "retreat", short: "Retreat Land", title: "Land-Based Retreat", s: "planning", note: "Woodland labyrinth and practice chambers", blocks: [
-      {"type":"text","heading":"A sanctuary on the land","body":["A retreat built for sensory regulation, deep rest and integration.","A woodland labyrinth ends in private practice chambers, so guests physically walk the descent and the return."]}
-    ] },
-    { id: "coop", short: "Co-Op", title: "Visionary Co-Op", s: "planning", note: "A referral network of aligned providers", blocks: [
-      {"type":"text","heading":"A non-competitive network","body":["Aligned practitioners, space designers, somatic workers and artisans refer clients to each other through shared affiliate agreements."]}
-    ] },
-    { id: "legacy", short: "Give-Back", title: "Ethical Legacy", s: "planning", note: "Scholarships and state-funded access", blocks: [
-      {"type":"list","heading":"Commitments","items":[{"t":"Capped salaries","d":"Comfortable, not excessive."},{"t":"Grants and scholarships","d":"Surplus revenue opens access."},{"t":"State funding","d":"Exploring Maine's Section 29 program so cost isn't a barrier."}]}
-    ] },
-    { id: "app", short: "App", title: "Adaptive Codex & Vitality Sync", s: "planning", note: "A daily check-in that hands out 1 to 3 access keys", blocks: [
-      {"type":"lead","text":"Turning the course library into a searchable tool that responds to each person's capacity."},
-      {"type":"stages","items":[{"t":"Capture","d":"Months 1 to 12. Log client capacity shifts, friction points and what works during live runs."},{"t":"Vitality Sync","d":"A 30-second mobile check-in rating nervous system state, energy and available time."},{"t":"Access keys","d":"The check-in hands out 1 to 3 targeted practices, so there's no decision fatigue."}]}
-    ] }
+  "big-picture": { s: "planning", blocks: [
+    {"type":"section","heading":"Land-Based Retreat"},
+    {"type":"text","heading":"A sanctuary on the land","body":["A retreat built for sensory regulation, deep rest and integration.","A woodland labyrinth ends in private practice chambers, so guests physically walk the descent and the return."]},
+    {"type":"section","heading":"Visionary Co-Op"},
+    {"type":"text","heading":"A non-competitive network","body":["Aligned practitioners, space designers, somatic workers and artisans refer clients to each other through shared affiliate agreements."]},
+    {"type":"section","heading":"Ethical Legacy"},
+    {"type":"list","heading":"Commitments","items":[{"t":"Capped salaries","d":"Comfortable, not excessive."},{"t":"Grants and scholarships","d":"Surplus revenue opens access."},{"t":"State funding","d":"Exploring Maine's Section 29 program so cost isn't a barrier."}]},
+    {"type":"section","heading":"Adaptive Codex & Vitality Sync"},
+    {"type":"lead","text":"Turning the course library into a searchable tool that responds to each person's capacity."},
+    {"type":"stages","items":[{"t":"Capture","d":"Months 1 to 12. Log client capacity shifts, friction points and what works during live runs."},{"t":"Vitality Sync","d":"A 30-second mobile check-in rating nervous system state, energy and available time."},{"t":"Access keys","d":"The check-in hands out 1 to 3 targeted practices, so there's no decision fatigue."}]}
   ] }
 };
 
