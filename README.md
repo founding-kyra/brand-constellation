@@ -8,6 +8,7 @@ shared/                 The Brand Constellation design (Kyra's brand). Same for 
   constellation.css     Colors, fonts, layout, light and dark mode
   constellation.js      The orbit map, pages, search, Back button, image viewer
   kyra-logo.png         Header logo
+template/               Blank starting point: copy this for each new client
 resonant-living/        One client
   index.html            Page wrapper (only the <title> changes per client)
   content.js            This client's content, filling the pages from shell.js
@@ -38,9 +39,9 @@ Everything specific to a client lives in `content.js`:
 
 ## Add a new client
 
-1. Copy `resonant-living/` to a new folder, such as `new-client/`.
+1. Copy `template/` to a new folder, such as `new-client/`.
 2. Change the `<title>` in its `index.html`.
-3. Replace `CLIENT` and `CONTENT` in its `content.js`, and swap the images in `inspo/`.
+3. Set `CLIENT` in its `content.js`, then fill `CONTENT` page by page (the file lists every page id and block type). Add images to `inspo/`.
 4. Push. The hub is live at `https://founding-kyra.github.io/brand-constellation/new-client/`.
 
 ## Hosting
