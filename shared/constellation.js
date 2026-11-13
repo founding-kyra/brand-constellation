@@ -325,3 +325,93 @@ syncTheme();
 
 route();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (document.getElementById("orbit")) renderHome(); else route(); });
+
+/* ---------- Search ---------- */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function collectText(v, out) {
+  if (typeof v === "string") out.push(v.replace(/<[^>]+>/g, ""));
+  else if (Array.isArray(v)) v.forEach(x => collectText(x, out));
+  else if (v && typeof v === "object") for (const k in v) if (!["type", "s", "id", "path", "images", "folder", "link", "hex", "empty", "wide"].includes(k)) collectText(v[k], out);
+}
+const SEARCH_INDEX = [];
+ALL.forEach(s => {
+  const t = []; collectText([s.blurb, s.blocks], t);
+  SEARCH_INDEX.push({ id: s.id, title: s.title, where: s.id === HOME.id ? CLIENT.name : "Section", text: t.join(" · ") });
+  s.subs.forEach(u => {
+    const t2 = []; collectText([u.note, u.blocks], t2);
+    SEARCH_INDEX.push({ id: u.id, title: u.title, where: s.short, text: t2.join(" · ") });
+  });
+});
+function searchPages(q) {
+  const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+  if (!terms.length) return [];
+  return SEARCH_INDEX.map(e => {
+    const title = e.title.toLowerCase(), text = e.text.toLowerCase();
+    let score = 0;
+    for (const t of terms) {
+      const inTitle = title.includes(t), n = text.split(t).length - 1;
+      if (!inTitle && !n) return null;
+      score += (inTitle ? 20 : 0) + Math.min(n, 5);
+    }
+    return { e, score };
+  }).filter(Boolean).sort((a, b) => b.score - a.score).slice(0, 12).map(r => r.e);
+}
+function snippet(text, terms) {
+  const low = text.toLowerCase(); let at = -1;
+  for (const t of terms) { at = low.indexOf(t); if (at >= 0) break; }
+  if (at < 0) return esc(text.slice(0, 110)) + (text.length > 110 ? "…" : "");
+  const start = Math.max(0, at - 50), end = Math.min(text.length, at + 80);
+  return (start ? "…" : "") + mark(text.slice(start, end), terms) + (end < text.length ? "…" : "");
+}
+function mark(str, terms) {
+  let out = esc(str);
+  terms.forEach(t => { out = out.replace(new RegExp(`(${esc(t).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"), "<mark>$1</mark>"); });
+  return out;
+}
+
+const SEARCH = { el: null, active: 0 };
+(function mountSearch() {
+  const top = document.querySelector(".top"), logo = document.getElementById("logo");
+  const right = document.createElement("div"); right.className = "top-right";
+  right.innerHTML = `<button type="button" class="searchbtn" id="searchBtn" aria-label="Search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Search</span></button>`;
+  top.appendChild(right); right.appendChild(logo);
+  const el = document.createElement("div"); el.className = "search"; el.hidden = true;
+  el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Search");
+  el.innerHTML = `<div class="search-panel">
+    <div class="search-bar"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="searchInput" type="search" autocomplete="off" spellcheck="false" placeholder="Search ${esc(CLIENT.name)}" aria-label="Search">
+      <button type="button" class="theme" id="searchClose">Close</button></div>
+    <ul class="results" id="searchResults" role="listbox"></ul></div>`;
+  document.body.appendChild(el); SEARCH.el = el;
+  const input = el.querySelector("#searchInput"), list = el.querySelector("#searchResults");
+  const render = () => {
+    const q = input.value.trim(), terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+    if (!q) { list.innerHTML = `<li class="empty">Search every section, page and note.</li>`; return; }
+    const hits = searchPages(q); SEARCH.active = 0;
+    list.innerHTML = hits.length ? hits.map((h, i) => `<li><a href="#${h.id}" class="hit${i === 0 ? " on" : ""}" role="option"><span class="hit-top"><b>${mark(h.title, terms)}</b><em>${esc(h.where)}</em></span><span class="hit-text">${snippet(h.text, terms)}</span></a></li>`).join("")
+      : `<li class="empty">No matches for “${esc(q)}”.</li>`;
+  };
+  const move = d => {
+    const hits = [...list.querySelectorAll(".hit")]; if (!hits.length) return;
+    hits[SEARCH.active].classList.remove("on");
+    SEARCH.active = (SEARCH.active + d + hits.length) % hits.length;
+    hits[SEARCH.active].classList.add("on"); hits[SEARCH.active].scrollIntoView({ block: "nearest" });
+  };
+  input.addEventListener("input", render);
+  input.addEventListener("keydown", e => {
+    if (e.key === "ArrowDown") { e.preventDefault(); move(1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); move(-1); }
+    else if (e.key === "Enter") { const h = list.querySelectorAll(".hit")[SEARCH.active]; if (h) { e.preventDefault(); closeSearch(); location.hash = h.getAttribute("href").slice(1); } }
+  });
+  list.addEventListener("click", e => { if (e.target.closest(".hit")) closeSearch(); });
+  el.addEventListener("click", e => { if (e.target === el || e.target.closest("#searchClose")) closeSearch(); });
+  document.getElementById("searchBtn").addEventListener("click", openSearch);
+  render();
+})();
+function openSearch() { SEARCH.el.hidden = false; document.body.classList.add("noscroll"); const i = SEARCH.el.querySelector("#searchInput"); i.focus(); i.select(); }
+function closeSearch() { SEARCH.el.hidden = true; document.body.classList.remove("noscroll"); }
+document.addEventListener("keydown", e => {
+  const typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName);
+  if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || (e.key === "/" && !typing)) { e.preventDefault(); openSearch(); }
+  else if (e.key === "Escape" && !SEARCH.el.hidden) closeSearch();
+});
