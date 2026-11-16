@@ -20,7 +20,7 @@ resonant-living/        One client
 `shared/shell.js` holds the sections every client gets, with plain descriptions:
 
 - **Brand Home** (centre): Origin Story, Ethos & Values, Ethical Framework
-- **Brand Core & Identity**: Messaging, Identity, Art & Photo Direction, Content Library, Inspo
+- **Brand Core & Identity**: Messaging, Brand Book (logos, typography, color), Art & Photo Direction, Content Library, Inspo
 - **Offers & Funnel Architecture**: Freebies & Lead Magnets, Low Ticket, High Ticket, Programs
 - **Target Audience**: Audience Research, CRM & Lead Tracker
 - **Marketing & Initiatives**: Platforms, 30-Day Ramp-Up (a day-by-day calendar), Paid Advertising

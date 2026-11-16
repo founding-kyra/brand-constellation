@@ -16,7 +16,11 @@ const SHELL = {
   sections: [
     { id: "brand", short: "Brand Core", title: "Brand Core & Identity", blurb: "How the brand speaks, looks and shows up.", subs: [
       { id: "messaging", short: "Messaging", title: "Messaging", note: "Positioning, voice and key phrases" },
-      { id: "identity", short: "Identity", title: "Identity", note: "Brand guidelines and logo files" },
+      { id: "identity", short: "Brand Book", title: "Brand Book", note: "Logos, typography and color, with the rules for each", wide: true,
+        placeholder: [{ type: "brandbook", groups: [
+          { t: "Logos", kind: "logo", items: ["Primary Logo", "Secondary Logo", "Type-Only Logo", "Badge", "Icons", "Favicon", "Watermark", "Graphics"].map(t => ({ t })) },
+          { t: "Typography", kind: "type", items: ["Primary", "Secondary", "Body"].map(t => ({ t })) },
+          { t: "Color", kind: "color", items: [{ t: "Palette" }] }] }] },
       { id: "art", short: "Art & Photo", title: "Art & Photo Direction", note: "Visual mood, symbols and photo style" },
       { id: "library", short: "Content Library", title: "Content Library", note: "Finished brand assets, ready to use" },
       { id: "inspo", short: "Inspo", title: "Inspo", note: "Reference images for the brand's look and feel", wide: true,

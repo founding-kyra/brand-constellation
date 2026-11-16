@@ -220,6 +220,33 @@ function blockHTML(b) {
       };
       return `${h}<div class="cal">${tools}${b.weeks.map(w => `<section class="week"><div class="week-head"><h4>${w.t}</h4>${w.d ? `<p>${w.d}</p>` : ""}</div><div class="days">${w.days.map(day).join("")}</div></section>`).join("")}</div>`;
     }
+    case "brandbook": {
+      const slug = x => String(x).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const idOf = (g, i) => `bb-${slug(g.t)}-${slug(i.t)}`;
+      const HINT = {
+        logo: "Clear space, minimum size, approved backgrounds and what not to do.",
+        type: "Where it's used, sizes, case and spacing, and what it pairs with.",
+        color: "When to use each color, and which pairings to avoid."
+      };
+      const tile = (x, big) => x.img
+        ? `<figure class="bb-tile${big ? " big" : ""}" style="--tbg:${x.bg || "var(--surface)"}"><span class="bb-img"><img src="${x.img}" alt="${x.label || ""}" loading="lazy"></span>${x.label ? `<figcaption>${x.label}</figcaption>` : ""}</figure>`
+        : `<figure class="bb-tile empty${big ? " big" : ""}"${x.bg ? ` style="--tbg:${x.bg}"` : ""}><span class="bb-img"></span><figcaption>${x.label || "To come"}</figcaption></figure>`;
+      const tiles = (list, defaults) => `<div class="bb-tiles">${(list && list.length ? list : defaults.map(l => ({ label: l }))).map(x => tile(x)).join("")}</div>`;
+      const rules = (list, kind) => list && list.length
+        ? `<ul class="bb-rules">${list.map(r => `<li>${r}</li>`).join("")}</ul>`
+        : `<p class="bb-hint">${HINT[kind]}</p>`;
+      const part = (title, inner) => `<div class="bb-part"><h4>${title}</h4>${inner}</div>`;
+      const item = (g, i) => {
+        const kind = g.kind || "logo";
+        let body = "";
+        if (kind === "logo") body = (i.img ? tile({ img: i.img, bg: i.bg, label: "" }, true) : "") + part("Rules", rules(i.rules, kind)) + part("Color variations", tiles(i.variations, ["On light", "On dark", "One color", "Reversed"])) + part("Applications", tiles(i.applications, ["Website", "Social", "Print", "Email"]));
+        if (kind === "type") body = `${i.font ? `<p class="bb-font">${i.font}</p>` : `<p class="bb-font empty">Font to come</p>`}${i.role ? `<p class="bb-role">${i.role}</p>` : ""}` + (i.img ? tile({ img: i.img, bg: i.bg, label: "" }, true) : tile({ label: "Specimen to come" }, true)) + part("Rules", rules(i.rules, kind));
+        if (kind === "color") body = `<div class="swatches">${(i.swatches && i.swatches.length ? i.swatches : [1, 2, 3, 4, 5].map(() => null)).map(c => c ? `<div class="sw"><i style="--c:${c.hex}"></i><b>${c.name}</b><span>${c.hex}</span>${c.role ? `<em>${c.role}</em>` : ""}</div>` : `<div class="sw"><i class="empty"></i><b>To come</b></div>`).join("")}</div>` + part("Rules", rules(i.rules, kind));
+        return `<section class="bb-item" id="${idOf(g, i)}"><h3>${i.t}</h3>${i.note ? `<p class="bb-note">${i.note}</p>` : ""}${body}</section>`;
+      };
+      const toc = b.groups.map(g => `<div class="bb-g"><b>${g.t}</b>${g.items.map(i => `<button type="button" class="bb-link" data-target="${idOf(g, i)}">${i.t}</button>`).join("")}</div>`).join("");
+      return `${h}<div class="bb"><nav class="bb-toc" aria-label="Brand book contents">${toc}</nav><div class="bb-body">${b.groups.map(g => `<div class="bb-group"><h2 class="subhead">${g.t}</h2>${g.items.map(i => item(g, i)).join("")}</div>`).join("")}</div></div>`;
+    }
     case "copy": return `${h}<div class="copies">${b.items.map(c => `<details class="copy"><summary><span class="copy-t">${c.t}</span>${c.meta ? `<span class="copy-meta">${c.meta}</span>` : ""}</summary><div class="copy-body">${c.text.split("\n").filter(Boolean).map(l => `<p>${l}</p>`).join("")}</div><button type="button" class="theme copybtn">Copy text</button></details>`).join("")}</div>`;
     case "pipeline": return `${h}<div class="pipeline">${b.stages.map(s => `<div><b>${s.t}</b><span>${s.d}</span><em>No contacts yet</em></div>`).join("")}</div>`;
     case "moodboard": {
@@ -298,6 +325,7 @@ function route() {
   else if (PAGE[id]) renderPage(PAGE[id]);
   else renderHome();
   document.getElementById("hint").style.visibility = document.getElementById("orbit") ? "visible" : "hidden";
+  bbInit();
   document.title = id === "home" || !(SEC[id] || PAGE[id]) ? `${CLIENT.name} · Brand Constellation` : `${(SEC[id] || PAGE[id]).title} · ${CLIENT.name}`;
   window.scrollTo(0, 0);
 }
@@ -511,6 +539,28 @@ document.addEventListener("click", e => {
   const c = e.target.closest(".copy .copybtn"); if (c) copyFrom(c, c.closest(".copy").querySelector(".copy-body"));
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && CAL.el && !CAL.el.hidden) calClose(); });
+
+/* ---------- Brand book: contents links and active section ---------- */
+let BB_OBS = null;
+function bbInit() {
+  if (BB_OBS) { BB_OBS.disconnect(); BB_OBS = null; }
+  const book = document.querySelector(".bb"); if (!book || !("IntersectionObserver" in window)) return;
+  const links = [...book.querySelectorAll(".bb-link")];
+  BB_OBS = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      links.forEach(l => l.classList.toggle("on", l.dataset.target === e.target.id));
+      const on = book.querySelector(".bb-link.on");
+      if (on && matchMedia("(max-width: 900px)").matches) on.scrollIntoView({ block: "nearest", inline: "center" });
+    });
+  }, { rootMargin: "-30% 0px -60% 0px" });
+  book.querySelectorAll(".bb-item").forEach(s => BB_OBS.observe(s));
+}
+document.addEventListener("click", e => {
+  const l = e.target.closest(".bb-link"); if (!l) return;
+  const t = document.getElementById(l.dataset.target);
+  if (t) t.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+});
 
 /* Start */
 route();
