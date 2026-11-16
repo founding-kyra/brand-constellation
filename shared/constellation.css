@@ -551,3 +551,17 @@ body.noscroll { overflow: hidden; }
   .vb-gloss > div { grid-template-columns: minmax(0, 1fr); gap: 6px; }
   .vb-promise { padding-inline: 4px; }
 }
+
+/* Starfield behind the orbit map */
+.stars .dust { fill: var(--ink); }
+.stars .spark.ink { fill: var(--ink); opacity: .55; }
+.stars .spark.rust { fill: var(--accent); opacity: .8; }
+.stars .cline { fill: none; stroke: var(--line); stroke-width: .8; stroke-dasharray: 1 4; }
+.stars .cstar { fill: var(--ink); opacity: .6; }
+.stars .spark, .stars .tw { transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: no-preference) {
+  .stars .spark { animation: sparkle var(--t, 5s) ease-in-out var(--d, 0s) infinite; }
+  .stars .tw { animation: twinkle var(--t, 5s) ease-in-out var(--d, 0s) infinite; }
+}
+@keyframes sparkle { 0%, 100% { transform: scale(1) rotate(0deg); } 50% { transform: scale(.55) rotate(20deg); opacity: .25; } }
+@keyframes twinkle { 0%, 100% { opacity: .15; } 50% { opacity: .9; } }

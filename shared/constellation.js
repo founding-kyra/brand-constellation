@@ -58,6 +58,7 @@ function renderOrbit(svg, compact, onHover) {
   svg.classList.toggle("compact", compact);
   const back = mk("g", {}, svg), links = mk("g", {}, svg), spokes = mk("g", {}, svg), nodes = mk("g", {}, svg);
   const fs = compact ? { sub: 24, pill: 25, pillH: 56, sun: 17, sunR: 82 } : { sub: 26, pill: 21, pillH: 50, sun: 17, sunR: 98 };
+  starfield(mk("g", { class: "stars", "aria-hidden": "true" }, back), L, compact, fs.sunR);
   mk("circle", { cx: L.cx, cy: L.cy, r: L.Rp, class: "ring" }, back);
   mk("circle", { cx: L.cx, cy: L.cy, r: L.Rs - 34, class: "ring dash" }, back);
   mk("circle", { cx: L.cx, cy: L.cy, r: fs.sunR + 18, class: "ring" }, back);
@@ -108,6 +109,49 @@ function renderOrbit(svg, compact, onHover) {
   });
   bindKeys(sun, () => go(HOME.id));
   sun.addEventListener("mouseenter", () => onHover(null)); sun.addEventListener("focus", () => onHover(null));
+}
+/* A quiet field of stars behind the map. Seeded, so it never jumps between visits;
+   stars keep clear of the sun, the section pills and the page labels. */
+function starfield(g, L, compact, sunR) {
+  let seed = 7;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const busy = [{ x: L.cx, y: L.cy, r: sunR + 40 }];
+  Object.values(L.planets).forEach(P => busy.push({ x: P.x, y: P.y, r: compact ? 90 : 120 }));
+  Object.values(L.subs).forEach(Q => busy.push({ x: Q.x, y: Q.y, r: compact ? 34 : 70 }, { x: Q.x + Math.cos(Q.a) * 90, y: Q.y + Math.sin(Q.a) * 30, r: compact ? 0 : 75 }));
+  const free = (x, y, pad = 0) => busy.every(b => Math.hypot(x - b.x, y - b.y) > b.r + pad);
+  const pick = pad => { for (let i = 0; i < 60; i++) { const x = rnd() * L.W, y = rnd() * L.H; if (free(x, y, pad)) return { x, y }; } return null; };
+  const twinkle = el => { el.style.setProperty("--d", (rnd() * 6).toFixed(2) + "s"); el.style.setProperty("--t", (3 + rnd() * 4).toFixed(2) + "s"); };
+  /* Dust: many tiny points */
+  for (let i = 0; i < (compact ? 70 : 150); i++) {
+    const p = pick(0); if (!p) continue;
+    const r = rnd() < .85 ? .9 + rnd() * .9 : 1.8 + rnd() * .9;
+    const c = mk("circle", { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: r.toFixed(2), class: "dust" + (rnd() < .25 ? " tw" : "") }, g);
+    c.style.opacity = (.25 + rnd() * .55).toFixed(2); twinkle(c);
+  }
+  /* Sparkles: four-point stars, a few in rust */
+  const spark = (x, y, R, cls) => {
+    const r = R * .22;
+    const d = `M${x} ${y - R} Q${x + r} ${y - r} ${x + R} ${y} Q${x + r} ${y + r} ${x} ${y + R} Q${x - r} ${y + r} ${x - R} ${y} Q${x - r} ${y - r} ${x} ${y - R}Z`;
+    const el = mk("path", { d, class: "spark " + cls }, g); twinkle(el); return el;
+  };
+  for (let i = 0; i < (compact ? 7 : 12); i++) {
+    const p = pick(10); if (!p) continue;
+    spark(p.x, p.y, (compact ? 7 : 8) + rnd() * (compact ? 6 : 9), rnd() < .4 ? "rust" : "ink");
+  }
+  /* Two small constellations drawn with hairlines */
+  for (let k = 0; k < 2; k++) {
+    const a = pick(70); if (!a) continue;
+    let pts = [a], ang = rnd() * Math.PI * 2;
+    for (let j = 0; j < 3 + Math.floor(rnd() * 2); j++) {
+      const last = pts[pts.length - 1]; ang += (rnd() - .5) * 1.6;
+      const len = (compact ? 30 : 42) + rnd() * 34, q = { x: last.x + Math.cos(ang) * len, y: last.y + Math.sin(ang) * len };
+      if (q.x < 10 || q.y < 10 || q.x > L.W - 10 || q.y > L.H - 10 || !free(q.x, q.y)) break;
+      pts.push(q);
+    }
+    if (pts.length < 3) continue;
+    mk("polyline", { points: pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" "), class: "cline" }, g);
+    pts.forEach((p, j) => mk("circle", { cx: p.x.toFixed(1), cy: p.y.toFixed(1), r: j === 0 ? 2.6 : 1.8, class: "cstar" }, g));
+  }
 }
 function focusOrbit(svg, secId) {
   svg.classList.toggle("focusing", !!secId);
