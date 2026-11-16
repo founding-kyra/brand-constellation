@@ -12,6 +12,9 @@
 
    Each page: { s: "ready" | "progress" | "planning", blocks: [ ... ] }  (add draft: true to hide it from the client)
    Pages left out show "Not started yet".
+   Extra client-only page in a section: CONTENT.marketing = { add: [{ id: "tiktok-launch", short: "TikTok Launch",
+     title: "14-Day TikTok Launch", note: "One line", after: "plan", wide: true, s: "progress", blocks: [ ... ] }] }
+   Calendar posts can carry label: "1A" (shown instead of n) and aria: "Day 1, post 1"; keep every n unique.
 
    Block examples
      { type: "lead", text: "One strong opening sentence." }

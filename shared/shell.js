@@ -94,6 +94,12 @@ function buildFromShell(shell, content) {
   const section = sec => {
     const c = content[sec.id] || {};
     const subs = (c.subs || sec.subs).map(u => c.subs ? { ...fill(u), filled: !!(u.blocks || []).length } : fill(u));
+    /* CONTENT[sectionId].add = [{ id, short, title, note, after, s, blocks }] adds client-only pages, placed after the page named in "after". */
+    (c.add || []).forEach(u => {
+      const page = { s: "planning", ...u, filled: !!(u.blocks || []).length };
+      const i = subs.findIndex(x => x.id === u.after);
+      subs.splice(i < 0 ? subs.length : i + 1, 0, page);
+    });
     return { ...sec, blocks: c.blocks, subs };
   };
   return { home: section(shell.home), sections: shell.sections.map(section) };

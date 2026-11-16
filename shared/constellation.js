@@ -254,12 +254,12 @@ function blockHTML(b) {
         <div class="cal-progress"><span class="cal-count"><b>${all.filter(d => posted[d.n]).length}</b> of ${all.length} posted</span><span class="cal-bar"><i style="width:${Math.round(all.filter(d => posted[d.n]).length / all.length * 100)}%"></i></span></div>
         <div class="cal-filters" role="group" aria-label="Filter posts"><button type="button" class="chip-f on" data-kind="">All</button>${kinds.map(k => `<button type="button" class="chip-f" data-kind="${k}"><i class="kdot k-${k.toLowerCase()}"></i>${k}</button>`).join("")}<button type="button" class="chip-f chip-hide" aria-pressed="false">Hide posted</button></div></div>` : "";
       const day = d => {
-        if (!d.hook) return `<div class="day empty"><span class="flip"><span class="face front"><span class="day-n">${d.n}</span><span class="day-note">Open</span></span></span></div>`;
+        if (!d.hook) return `<div class="day empty"><span class="flip"><span class="face front"><span class="day-n">${d.label || d.n}</span><span class="day-note">Open</span></span></span></div>`;
         const when = posted[d.n];
-        return `<button type="button" class="day${when ? " posted" : ""}" data-n="${d.n}" data-kind="${d.kind || ""}" aria-label="Day ${d.n}${when ? ", posted" : ""}: ${d.hook.replace(/"/g, "&quot;")}">
+        return `<button type="button" class="day${when ? " posted" : ""}" data-n="${d.n}" data-kind="${d.kind || ""}" aria-label="${d.aria || "Day " + d.n}${when ? ", posted" : ""}: ${d.hook.replace(/"/g, "&quot;")}">
           <span class="flip">
-            <span class="face front"><span class="day-top"><span class="day-n">${d.n}</span><span class="day-kind"><i class="kdot k-${(d.kind || "").toLowerCase()}"></i>${d.kind || ""}</span></span><span class="day-hook">${d.hook}</span>${d.text ? `<span class="day-has">Full script inside</span>` : ""}</span>
-            <span class="face back"><span class="day-top"><span class="day-n">${d.n}</span><span class="back-stamp">✓ Posted</span></span><span class="back-hook">${d.hook}</span><span class="back-date">${when ? fmtDate(when) : ""}</span></span>
+            <span class="face front"><span class="day-top"><span class="day-n">${d.label || d.n}</span><span class="day-kind"><i class="kdot k-${(d.kind || "").toLowerCase()}"></i>${d.kind || ""}</span></span><span class="day-hook">${d.hook}</span>${d.text ? `<span class="day-has">Full script inside</span>` : ""}</span>
+            <span class="face back"><span class="day-top"><span class="day-n">${d.label || d.n}</span><span class="back-stamp">✓ Posted</span></span><span class="back-hook">${d.hook}</span><span class="back-date">${when ? fmtDate(when) : ""}</span></span>
           </span></button>`;
       };
       return `${h}<div class="cal">${tools}${b.weeks.map(w => `<section class="week"><div class="week-head"><h4>${w.t}</h4>${w.d ? `<p>${w.d}</p>` : ""}</div><div class="days">${w.days.map(day).join("")}</div></section>`).join("")}</div>`;
@@ -587,7 +587,7 @@ function calOpen(n) {
   CAL.open = n;
   const when = calPosted()[n];
   CAL.el.innerHTML = `<article class="cv-card">
-    <div class="cv-top"><span class="day-n">${d.n}</span><span class="day-kind"><i class="kdot k-${(d.kind || "").toLowerCase()}"></i>${d.kind || ""}${d.format ? ` · ${d.format}` : ""}</span><button type="button" class="theme cv-close">Close</button></div>
+    <div class="cv-top"><span class="day-n">${d.label || d.n}</span><span class="day-kind"><i class="kdot k-${(d.kind || "").toLowerCase()}"></i>${d.kind || ""}${d.format ? ` · ${d.format}` : ""}</span><button type="button" class="theme cv-close">Close</button></div>
     <h3 class="cv-hook">${d.hook}</h3>
     ${d.note ? `<p class="cv-note">${d.note}</p>` : ""}
     ${d.cta ? `<p class="day-cta"><b>CTA</b>${d.cta}</p>` : ""}
