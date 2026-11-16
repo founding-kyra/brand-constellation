@@ -105,7 +105,7 @@ const CONTENT = {
     {"type":"text","heading":"Why it isn't linear","body":["A daily check-in lets clients move between high structure and independence without shame. That keeps people in the program instead of dropping out."]}
   ] },
 
-  research: { s: "planning", blocks: [
+  research: { s: "progress", blocks: [
     {"type":"lead","text":"The Next 40: capable women, 30 to 50+, who refuse to spend the second half of life in survival mode."},
     {"type":"quote","text":"I spent 40 years doing it the way I was supposed to do it. I am going to choose my next 40.","by":"The Next 40"},
     {"type":"list","heading":"Who she is","items":[{"t":"Capable","d":"Leads organizations and households, solves complex problems, cares for others."},{"t":"Well-read","d":"Knows psychology, self-help and holistic wellness well."},{"t":"Multi-passionate","d":"Visionary, intelligent and self-aware."}]},
