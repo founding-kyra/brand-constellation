@@ -23,7 +23,7 @@ const SHELL = {
           { t: "Color", kind: "color", items: [{ t: "Palette" }] }] }] },
       { id: "art", short: "Art & Photo", title: "Art & Photo Direction", note: "Visual mood, symbols and photo style" },
       { id: "library", short: "Content Library", title: "Content Library", note: "Finished brand assets, ready to use" },
-      { id: "inspo", short: "Inspo", title: "Inspo", note: "Reference images for the brand's look and feel", wide: true,
+      { id: "inspo", short: "Inspo", title: "Inspo", note: "Reference images for the brand's look and feel", wide: true, keep: true,
         placeholder: [{ type: "board", frames: ["Image", "Image", "Image", "Image", "Image", "Image"] }] }
     ] },
     { id: "offers", short: "Offers", title: "Offers & Funnel Architecture", blurb: "Everything the brand sells, from free to premium.", subs: [
@@ -97,7 +97,9 @@ function clientBlocks(blocks) {
 }
 function clientView(built) {
   const page = u => {
-    if (!u.filled || u.draft) return null;
+    if (u.draft) return null;
+    if (u.keep) return { ...u, blocks: u.filled ? clientBlocks(u.blocks) : [] };  /* Inspo always shows, so clients can add their own */
+    if (!u.filled) return null;
     const blocks = clientBlocks(u.blocks);
     return blocks.length ? { ...u, blocks } : null;
   };
