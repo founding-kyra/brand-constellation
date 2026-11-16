@@ -51,3 +51,13 @@ Client hubs hide anything that doesn't exist yet: pages with no content, empty s
 ## Hosting
 
 This is on public GitHub Pages for now. Pages ask search engines not to index them (`noindex` and `robots.txt`), but anyone with a link can open them. Before real client use, move it behind a login (planned: Cloudflare Pages + Cloudflare Access).
+
+## Client uploads (Add inspo)
+
+The Inspo page has a **+ Add inspo** button. Clients pick a photo or screenshot, add an optional note and enter their passcode once; the image appears under "Saved by you". Tap a saved image, then Remove twice, to delete it.
+
+- Upload service: Cloudflare Pages project `brand-constellation` (functions in `functions/api/`), images in the D1 database `brand-constellation` (table in `schema.sql`).
+- Each client's passcode is a Cloudflare secret named after their folder, for example `PASS_RESONANT_LIVING`. `PASS_ADMIN` works on every hub.
+- Set a passcode for a new client (run from this folder):
+  `npx wrangler pages secret put PASS_NEW_CLIENT --project-name brand-constellation`, then deploy with
+  `npx wrangler pages deploy . --project-name brand-constellation --branch main`.

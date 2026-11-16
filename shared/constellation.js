@@ -251,8 +251,8 @@ function blockHTML(b) {
     case "copy": return `${h}<div class="copies">${b.items.map(c => `<details class="copy"><summary><span class="copy-t">${c.t}</span>${c.meta ? `<span class="copy-meta">${c.meta}</span>` : ""}</summary><div class="copy-body">${c.text.split("\n").filter(Boolean).map(l => `<p>${l}</p>`).join("")}</div><button type="button" class="theme copybtn">Copy text</button></details>`).join("")}</div>`;
     case "pipeline": return `${h}<div class="pipeline">${b.stages.map(s => `<div><b>${s.t}</b><span>${s.d}</span><em>No contacts yet</em></div>`).join("")}</div>`;
     case "moodboard": {
-      LIGHTBOX.list = b.images.map((_, i) => `${b.path}${String(i + 1).padStart(2, "0")}.jpg`);
-      return `${h}<div class="mood">${b.images.map(([w, ht], i) => `<button type="button" class="pin" data-i="${i}" style="--r:${(((i * 37) % 7) - 3) * 0.3}deg" aria-label="Open image ${i + 1} of ${b.images.length}"><img src="${LIGHTBOX.list[i]}" width="${w}" height="${ht}" loading="lazy" alt=""></button>`).join("")}</div>`;
+      LIGHTBOX.mood = b.images.map((_, i) => `${b.path}${String(i + 1).padStart(2, "0")}.jpg`);
+      return `${h}<div class="mood">${b.images.map(([w, ht], i) => `<button type="button" class="pin" data-i="${i}" style="--r:${(((i * 37) % 7) - 3) * 0.3}deg" aria-label="Open image ${i + 1} of ${b.images.length}"><img src="${LIGHTBOX.mood[i]}" width="${w}" height="${ht}" loading="lazy" alt=""></button>`).join("")}</div>`;
     }
   }
   return "";
@@ -263,8 +263,9 @@ function openLightbox(i) {
   if (!LIGHTBOX.el) {
     const el = document.createElement("div"); el.className = "lb"; el.hidden = true;
     el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Image viewer");
-    el.innerHTML = `<button type="button" class="theme lb-close">Close</button><button type="button" class="theme lb-prev" aria-label="Previous image">←</button><img alt=""><button type="button" class="theme lb-next" aria-label="Next image">→</button><p class="lb-count"></p>`;
+    el.innerHTML = `<button type="button" class="theme lb-close">Close</button><button type="button" class="theme lb-prev" aria-label="Previous image">←</button><img alt=""><button type="button" class="theme lb-next" aria-label="Next image">→</button><p class="lb-count"></p><button type="button" class="theme lb-remove" hidden>Remove</button>`;
     el.addEventListener("click", e => {
+      if (e.target.closest(".lb-remove")) { upRemove(e.target.closest(".lb-remove")); return; }
       if (e.target.closest(".lb-prev")) step(-1); else if (e.target.closest(".lb-next")) step(1);
       else if (e.target.closest(".lb-close") || e.target === el) closeLightbox();
     });
@@ -272,14 +273,24 @@ function openLightbox(i) {
   }
   LIGHTBOX.i = i; showLightbox(); LIGHTBOX.el.hidden = false; LIGHTBOX.el.querySelector(".lb-close").focus();
 }
-function showLightbox() { const el = LIGHTBOX.el; el.querySelector("img").src = LIGHTBOX.list[LIGHTBOX.i]; el.querySelector(".lb-count").textContent = `${LIGHTBOX.i + 1} of ${LIGHTBOX.list.length}`; }
+function showLightbox() {
+  const el = LIGHTBOX.el; el.querySelector("img").src = LIGHTBOX.list[LIGHTBOX.i];
+  const up = LIGHTBOX.group === "up" ? UP.items[LIGHTBOX.i] : null;
+  el.querySelector(".lb-count").textContent = up && up.note ? up.note : `${LIGHTBOX.i + 1} of ${LIGHTBOX.list.length}`;
+  const rm = el.querySelector(".lb-remove"); rm.hidden = !up; rm.textContent = "Remove"; rm.dataset.armed = "";
+}
 function step(d) { LIGHTBOX.i = (LIGHTBOX.i + d + LIGHTBOX.list.length) % LIGHTBOX.list.length; showLightbox(); }
 function closeLightbox() { if (LIGHTBOX.el) LIGHTBOX.el.hidden = true; }
 document.addEventListener("keydown", e => {
   if (!LIGHTBOX.el || LIGHTBOX.el.hidden) return;
   if (e.key === "Escape") closeLightbox(); else if (e.key === "ArrowLeft") step(-1); else if (e.key === "ArrowRight") step(1);
 });
-document.addEventListener("click", e => { const pin = e.target.closest(".pin"); if (pin) openLightbox(+pin.dataset.i); });
+document.addEventListener("click", e => {
+  const pin = e.target.closest(".pin"); if (!pin) return;
+  LIGHTBOX.group = pin.dataset.group || "mood";
+  LIGHTBOX.list = LIGHTBOX.group === "up" ? UP.items.map(upSrc) : LIGHTBOX.mood;
+  openLightbox(+pin.dataset.i);
+});
 
 const blocksHTML = blocks => blocks && blocks.length ? `<div class="blocks">${blocks.map(b => `<section class="block">${blockHTML(b)}</section>`).join("")}</div>` : "";
 
@@ -327,6 +338,7 @@ function route() {
   else renderHome();
   document.getElementById("hint").style.visibility = document.getElementById("orbit") ? "visible" : "hidden";
   bbInit();
+  upInit();
   document.title = id === "home" || !(SEC[id] || PAGE[id]) ? `${CLIENT.name} · Brand Constellation` : `${(SEC[id] || PAGE[id]).title} · ${CLIENT.name}`;
   window.scrollTo(0, 0);
 }
@@ -562,6 +574,105 @@ document.addEventListener("click", e => {
   const t = document.getElementById(l.dataset.target);
   if (t) t.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
 });
+
+/* ---------- Client uploads to the Inspo board ---------- */
+const API = location.hostname.endsWith("brand-constellation.pages.dev") || location.port === "8788" ? "/api" : "https://brand-constellation.pages.dev/api";
+const HUB_ID = CLIENT.id || location.pathname.split("/").filter(Boolean).pop();
+const UP = { items: [], el: null, file: null };
+const upSrc = it => `${API}/inspo/img?id=${encodeURIComponent(it.id)}`;
+const upKey = { get() { try { return localStorage.getItem(`bc:${HUB_ID}:key`) || ""; } catch (e) { return ""; } },
+  set(v) { try { v ? localStorage.setItem(`bc:${HUB_ID}:key`, v) : localStorage.removeItem(`bc:${HUB_ID}:key`); } catch (e) {} } };
+function upInit() {
+  const page = document.querySelector('.main .blocks'); if (!page || (location.hash.slice(1) !== "inspo")) return;
+  const box = document.createElement("section"); box.className = "block up-area";
+  box.innerHTML = `<div class="up-bar"><p>Love something you saw? Save it here.</p><button type="button" class="open up-add">+ Add inspo</button></div><div class="up-saved" hidden><h3>Saved by you</h3><div class="mood up-grid"></div></div>`;
+  page.prepend(box);
+  box.querySelector(".up-add").addEventListener("click", upOpen);
+  upLoad();
+}
+async function upLoad() {
+  try {
+    const r = await fetch(`${API}/inspo?client=${encodeURIComponent(HUB_ID)}`); if (!r.ok) return;
+    UP.items = (await r.json()).items || [];
+  } catch (e) { return; }
+  const wrap = document.querySelector(".up-saved"); if (!wrap) return;
+  wrap.hidden = !UP.items.length;
+  wrap.querySelector(".up-grid").innerHTML = UP.items.map((it, i) => `<button type="button" class="pin" data-group="up" data-i="${i}" style="--r:${(((i * 37) % 7) - 3) * 0.3}deg" aria-label="Open saved image ${i + 1}"><img src="${upSrc(it)}" ${it.w && it.h ? `width="${it.w}" height="${it.h}"` : ""} loading="lazy" alt="${(it.note || "").replace(/"/g, "&quot;")}"></button>`).join("");
+}
+function upOpen() {
+  if (!UP.el) {
+    const el = document.createElement("div"); el.className = "cardview"; el.hidden = true;
+    el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Add inspo");
+    el.addEventListener("click", e => { if (e.target === el || e.target.closest(".cv-close")) upClose(); });
+    document.body.appendChild(el); UP.el = el;
+  }
+  UP.file = null;
+  UP.el.innerHTML = `<form class="cv-card up-form" novalidate>
+    <div class="cv-top"><h3 class="cv-hook">Add inspo</h3><button type="button" class="theme cv-close">Close</button></div>
+    <label class="up-drop"><input type="file" id="upFile" accept="image/*"><span class="up-preview"><span>Choose a photo or screenshot</span></span></label>
+    <label class="up-field"><span>A note (optional)</span><input type="text" id="upNote" maxlength="280" placeholder="What do you love about it?"></label>
+    ${upKey.get() ? "" : `<label class="up-field"><span>Passcode</span><input type="password" id="upPass" autocomplete="current-password" placeholder="The passcode Kyra gave you"></label>`}
+    <p class="up-msg" role="status"></p>
+    <button type="submit" class="open up-send">Add to the board</button>
+  </form>`;
+  const form = UP.el.querySelector("form");
+  form.querySelector("#upFile").addEventListener("change", e => {
+    UP.file = e.target.files[0] || null;
+    const pv = form.querySelector(".up-preview");
+    pv.innerHTML = UP.file ? `<img src="${URL.createObjectURL(UP.file)}" alt="">` : `<span>Choose a photo or screenshot</span>`;
+  });
+  form.addEventListener("submit", upSend);
+  UP.el.hidden = false; document.body.classList.add("noscroll");
+}
+function upClose() { if (UP.el) { UP.el.hidden = true; document.body.classList.remove("noscroll"); } }
+function upShrink(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 1400, k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas"); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      resolve({ data: c.toDataURL("image/jpeg", 0.85).split(",")[1], w: c.width, h: c.height });
+    };
+    img.onerror = () => reject(new Error("That file isn't an image this browser can read."));
+    img.src = URL.createObjectURL(file);
+  });
+}
+async function upSend(e) {
+  e.preventDefault();
+  const form = e.target, msg = form.querySelector(".up-msg"), btn = form.querySelector(".up-send");
+  const passEl = form.querySelector("#upPass"), key = passEl ? passEl.value.trim() : upKey.get();
+  if (!UP.file) { msg.textContent = "Choose a photo first."; return; }
+  if (!key) { msg.textContent = "Enter the passcode Kyra gave you."; passEl && passEl.focus(); return; }
+  btn.disabled = true; btn.textContent = "Adding…"; msg.textContent = "";
+  try {
+    const img = await upShrink(UP.file);
+    const r = await fetch(`${API}/inspo`, { method: "POST", headers: { "Content-Type": "application/json", "X-Hub-Key": key },
+      body: JSON.stringify({ client: HUB_ID, note: form.querySelector("#upNote").value.trim(), mime: "image/jpeg", ...img }) });
+    const out = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      if (r.status === 401) { upKey.set(""); }
+      msg.textContent = out.error || "That didn't save. Try again.";
+      if (r.status === 401 && !passEl) { upOpen(); UP.el.querySelector(".up-msg").textContent = out.error; }
+      btn.disabled = false; btn.textContent = "Add to the board"; return;
+    }
+    upKey.set(key); upClose(); await upLoad();
+    document.querySelector(".up-saved")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  } catch (err) {
+    msg.textContent = err.message || "That didn't save. Check your connection and try again.";
+    btn.disabled = false; btn.textContent = "Add to the board";
+  }
+}
+async function upRemove(btn) {
+  const it = UP.items[LIGHTBOX.i]; if (!it) return;
+  if (!btn.dataset.armed) { btn.dataset.armed = "1"; btn.textContent = "Tap again to remove"; return; }
+  const key = upKey.get();
+  if (!key) { btn.textContent = "Add something first to unlock removing"; return; }
+  btn.textContent = "Removing…";
+  const r = await fetch(`${API}/inspo?client=${encodeURIComponent(HUB_ID)}&id=${encodeURIComponent(it.id)}`, { method: "DELETE", headers: { "X-Hub-Key": key } }).catch(() => null);
+  if (!r || !r.ok) { btn.textContent = "Couldn't remove it"; return; }
+  closeLightbox(); await upLoad();
+}
 
 /* Start */
 route();

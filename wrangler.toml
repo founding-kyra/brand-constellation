@@ -1,0 +1,8 @@
+name = "brand-constellation"
+pages_build_output_dir = "."
+compatibility_date = "2026-11-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "brand-constellation"
+database_id = "6ed64fee-d791-44bc-9594-e6ce60301ad1"
