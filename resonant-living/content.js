@@ -43,13 +43,27 @@ const CONTENT = {
     {"type":"compare","heading":"Say this, not that","cols":["Say","Avoid"],"rows":[["Capacity","Discipline"],["Scaffolding","Rigid routine"],["Guide","Guru or healer"],["Return to center","Fix yourself"]]}
   ] },
 
-  identity: { s: "planning", blocks: [
-    {"type":"pending","heading":"Identity in progress","text":"The visual identity hasn't been designed yet. This page fills in as it's created.","needs":["Logo and marks","Color palette","Typography","Usage rules"]},
-    {"type":"section","heading":"Brand Guidelines"},
-    {"type":"swatches","heading":"Color","items":[],"empty":4},
-    {"type":"text","heading":"Typography","body":["To come."]},
-    {"type":"section","heading":"Logo Files"},
-    {"type":"gallery","heading":"","folder":"","tiles":["Primary logo","Submark","Wordmark","Icon"]}
+  identity: { s: "progress", blocks: [
+    { "type": "brandbook", "groups": [
+      { "t": "Logos", "kind": "logo", "items": [
+        {"t":"Primary Logo","note":"The stacked wordmark: RESONANT in Hello Paris, Living in Simply Serene.","img":"brand/primary-dark.png","bg":"#E6E0D6","variations":[{"label":"On ivory","img":"brand/primary-dark.png","bg":"#E6E0D6"},{"label":"On midnight","img":"brand/primary-light.png","bg":"#1C2430"},{"label":"With the knot and gold circle","img":"brand/primary-mark.png","bg":"#EFEAE0"}]},
+        {"t":"Secondary Logo","note":"Horizontal: the knot beside the wordmark, for wide spaces like a website header.","img":"brand/secondary.png","bg":"#E6E0D6","variations":[{"label":"On ivory","img":"brand/secondary.png","bg":"#E6E0D6"}]},
+        {"t":"Type-Only Logo","note":"RESONANT with LIVING CO. in Pragmatica Extended. No mark, no script.","img":"brand/type-only.png","bg":"#E4E2DD","variations":[{"label":"Oxblood on stone","img":"brand/type-only.png","bg":"#E4E2DD"}]},
+        {"t":"Badge","note":"The circular badge, plus the RL monogram for small round spaces.","img":"brand/badge.png","bg":"#E6E0D6","variations":[{"label":"Circular badge","img":"brand/badge.png","bg":"#E6E0D6"},{"label":"RL monogram","img":"brand/monogram.png","bg":"#EFEAE0"}]},
+        {"t":"Icons","note":"The knot on its own, in three finishes.","img":"brand/icon-color.png","bg":"#EFEAE0","variations":[{"label":"Multicolor","img":"brand/icon-color.png","bg":"#EFEAE0"},{"label":"Gold foil","img":"brand/icon-gold.png","bg":"#1C2430"},{"label":"Black on ochre","img":"brand/icon-black.png","bg":"#8A5A2B"}]},
+        {"t":"Favicon","note":"Not designed yet. The knot or the RL monogram would both work at tiny sizes."},
+        {"t":"Watermark","note":"Not designed yet."},
+        {"t":"Graphics","note":"Not designed yet: patterns, textures and supporting marks."}
+      ] },
+      { "t": "Typography", "kind": "type", "items": [
+        {"t":"Primary","font":"Hello Paris","role":"Headlines and the RESONANT wordmark."},
+        {"t":"Secondary","font":"Simply Serene","role":"Script accents, like Living in the logo."},
+        {"t":"Body","font":"Pragmatica Extended","role":"Body text and small caps labels, like LIVING CO."}
+      ] },
+      { "t": "Color", "kind": "color", "items": [
+        {"t":"Palette","swatches":[{"name":"Ivory","hex":"#E6E0D6"},{"name":"Oxblood","hex":"#481E23"},{"name":"Moss","hex":"#6B6F4E"},{"name":"Midnight","hex":"#1C2430"},{"name":"Ochre","hex":"#8A5A2B"}]}
+      ] }
+    ] }
   ] },
 
   art: { s: "planning", blocks: [

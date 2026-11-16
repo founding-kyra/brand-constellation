@@ -427,3 +427,7 @@ body.noscroll { overflow: hidden; }
   .bb-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 .bb-tile.big { max-width: 640px; }
+.bb-tile:not(.empty) .bb-img { padding: 0; }
+.bb-tile.big:not(.empty) .bb-img { padding: 0; }
+.bb-img { position: relative; }
+.bb-img img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; object-fit: contain; }
