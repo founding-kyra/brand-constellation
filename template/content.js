@@ -42,7 +42,7 @@
            { t: "Core Tenets", kind: "cards", items: [{ t: "Tenet", d: "What it means" }] }] },
          { t: "Voice", items: [
            { t: "Voice Pillars", kind: "pillars", items: [{ t: "Grounded", d: "How it sounds", sounds: "An example line" }] },
-           { t: "We Are, Never", kind: "spectrum", items: [{ is: "Direct", not: "abrasive" }] },
+           { t: "We Are… But We're Never…", kind: "spectrum", items: [{ is: "Direct", not: "abrasive" }] },
            { t: "Tone by Setting", kind: "tone", items: [{ t: "Public", where: "Social, ads", d: "How it shifts", ex: "Example", level: 2 }] }] },
          { t: "Words", items: [
            { t: "Signature Terms", kind: "glossary", items: [{ t: "Term", d: "Meaning", use: "Usage note" }] },

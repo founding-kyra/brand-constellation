@@ -24,7 +24,7 @@ const SHELL = {
             { t: "Core Tenets", kind: "cards", hint: "Three to five principles the brand works by." }] },
           { t: "Voice", items: [
             { t: "Voice Pillars", kind: "pillars", hint: "Four or five personality traits, and how each one sounds." },
-            { t: "We Are, Never", kind: "spectrum", hint: "Guardrails that keep the voice from drifting too far." },
+            { t: "We Are… But We're Never…", kind: "spectrum", hint: "Guardrails that keep the voice from drifting too far." },
             { t: "Tone by Setting", kind: "tone", hint: "How the voice shifts between public, personal and product moments." }] },
           { t: "Words", items: [
             { t: "Signature Terms", kind: "glossary", hint: "The brand's own names and phrases, and what each one means." },
