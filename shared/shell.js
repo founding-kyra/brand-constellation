@@ -24,6 +24,8 @@ const SHELL = {
       { id: "art", short: "Art & Photo", title: "Art & Photo Direction", note: "Visual mood, symbols and photo style" },
       { id: "library", short: "Content Library", title: "Content Library", note: "Finished brand assets, ready to use" },
       { id: "inspo", short: "Inspo", title: "Inspo", note: "Reference images for the brand's look and feel", wide: true, keep: true,
+        /* Rule: once the Pinterest board is uploaded, Inspo is marked Ready (finished). */
+        readyWhen: blocks => blocks.some(b => b.type === "moodboard" && (b.images || []).length),
         placeholder: [{ type: "board", frames: ["Image", "Image", "Image", "Image", "Image", "Image"] }] }
     ] },
     { id: "offers", short: "Offers", title: "Offers & Funnel Architecture", blurb: "Everything the brand sells, from free to premium.", subs: [
@@ -62,7 +64,9 @@ const SHELL = {
 function buildFromShell(shell, content) {
   const fill = u => {
     const own = content[u.id] && ((content[u.id].blocks || []).length || content[u.id].subs);
-    return { s: "planning", blocks: u.placeholder || [], ...u, ...(content[u.id] || {}), filled: !!own };
+    const page = { s: "planning", blocks: u.placeholder || [], ...u, ...(content[u.id] || {}), filled: !!own };
+    if (u.readyWhen && u.readyWhen(page.blocks || [])) page.s = "ready";
+    return page;
   };
   const section = sec => {
     const c = content[sec.id] || {};
