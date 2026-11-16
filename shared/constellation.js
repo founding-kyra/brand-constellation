@@ -248,6 +248,40 @@ function blockHTML(b) {
       const toc = b.groups.map(g => `<div class="bb-g"><b>${g.t}</b>${g.items.map(i => `<button type="button" class="bb-link" data-target="${idOf(g, i)}">${i.t}</button>`).join("")}</div>`).join("");
       return `${h}<div class="bb"><nav class="bb-toc" aria-label="Brand book contents">${toc}</nav><div class="bb-body">${b.groups.map(g => `<div class="bb-group"><h2 class="subhead">${g.t}</h2>${g.items.map(i => item(g, i)).join("")}</div>`).join("")}</div></div>`;
     }
+    case "voicebook": {
+      /* Messaging guide. Each item has a kind that sets its look. Empty items
+         (template only) draw the same layout as soft placeholder bars. */
+      const slug = x => String(x).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const idOf = (p, i) => `vb-${slug(p.t)}-${slug(i.t)}`;
+      const g = (x, w = "70%") => x ? x : `<i class="gb" style="width:${w}"></i>`;
+      const n = k => String(k + 1).padStart(2, "0");
+      const cols = (list, d) => { const c = (list && list.length) || d; return `style="--cols:${c === 4 ? 2 : Math.min(c, 3)}"`; };
+      const fill = (list, count) => list && list.length ? list : Array.from({ length: count }, () => ({}));
+      const TONE = [{ t: "Public", where: "Social, ads, homepage, press" }, { t: "Personal", where: "Email, DMs, community, support" }, { t: "Product", where: "Programs, onboarding, packaging" }];
+      const W = ["46%", "62%", "38%", "54%", "70%", "42%"];
+      const KIND = {
+        archetype: i => `<div class="vb-arch"><div class="vb-arch-cell"><span class="vb-lab">Archetype</span><b>${g(i.archetype, "60%")}</b></div><div class="vb-arch-cell"><span class="vb-lab">Role in their life</span><b>${g(i.role, "50%")}</b></div></div>${i.d ? `<p class="vb-d">${i.d}</p>` : ""}`,
+        promise: i => `<blockquote class="vb-promise">${i.text || `${g("", "90%")}${g("", "60%")}`}</blockquote>`,
+        beliefs: i => `<div class="vb-beliefs"><div class="vb-believe"><span class="vb-lab">We believe</span><p>${i.believe || `${g("", "92%")}${g("", "80%")}${g("", "55%")}`}</p></div><div class="vb-against"><span class="vb-lab">We stand against</span><ul>${fill(i.against, 3).map((a, k) => `<li>${g(typeof a === "string" ? a : "", W[k])}</li>`).join("")}</ul></div></div>`,
+        cards: i => `<div class="vb-cards" ${cols(i.items, 3)}>${fill(i.items, 3).map((c, k) => `<div class="vb-card"><span class="vb-num">${n(k)}</span><b>${g(c.t, "55%")}</b><p>${c.d || (c.t ? "" : `${g("", "90%")}${g("", "65%")}`)}</p></div>`).join("")}</div>`,
+        pillars: i => `<div class="vb-pillars" ${cols(i.items, 4)}>${fill(i.items, 4).map(c => `<div class="vb-pillar"><b>${g(c.t, "50%")}</b><p>${c.d || (c.t ? "" : `${g("", "88%")}${g("", "60%")}`)}</p>${c.sounds ? `<q>${c.sounds}</q>` : c.t ? "" : `<q>${g("", "75%")}</q>`}</div>`).join("")}</div>`,
+        spectrum: i => `<div class="vb-spec">${fill(i.items, 3).map((r, k) => `<div class="vb-row"><b>${g(r.is, "60%")}</b><span class="vb-track" style="--at:${[18, 26, 14, 22, 30][k % 5]}%"><i></i></span><span class="vb-not">${r.not ? `never ${r.not}` : g("", "60%")}</span>${r.d ? `<p>${r.d}</p>` : ""}</div>`).join("")}</div>`,
+        tone: i => `<div class="vb-tone">${(i.items && i.items.length ? i.items : TONE).map((c, k) => `<div class="vb-set"><span class="vb-vol" aria-hidden="true">${[1, 2, 3].map(d => `<i class="${d <= (c.level || 3 - k) ? "on" : ""}"></i>`).join("")}</span><b>${c.t}</b><span class="vb-where">${c.where || (TONE[k] || {}).where || ""}</span><p>${c.d || `${g("", "90%")}${g("", "70%")}`}</p>${c.ex ? `<q>${c.ex}</q>` : c.d ? "" : `<q>${g("", "80%")}</q>`}</div>`).join("")}</div>`,
+        glossary: i => `<dl class="vb-gloss">${fill(i.items, 3).map((c, k) => `<div><dt>${g(c.t, W[k])}</dt><dd>${c.d || `${g("", "85%")}`}${c.use ? `<span class="vb-use">${c.use}</span>` : ""}</dd></div>`).join("")}</dl>`,
+        avoid: i => `<ul class="vb-avoid">${fill(i.items, 6).map((w, k) => `<li>${typeof w === "string" ? w : `<i class="gb" style="width:${50 + (k * 23) % 50}px"></i>`}</li>`).join("")}</ul>`,
+        swap: i => `<div class="vb-swap"><div class="vb-swap-h"><span class="vb-lab">Instead of</span><span></span><span class="vb-lab">Say</span></div>${fill(i.items, 3).map((r, k) => `<div class="vb-swap-r"><s>${g(r.not, W[k])}</s><span class="vb-arrow" aria-hidden="true">→</span><b>${g(r.say, W[k + 1])}</b></div>`).join("")}</div>`,
+        bank: i => `<ul class="vb-bank">${fill(i.items, 12).map((w, k) => `<li class="z${k % 4}">${typeof w === "string" ? w : `<i class="gb" style="width:${40 + (k * 29) % 70}px"></i>`}</li>`).join("")}</ul>`,
+        metaphors: i => `<div class="vb-meta">${fill(i.items, 2).map(c => `<div class="vb-metaphor"><b>${g(c.t, "45%")}</b><p>${c.d || `${g("", "90%")}${g("", "60%")}`}</p></div>`).join("")}</div>`,
+        objection: i => `<div class="vb-obj"><div class="vb-obj-q"><span class="vb-lab">They might think</span><q>${i.q || g("", "80%")}</q></div><div class="vb-obj-a"><span class="vb-lab">How we answer</span><p>${i.a || `${g("", "92%")}${g("", "75%")}${g("", "50%")}`}</p>${(i.points || []).length ? `<ul>${i.points.map(p => `<li>${p}</li>`).join("")}</ul>` : ""}</div></div>`
+      };
+      const VB_EMPTY = i => !["archetype", "role", "d", "text", "believe", "against", "items", "q", "a", "points"].some(k => Array.isArray(i[k]) ? i[k].length : i[k]);
+      const item = (p, i) => {
+        const empty = VB_EMPTY(i);
+        return `<section class="bb-item vb-item${empty ? " ghost" : ""}" id="${idOf(p, i)}"><h3>${i.t}</h3>${i.note || (empty && i.hint) ? `<p class="bb-note">${i.note || i.hint}</p>` : ""}${(KIND[i.kind] || KIND.cards)(i)}</section>`;
+      };
+      const toc = b.parts.map(p => `<div class="bb-g"><b>${p.t}</b>${p.items.map(i => `<button type="button" class="bb-link" data-target="${idOf(p, i)}">${i.t}</button>`).join("")}</div>`).join("");
+      return `${h}<div class="bb vb"><nav class="bb-toc" aria-label="Messaging contents">${toc}</nav><div class="bb-body">${b.parts.map(p => `<div class="bb-group"><h2 class="subhead">${p.t}</h2>${p.items.map(i => item(p, i)).join("")}</div>`).join("")}</div></div>`;
+    }
     case "copy": return `${h}<div class="copies">${b.items.map(c => `<details class="copy"><summary><span class="copy-t">${c.t}</span>${c.meta ? `<span class="copy-meta">${c.meta}</span>` : ""}</summary><div class="copy-body">${c.text.split("\n").filter(Boolean).map(l => `<p>${l}</p>`).join("")}</div><button type="button" class="theme copybtn">Copy text</button></details>`).join("")}</div>`;
     case "pipeline": return `${h}<div class="pipeline">${b.stages.map(s => `<div><b>${s.t}</b><span>${s.d}</span><em>No contacts yet</em></div>`).join("")}</div>`;
     case "moodboard": {

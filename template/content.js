@@ -34,6 +34,27 @@
            variations: [{ label: "On ivory", img: "brand/primary-ivory.png", bg: "#E6E0D6" }], applications: [{ label: "Website", img: "brand/web.png" }] }] },
          { t: "Typography", kind: "type", items: [{ t: "Primary", font: "Font name", role: "Headlines", img: "brand/type-primary.png", rules: ["Rule"] }] },
          { t: "Color", kind: "color", items: [{ t: "Palette", swatches: [{ name: "Ivory", hex: "#E6E0D6", role: "Backgrounds" }], rules: ["Rule"] }] }] }
+     { type: "voicebook", parts: [   (the Messaging page; copy the part and item titles from shared/shell.js)
+         { t: "Positioning", items: [
+           { t: "Archetype", kind: "archetype", archetype: "The Creator", role: "Sanctuary", d: "One line on why" },
+           { t: "Brand Promise", kind: "promise", text: "One sentence." },
+           { t: "Beliefs", kind: "beliefs", believe: "What the brand believes.", against: ["Norm it opposes"] },
+           { t: "Core Tenets", kind: "cards", items: [{ t: "Tenet", d: "What it means" }] }] },
+         { t: "Voice", items: [
+           { t: "Voice Pillars", kind: "pillars", items: [{ t: "Grounded", d: "How it sounds", sounds: "An example line" }] },
+           { t: "We Are, Never", kind: "spectrum", items: [{ is: "Direct", not: "abrasive" }] },
+           { t: "Tone by Setting", kind: "tone", items: [{ t: "Public", where: "Social, ads", d: "How it shifts", ex: "Example", level: 2 }] }] },
+         { t: "Words", items: [
+           { t: "Signature Terms", kind: "glossary", items: [{ t: "Term", d: "Meaning", use: "Usage note" }] },
+           { t: "Words We Don't Use", kind: "avoid", items: ["Word"] },
+           { t: "Say This, Not That", kind: "swap", items: [{ not: "Industry word", say: "Brand word" }] },
+           { t: "Sensory Word Bank", kind: "bank", items: ["Word"] }] },
+         { t: "Stories", items: [
+           { t: "Content Pillars", kind: "cards", items: [{ t: "Pillar", d: "What it covers" }] },
+           { t: "Signature Metaphors", kind: "metaphors", items: [{ t: "The metaphor", d: "What it makes clear" }] }] },
+         { t: "Objections", items: [
+           { t: "Price", kind: "objection", q: "What they might think", a: "How we answer", points: ["Point"] }] }] }
+       (items left out or empty are hidden from the client)
      { type: "moodboard", path: "inspo/brand-", images: [[720, 900], [720, 720]] }
        (images are [width, height] for inspo/brand-01.jpg, inspo/brand-02.jpg, ...)
    ===================================================================== */

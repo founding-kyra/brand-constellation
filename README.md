@@ -20,7 +20,7 @@ resonant-living/        One client
 `shared/shell.js` holds the sections every client gets, with plain descriptions:
 
 - **Brand Home** (centre): Origin Story, Ethos & Values, Ethical Framework
-- **Brand Core & Identity**: Messaging, Brand Book (logos, typography, color), Art & Photo Direction, Content Library, Inspo
+- **Brand Core & Identity**: Messaging (positioning, voice, words, stories, objections), Brand Book (logos, typography, color), Art & Photo Direction, Content Library, Inspo
 - **Offers & Funnel Architecture**: Freebies & Lead Magnets, Low Ticket, High Ticket, Programs
 - **Target Audience**: Audience Research, CRM & Lead Tracker
 - **Marketing & Initiatives**: Platforms, 30-Day Ramp-Up (a day-by-day calendar), Paid Advertising
@@ -39,7 +39,7 @@ Everything specific to a client lives in `content.js`:
 
 ## What clients see
 
-Client hubs hide anything that doesn't exist yet: pages with no content, empty sections, "to come" placeholders, empty Brand Book parts, empty calendar days and "still to do" boxes. Mark a page `draft: true` in `content.js` to keep its content but hide it. The template sets `CLIENT.showEmpty = true`, so it shows every placeholder.
+Client hubs hide anything that doesn't exist yet: pages with no content, empty sections, "to come" placeholders, empty Brand Book and Messaging parts, empty calendar days and "still to do" boxes. Mark a page `draft: true` in `content.js` to keep its content but hide it. The template sets `CLIENT.showEmpty = true`, so it shows every placeholder.
 
 ## Add a new client
 

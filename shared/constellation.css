@@ -452,3 +452,100 @@ body.noscroll { overflow: hidden; }
 .up-send:disabled { opacity: .6; cursor: progress; }
 .lb-remove { position: absolute; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); }
 @media (max-width: 560px) { .lb-remove { bottom: calc(60px + env(safe-area-inset-bottom, 0px)); } }
+
+/* Messaging guide (voicebook). Shares the Brand Book layout and contents rail. */
+.vb .bb-item { gap: 20px; }
+.vb-lab { display: block; font-family: var(--font-label); font-stretch: 112.5%; font-weight: 800; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+.vb-d { margin: 0; max-width: 62ch; }
+.gb { display: block; height: .62em; margin: .5em 0; border-radius: 99px; background: var(--line-faint); max-width: 100%; }
+.vb-item.ghost .bb-note { font-style: italic; }
+
+.vb-arch { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.vb-arch-cell { position: relative; overflow: hidden; display: grid; gap: 14px; align-content: end; min-height: 170px; padding: 24px; border-radius: 20px; background: var(--surface); }
+.vb-arch-cell::before { content: ""; position: absolute; right: -60px; top: -60px; width: 180px; height: 180px; border-radius: 50%; border: 1px solid var(--line); box-shadow: 0 0 0 28px transparent, 0 0 0 29px var(--line-faint); }
+.vb-arch-cell::after { content: ""; position: absolute; right: 26px; top: 30px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+.vb-arch-cell b { font-family: var(--font-display); font-size: clamp(20px, 3vw, 30px); letter-spacing: .04em; text-transform: uppercase; line-height: 1.1; }
+
+.vb-promise { margin: 0; padding: 40px 8% 36px; text-align: center; border-block: 1px solid var(--line); font-size: clamp(22px, 2.8vw, 32px); line-height: 1.35; font-weight: 700; text-wrap: balance; position: relative; }
+.vb-promise::before { content: "\201C"; position: absolute; left: 50%; top: -.55em; transform: translateX(-50%); padding: 0 14px; background: var(--bg); font-family: var(--font-display); color: var(--accent); font-size: 1.6em; line-height: 1; }
+.vb-promise .gb { margin-inline: auto; height: .5em; }
+
+.vb-beliefs { display: grid; grid-template-columns: 1.15fr 1fr; gap: 14px; }
+.vb-believe, .vb-against { border-radius: 20px; padding: 26px; display: grid; gap: 12px; align-content: start; }
+.vb-believe { background: var(--ink); color: var(--bg); }
+.vb-believe .vb-lab { color: var(--bg); opacity: .75; }
+.vb-believe p { margin: 0; font-size: 20px; line-height: 1.45; }
+.vb-believe .gb { background: color-mix(in srgb, var(--bg) 22%, transparent); }
+.vb-against { border: 1px solid var(--line); }
+.vb-against ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.vb-against li { display: grid; grid-template-columns: 18px 1fr; gap: 8px; align-items: baseline; }
+.vb-against li::before { content: "✕"; color: var(--accent); font-weight: 700; font-size: 13px; }
+
+.vb-cards, .vb-pillars { display: grid; grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); gap: 12px; }
+.vb-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.vb-card, .vb-pillar, .vb-metaphor { background: var(--surface); border-radius: 18px; padding: 22px; display: grid; gap: 8px; align-content: start; }
+.vb-card p, .vb-pillar p, .vb-metaphor p { margin: 0; color: var(--ink-soft); }
+.vb-card b, .vb-metaphor b { font-size: 18px; }
+.vb-num { font-family: var(--font-label); font-stretch: 112.5%; font-weight: 800; color: var(--accent); font-size: 15px; letter-spacing: .08em; }
+.vb-pillar b { font-family: var(--font-display); font-size: 15px; letter-spacing: .08em; text-transform: uppercase; }
+.vb-pillar q, .vb-set q { display: block; quotes: none; margin-top: 6px; padding-left: 12px; border-left: 2px solid var(--accent); font-style: italic; }
+.vb-metaphor { background: transparent; border: 1px solid var(--line); }
+.vb-metaphor b { font-style: italic; font-size: 22px; }
+
+.vb-spec { display: grid; border-top: 1px solid var(--line-faint); }
+.vb-row { display: grid; grid-template-columns: minmax(110px, 1fr) minmax(90px, 1.3fr) minmax(110px, 1fr); gap: 4px 18px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line-faint); }
+.vb-row > b { font-family: var(--font-display); font-size: 15px; letter-spacing: .08em; text-transform: uppercase; }
+.vb-track { position: relative; height: 2px; background: linear-gradient(90deg, var(--accent), var(--line-faint)); border-radius: 2px; }
+.vb-track i { position: absolute; left: var(--at); top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 18%, transparent); }
+.vb-not { color: var(--ink-soft); font-style: italic; text-align: right; }
+.vb-row p { grid-column: 1 / -1; margin: 4px 0 0; color: var(--ink-soft); }
+
+.vb-tone { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.vb-set { border: 1px solid var(--line); border-radius: 18px; padding: 22px; display: grid; gap: 8px; align-content: start; }
+.vb-set > b { font-family: var(--font-display); font-size: 16px; letter-spacing: .08em; text-transform: uppercase; }
+.vb-where { font-size: 14px; color: var(--ink-soft); }
+.vb-set p { margin: 0; }
+.vb-vol { display: flex; gap: 4px; }
+.vb-vol i { width: 18px; height: 4px; border-radius: 4px; background: var(--line-faint); }
+.vb-vol i.on { background: var(--accent); }
+
+.vb-gloss { margin: 0; display: grid; }
+.vb-gloss > div { display: grid; grid-template-columns: minmax(150px, 1fr) 2fr; gap: 18px; padding: 16px 0; border-bottom: 1px solid var(--line-faint); }
+.vb-gloss > div:first-child { border-top: 1px solid var(--line-faint); }
+.vb-gloss dt { font-family: var(--font-display); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--accent); }
+.vb-gloss dd { margin: 0; }
+.vb-use { display: block; margin-top: 4px; font-size: 14px; color: var(--ink-soft); }
+
+.vb-avoid, .vb-bank { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 10px; }
+.vb-avoid li { padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-soft); text-decoration: line-through; text-decoration-color: var(--accent); text-decoration-thickness: 2px; }
+.vb-avoid .gb, .vb-bank .gb { margin: .35em 0; }
+.vb-bank { gap: 6px 18px; align-items: baseline; padding: 26px; border-radius: 20px; background: var(--surface); }
+.vb-bank li.z0 { font-size: 26px; font-weight: 700; }
+.vb-bank li.z1 { font-size: 18px; font-style: italic; }
+.vb-bank li.z2 { font-size: 21px; color: var(--accent); }
+.vb-bank li.z3 { font-size: 16px; color: var(--ink-soft); }
+
+.vb-swap { display: grid; }
+.vb-swap-h, .vb-swap-r { display: grid; grid-template-columns: 1fr 40px 1fr; gap: 12px; align-items: center; }
+.vb-swap-h { padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.vb-swap-h .vb-lab:first-child { color: var(--ink-soft); }
+.vb-swap-r { padding: 15px 0; border-bottom: 1px solid var(--line-faint); }
+.vb-swap-r s { color: var(--ink-soft); text-decoration-color: var(--line); }
+.vb-swap-r b { font-size: 18px; }
+.vb-arrow { color: var(--accent); text-align: center; font-size: 20px; }
+
+.vb-obj { display: grid; grid-template-columns: 1fr 1.3fr; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; }
+.vb-obj-q { background: var(--surface); padding: 24px; display: grid; gap: 10px; align-content: start; }
+.vb-obj-q q { quotes: "\201C" "\201D"; font-size: 20px; font-style: italic; line-height: 1.4; }
+.vb-obj-a { padding: 24px; display: grid; gap: 10px; align-content: start; }
+.vb-obj-a p { margin: 0; }
+.vb-obj-a ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+
+@media (max-width: 760px) {
+  .vb-arch, .vb-beliefs, .vb-tone, .vb-obj, .vb-cards, .vb-pillars { grid-template-columns: minmax(0, 1fr); }
+  .vb-arch-cell { min-height: 130px; }
+  .vb-row { grid-template-columns: 1fr auto; }
+  .vb-track { grid-column: 1 / -1; grid-row: 2; margin: 8px 0 2px; }
+  .vb-gloss > div { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .vb-promise { padding-inline: 4px; }
+}

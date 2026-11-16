@@ -15,7 +15,30 @@ const SHELL = {
   },
   sections: [
     { id: "brand", short: "Brand Core", title: "Brand Core & Identity", blurb: "How the brand speaks, looks and shows up.", subs: [
-      { id: "messaging", short: "Messaging", title: "Messaging", note: "Positioning, voice and key phrases" },
+      { id: "messaging", short: "Messaging", title: "Messaging", note: "Positioning, voice, words and stories", wide: true,
+        placeholder: [{ type: "voicebook", parts: [
+          { t: "Positioning", items: [
+            { t: "Archetype", kind: "archetype", hint: "The brand's character, and the role it plays in the customer's life." },
+            { t: "Brand Promise", kind: "promise", hint: "One sentence: what the brand delivers or stands for." },
+            { t: "Beliefs", kind: "beliefs", hint: "What the brand believes is true, and the habits or norms it stands against." },
+            { t: "Core Tenets", kind: "cards", hint: "Three to five principles the brand works by." }] },
+          { t: "Voice", items: [
+            { t: "Voice Pillars", kind: "pillars", hint: "Four or five personality traits, and how each one sounds." },
+            { t: "We Are, Never", kind: "spectrum", hint: "Guardrails that keep the voice from drifting too far." },
+            { t: "Tone by Setting", kind: "tone", hint: "How the voice shifts between public, personal and product moments." }] },
+          { t: "Words", items: [
+            { t: "Signature Terms", kind: "glossary", hint: "The brand's own names and phrases, and what each one means." },
+            { t: "Words We Don't Use", kind: "avoid", hint: "Clichés and off-brand phrases to leave out." },
+            { t: "Say This, Not That", kind: "swap", hint: "Common industry words, and the brand's own words for them." },
+            { t: "Sensory Word Bank", kind: "bank", hint: "Textures, verbs and images that build the brand's world." }] },
+          { t: "Stories", items: [
+            { t: "Content Pillars", kind: "cards", hint: "The themes the brand returns to again and again." },
+            { t: "Signature Metaphors", kind: "metaphors", hint: "Two or three images that make the big ideas easy to grasp." }] },
+          { t: "Objections", items: [
+            { t: "Price", kind: "objection", hint: "How the brand talks about value without discounting or apologizing." },
+            { t: "Why Change", kind: "objection", hint: "What staying the same is really costing them." },
+            { t: "Proof", kind: "objection", hint: "Why they can trust it: results, track record, reputation." },
+            { t: "Boundaries & Policies", kind: "objection", hint: "How limits, policies and refunds are explained with care." }] }] }] },
       { id: "identity", short: "Brand Book", title: "Brand Book", note: "Logos, typography and color, with the rules for each", wide: true,
         placeholder: [{ type: "brandbook", groups: [
           { t: "Logos", kind: "logo", items: ["Primary Logo", "Secondary Logo", "Type-Only Logo", "Badge", "Icons", "Favicon", "Watermark", "Graphics"].map(t => ({ t })) },
@@ -93,6 +116,11 @@ function clientBlocks(blocks) {
       case "brandbook": {
         const groups = b.groups.map(g => ({ ...g, items: g.items.filter(BRAND_HAS) })).filter(g => g.items.length);
         return groups.length ? { ...b, groups, hideEmpty: true } : null;
+      }
+      case "voicebook": {
+        const has = i => ["archetype", "role", "d", "text", "believe", "against", "items", "q", "a", "points"].some(k => Array.isArray(i[k]) ? i[k].length : i[k]);
+        const parts = b.parts.map(p => ({ ...p, items: p.items.filter(has) })).filter(p => p.items.length);
+        return parts.length ? { ...b, parts } : null;
       }
       case "text": return (b.body || []).join("").trim() && !/^to come\.?$/i.test((b.body || []).join(" ").trim()) ? b : null;
       default: return b;
