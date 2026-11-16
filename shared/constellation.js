@@ -231,17 +231,18 @@ function blockHTML(b) {
       const tile = (x, big) => x.img
         ? `<figure class="bb-tile${big ? " big" : ""}" style="--tbg:${x.bg || "var(--surface)"}"><span class="bb-img"><img src="${x.img}" alt="${x.label || ""}" loading="lazy"></span>${x.label ? `<figcaption>${x.label}</figcaption>` : ""}</figure>`
         : `<figure class="bb-tile empty${big ? " big" : ""}"${x.bg ? ` style="--tbg:${x.bg}"` : ""}><span class="bb-img"></span><figcaption>${x.label || "To come"}</figcaption></figure>`;
-      const tiles = (list, defaults) => `<div class="bb-tiles">${(list && list.length ? list : defaults.map(l => ({ label: l }))).map(x => tile(x)).join("")}</div>`;
+      const tiles = (list, defaults) => (list && list.length) || !b.hideEmpty ? `<div class="bb-tiles">${(list && list.length ? list : defaults.map(l => ({ label: l }))).map(x => tile(x)).join("")}</div>` : "";
       const rules = (list, kind) => list && list.length
         ? `<ul class="bb-rules">${list.map(r => `<li>${r}</li>`).join("")}</ul>`
-        : `<p class="bb-hint">${HINT[kind]}</p>`;
-      const part = (title, inner) => `<div class="bb-part"><h4>${title}</h4>${inner}</div>`;
+        : b.hideEmpty ? "" : `<p class="bb-hint">${HINT[kind]}</p>`;
+      const part = (title, inner) => inner ? `<div class="bb-part"><h4>${title}</h4>${inner}</div>` : "";
+      const H = !!b.hideEmpty;
       const item = (g, i) => {
         const kind = g.kind || "logo";
         let body = "";
         if (kind === "logo") body = (i.img ? tile({ img: i.img, bg: i.bg, label: "" }, true) : "") + part("Rules", rules(i.rules, kind)) + part("Color variations", tiles(i.variations, ["On light", "On dark", "One color", "Reversed"])) + part("Applications", tiles(i.applications, ["Website", "Social", "Print", "Email"]));
-        if (kind === "type") body = `${i.font ? `<p class="bb-font">${i.font}</p>` : `<p class="bb-font empty">Font to come</p>`}${i.role ? `<p class="bb-role">${i.role}</p>` : ""}` + (i.img ? tile({ img: i.img, bg: i.bg, label: "" }, true) : tile({ label: "Specimen to come" }, true)) + part("Rules", rules(i.rules, kind));
-        if (kind === "color") body = `<div class="swatches">${(i.swatches && i.swatches.length ? i.swatches : [1, 2, 3, 4, 5].map(() => null)).map(c => c ? `<div class="sw"><i style="--c:${c.hex}"></i><b>${c.name}</b><span>${c.hex}</span>${c.role ? `<em>${c.role}</em>` : ""}</div>` : `<div class="sw"><i class="empty"></i><b>To come</b></div>`).join("")}</div>` + part("Rules", rules(i.rules, kind));
+        if (kind === "type") body = `${i.font ? `<p class="bb-font">${i.font}</p>` : H ? "" : `<p class="bb-font empty">Font to come</p>`}${i.role ? `<p class="bb-role">${i.role}</p>` : ""}` + (i.img ? tile({ img: i.img, bg: i.bg, label: "" }, true) : H ? "" : tile({ label: "Specimen to come" }, true)) + part("Rules", rules(i.rules, kind));
+        if (kind === "color") body = `<div class="swatches">${(i.swatches && i.swatches.length ? i.swatches : H ? [] : [1, 2, 3, 4, 5].map(() => null)).map(c => c ? `<div class="sw"><i style="--c:${c.hex}"></i><b>${c.name}</b><span>${c.hex}</span>${c.role ? `<em>${c.role}</em>` : ""}</div>` : `<div class="sw"><i class="empty"></i><b>To come</b></div>`).join("")}</div>` + part("Rules", rules(i.rules, kind));
         return `<section class="bb-item" id="${idOf(g, i)}"><h3>${i.t}</h3>${i.note ? `<p class="bb-note">${i.note}</p>` : ""}${body}</section>`;
       };
       const toc = b.groups.map(g => `<div class="bb-g"><b>${g.t}</b>${g.items.map(i => `<button type="button" class="bb-link" data-target="${idOf(g, i)}">${i.t}</button>`).join("")}</div>`).join("");

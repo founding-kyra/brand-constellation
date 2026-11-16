@@ -37,11 +37,15 @@ Everything specific to a client lives in `content.js`:
 - `CONTENT[sectionId]`: `{ blocks }` adds an intro to a section; `{ subs }` replaces that section's pages for this client only.
 - `LINKS`: optional rust lines between related pages. Empty for now.
 
+## What clients see
+
+Client hubs hide anything that doesn't exist yet: pages with no content, empty sections, "to come" placeholders, empty Brand Book parts, empty calendar days and "still to do" boxes. Mark a page `draft: true` in `content.js` to keep its content but hide it. The template sets `CLIENT.showEmpty = true`, so it shows every placeholder.
+
 ## Add a new client
 
 1. Copy `template/` to a new folder, such as `new-client/`.
 2. Change the `<title>` in its `index.html`.
-3. Set `CLIENT` in its `content.js`, then fill `CONTENT` page by page (the file lists every page id and block type). Add images to `inspo/`.
+3. Set `CLIENT` in its `content.js` and delete the `showEmpty` line, then fill `CONTENT` page by page (the file lists every page id and block type). Add images to `inspo/`.
 4. Push. The hub is live at `https://founding-kyra.github.io/brand-constellation/new-client/`.
 
 ## Hosting

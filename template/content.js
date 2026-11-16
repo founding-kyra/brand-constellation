@@ -10,7 +10,7 @@
      Marketing       platforms, plan, ads
      Vision          big-picture, this-year, milestones, capacity
 
-   Each page: { s: "ready" | "progress" | "planning", blocks: [ ... ] }
+   Each page: { s: "ready" | "progress" | "planning", blocks: [ ... ] }  (add draft: true to hide it from the client)
    Pages left out show "Not started yet".
 
    Block examples
@@ -39,7 +39,8 @@
    ===================================================================== */
 const CLIENT = {
   name: "Brand Name",
-  sunLines: ["BRAND", "NAME"]
+  sunLines: ["BRAND", "NAME"],
+  showEmpty: true   /* the template shows every placeholder; client hubs hide what isn't made yet */
 };
 
 const CONTENT = {

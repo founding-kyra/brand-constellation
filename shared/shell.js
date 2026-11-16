@@ -60,12 +60,49 @@ const SHELL = {
    CONTENT[pageId] = { s, blocks } fills a page. CONTENT[sectionId] = { blocks }
    adds an intro to a section; { subs: [...] } replaces that section's pages. */
 function buildFromShell(shell, content) {
-  const fill = u => ({ s: "planning", blocks: u.placeholder || [], ...u, ...(content[u.id] || {}) });
+  const fill = u => {
+    const own = content[u.id] && ((content[u.id].blocks || []).length || content[u.id].subs);
+    return { s: "planning", blocks: u.placeholder || [], ...u, ...(content[u.id] || {}), filled: !!own };
+  };
   const section = sec => {
     const c = content[sec.id] || {};
-    return { ...sec, blocks: c.blocks, subs: (c.subs || sec.subs).map(fill) };
+    const subs = (c.subs || sec.subs).map(u => c.subs ? { ...fill(u), filled: !!(u.blocks || []).length } : fill(u));
+    return { ...sec, blocks: c.blocks, subs };
   };
   return { home: section(shell.home), sections: shell.sections.map(section) };
 }
-const BUILT = buildFromShell(SHELL, CONTENT);
+
+/* CLIENT VIEW: anything that doesn't exist yet is hidden from the client.
+   A page marked draft: true in content.js keeps its content but stays hidden.
+   Set CLIENT.showEmpty = true (the template does) to see every placeholder. */
+const BRAND_HAS = i => !!(i.img || (i.variations || []).length || (i.applications || []).length || (i.rules || []).length || i.font || (i.swatches || []).length);
+function clientBlocks(blocks) {
+  return (blocks || []).map(b => {
+    switch (b.type) {
+      case "pending": case "board": return null;
+      case "gallery": return b.folder ? b : null;
+      case "swatches": return (b.items || []).length ? { ...b, empty: 0 } : null;
+      case "calendar": {
+        const weeks = b.weeks.map(w => ({ ...w, days: w.days.filter(d => d.hook) })).filter(w => w.days.length);
+        return weeks.length ? { ...b, weeks } : null;
+      }
+      case "brandbook": {
+        const groups = b.groups.map(g => ({ ...g, items: g.items.filter(BRAND_HAS) })).filter(g => g.items.length);
+        return groups.length ? { ...b, groups, hideEmpty: true } : null;
+      }
+      case "text": return (b.body || []).join("").trim() && !/^to come\.?$/i.test((b.body || []).join(" ").trim()) ? b : null;
+      default: return b;
+    }
+  }).filter(Boolean);
+}
+function clientView(built) {
+  const page = u => {
+    if (!u.filled || u.draft) return null;
+    const blocks = clientBlocks(u.blocks);
+    return blocks.length ? { ...u, blocks } : null;
+  };
+  const section = sec => ({ ...sec, blocks: sec.blocks ? clientBlocks(sec.blocks) : sec.blocks, subs: sec.subs.map(page).filter(Boolean) });
+  return { home: section(built.home), sections: built.sections.map(section).filter(sec => sec.subs.length) };
+}
+const BUILT = (CLIENT.showEmpty ? x => x : clientView)(buildFromShell(SHELL, CONTENT));
 const HOME = BUILT.home, SECTIONS = BUILT.sections;

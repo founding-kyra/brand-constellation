@@ -73,7 +73,7 @@ const CONTENT = {
     {"type":"gallery","heading":"Photo library","folder":"","tiles":["Labyrinth paths","Forest & moss","Stone & slate","Founder portraits","Textures","Workspace"]}
   ] },
 
-  library: { s: "planning", blocks: [
+  library: { draft: true, s: "planning", blocks: [
     {"type":"lead","text":"Finished branded assets, ready to use."},
     {"type":"gallery","heading":"Asset library","folder":"","tiles":["Logos","Social templates","1 Rep of Resonance PDF","Guided audio","Video","Email graphics"]}
   ] },
@@ -117,7 +117,7 @@ const CONTENT = {
     {"type":"quotes","heading":"In her words","items":["I know what I need, why can't I consistently do it?","What is the point of trying? I keep doing this with no actual change.","I'm just fucking raw dogging life right now. I have no safety, no protection, and no functional capacity."]}
   ] },
 
-  crm: { s: "planning", blocks: [
+  crm: { draft: true, s: "planning", blocks: [
     {"type":"pending","heading":"Connect GoHighLevel","text":"Contacts and the lead tracker will show here once GoHighLevel is connected.","needs":["GoHighLevel connection","Pipeline stages confirmed","A tag for each offer"]},
     {"type":"pipeline","heading":"Proposed pipeline","stages":[{"t":"New lead","d":"Found the brand"},{"t":"1 Rep","d":"Took the free tool"},{"t":"88 Reps","d":"Bought the micro-offer"},{"t":"Course enquiry","d":"Asked about the course"},{"t":"Enrolled","d":"In the course"}]}
   ] },
@@ -178,7 +178,7 @@ const CONTENT = {
     {"type":"pending","heading":"Still to finalize","text":"Before the cohort is sold, Lauren confirms the details below. No paid-client case studies yet, and the work isn't positioned as treatment for any health condition.","needs":["Cohort price","Delivery format","Support boundaries","Who it's suitable for","How progress is assessed"]}
   ] },
 
-  ads: { s: "planning", blocks: [
+  ads: { draft: true, s: "planning", blocks: [
     {"type":"pending","heading":"A future phase","text":"Paid advertising will be planned once the organic funnel is running.","needs":["Budget","Offer to promote","Ad creative"]},
     {"type":"text","heading":"Guardrail","body":["Ads follow the brand's ethics: no engineered urgency and no pressing on pain points."]}
   ] },
