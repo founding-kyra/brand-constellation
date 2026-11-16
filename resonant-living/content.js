@@ -180,7 +180,7 @@ const CONTENT = {
     {"type":"text","heading":"Guardrail","body":["Ads follow the brand's ethics: no engineered urgency and no pressing on pain points."]}
   ] },
 
-  "big-picture": { s: "planning", blocks: [
+  "big-picture": { s: "progress", blocks: [
     {"type":"section","heading":"Land-Based Retreat"},
     {"type":"text","heading":"A sanctuary on the land","body":["A retreat built for sensory regulation, deep rest and integration.","A woodland labyrinth ends in private practice chambers, so guests physically walk the descent and the return."]},
     {"type":"section","heading":"Visionary Co-Op"},
