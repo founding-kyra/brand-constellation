@@ -8,7 +8,8 @@ const SHELL = {
     id: "about", short: "Brand Home", title: "Brand Home",
     blurb: "Where the brand comes from and what it stands for.",
     subs: [
-      { id: "origin", short: "Origin Story", title: "Origin Story", note: "How the brand began and why it exists" },
+      { id: "origin", short: "Origin Story", title: "Origin Story", note: "How the brand began and why it exists, told as your hero story",
+        placeholder: [{ type: "herostory" }] },
       { id: "ethos", short: "Ethos", title: "Ethos & Values", note: "The beliefs behind every decision" },
       { id: "ethics", short: "Ethics", title: "Ethical Framework", note: "What the brand will and won't do" }
     ]
@@ -18,6 +19,7 @@ const SHELL = {
       { id: "messaging", short: "Messaging", title: "Messaging", note: "Positioning, voice, words and stories", wide: true,
         placeholder: [{ type: "voicebook", parts: [
           { t: "Positioning", items: [
+            { t: "Positioning Line", kind: "positioning", hint: "One sentence: who you help, with what, toward what, and without what." },
             { t: "Archetype", kind: "archetype", hint: "The brand's character, and the role it plays in the customer's life." },
             { t: "Brand Promise", kind: "promise", hint: "One sentence: what the brand delivers or stands for." },
             { t: "Beliefs", kind: "beliefs", hint: "What the brand believes is true, and the habits or norms it stands against." },
@@ -57,12 +59,27 @@ const SHELL = {
       { id: "high", short: "Signature Offer", title: "Signature Offer", note: "The full transformation, with the support around it", kind: "signature", wide: true, placeholder: [{ type: "offer", kind: "signature" }] }
     ] },
     { id: "audience", short: "Audience", title: "Target Audience", blurb: "Who the brand serves and where each person is.", subs: [
-      { id: "research", short: "Research", title: "Audience Research", note: "Who they are, what they need, in their words" },
+      { id: "research", short: "Research", title: "Audience Research", note: "Who they are, what they need, in their words",
+        placeholder: [{ type: "compare", heading: "Before and after", cols: ["Before", "After"], rows: [["What they have", "", ""], ["How they feel", "", ""], ["Their average day", "", ""], ["How they see themselves", "", ""], ["How others see them", "", ""]] }],
+        /* Built into every Research page: the awareness levels and the audience survey. */
+        extra: [
+          { type: "stages", heading: "The 5 levels of awareness", items: [
+            { t: "Unaware", d: "She doesn't know she has a problem. Not worth marketing to yet." },
+            { t: "Problem aware", d: "She knows the problem, not the solutions. Your ideal client starts here." },
+            { t: "Solution aware", d: "She knows solutions exist but hasn't chosen one. Your freebie brings her here." },
+            { t: "Product aware", d: "She knows your offer and wonders if it will work for her. Your starter offer's sales page moves her through this." },
+            { t: "Most aware", d: "She's ready and needs the specifics: price, what's inside, the guarantee." }] },
+          { type: "list", heading: "Ask your audience", items: [
+            { t: "What's the hardest part of this for you right now?", d: "Get the problem in her words." },
+            { t: "Why is that a problem for you?", d: "The reason under the reason." },
+            { t: "If it were solved, what would your life look like?", d: "The after, in her words." }] },
+          { type: "text", heading: "How to run the survey", body: ["Send it once to your whole list and post it in your stories and community. Even five answers are worth it.", "Lift her exact phrases into your sales pages, emails and hooks. If she says she hates something, use \"hate\", not your softer word."] }
+        ] },
       { id: "crm", short: "CRM", title: "CRM & Lead Tracker", note: "Contacts, leads and where each person is" }
     ] },
     { id: "marketing", short: "Marketing", title: "Marketing & Initiatives", blurb: "Where the brand shows up and what goes out when.", subs: [
       { id: "social", short: "Social Media", title: "Social Media", note: "Where you show up, and the plans for each platform", children: [
-        { id: "platforms", short: "Platforms", title: "Platforms", note: "Where the brand shows up and why" },
+        { id: "platforms", short: "Platforms", title: "Platforms", note: "Where the brand shows up, and how your profile reads", placeholder: [{ type: "bio" }] },
         { id: "plan", short: "30-Day Ramp-Up", title: "30-Day Ramp-Up", note: "The first month of content, day by day", wide: true,
           placeholder: [{ type: "calendar", weeks: [
             { t: "Week 1", days: [1, 2, 3, 4, 5, 6, 7].map(n => ({ n })) },
@@ -92,6 +109,7 @@ function buildFromShell(shell, content) {
     const page = { s: "planning", blocks: u.placeholder || [], ...u, ...(content[u.id] || {}), filled: !!own };
     if (u.readyWhen && u.readyWhen(page.blocks || [])) page.s = "ready";
     if (u.children) page.children = u.children.map(fill);
+    if (u.extra) page.blocks = [...(page.blocks || []), ...u.extra];
     return page;
   };
   const place = (list, page) => { const i = list.findIndex(x => x.id === page.after); list.splice(i < 0 ? list.length : i + 1, 0, page); };
@@ -137,11 +155,11 @@ function clientBlocks(blocks) {
         return groups.length ? { ...b, groups, hideEmpty: true } : null;
       }
       case "voicebook": {
-        const has = i => ["archetype", "role", "d", "text", "believe", "against", "items", "q", "a", "points"].some(k => Array.isArray(i[k]) ? i[k].length : i[k]);
+        const has = i => ["who", "solution", "want", "avoid", "line", "archetype", "role", "d", "text", "believe", "against", "items", "q", "a", "points"].some(k => Array.isArray(i[k]) ? i[k].length : i[k]);
         const parts = b.parts.map(p => ({ ...p, items: p.items.filter(has) })).filter(p => p.items.length);
         return parts.length ? { ...b, parts } : null;
       }
-      case "offer": return { ...b, hideEmpty: true };
+      case "offer": case "herostory": case "bio": return { ...b, hideEmpty: true };
       case "text": return (b.body || []).join("").trim() && !/^to come\.?$/i.test((b.body || []).join(" ").trim()) ? b : null;
       default: return b;
     }

@@ -323,9 +323,18 @@ function blockHTML(b) {
         swap: i => `<div class="vb-swap"><div class="vb-swap-h"><span class="vb-lab">Instead of</span><span></span><span class="vb-lab">Say</span></div>${fill(i.items, 3).map((r, k) => `<div class="vb-swap-r"><s>${g(r.not, W[k])}</s><span class="vb-arrow" aria-hidden="true">→</span><b>${g(r.say, W[k + 1])}</b></div>`).join("")}</div>`,
         bank: i => `<ul class="vb-bank">${fill(i.items, 12).map((w, k) => `<li class="z${k % 4}">${typeof w === "string" ? w : `<i class="gb" style="width:${40 + (k * 29) % 70}px"></i>`}</li>`).join("")}</ul>`,
         metaphors: i => `<div class="vb-meta">${fill(i.items, 2).map(c => `<div class="vb-metaphor"><b>${g(c.t, "45%")}</b><p>${c.d || `${g("", "90%")}${g("", "60%")}`}</p></div>`).join("")}</div>`,
+        positioning: i => {
+          const started = i.who || i.solution || i.want || i.line;
+          const slot = (lab, v, w) => `<span class="ps-slot"><em>${lab}</em><b>${v || (started ? '<span class="ps-tbd">to decide</span>' : g("", w))}</b></span>`;
+          const parts = [i.who && `I help ${i.who}`, i.solution && `with ${i.solution}`, i.want && `so they can ${i.want}`, i.avoid && `without ${i.avoid}`].filter(Boolean);
+          const line = i.line || (parts.length ? parts.join(" ") + "." : "");
+          const M = ["Too vague: it names exactly who you help and with what", "Too clever: a stranger gets it in a second and could repeat it", "Tied to one platform: it still works if the platform changes"];
+          const mk2 = (t, k) => { const o = (i.checks || [])[k]; const v = o && typeof o === "object" ? o : { ok: o }; return `<li class="${v.ok === true ? "ok" : v.ok === false ? "no" : ""}"><i aria-hidden="true">${v.ok === true ? "✓" : v.ok === false ? "!" : ""}</i><div><b>${t}</b>${v.ok === false ? ` <span class="of-flag">Needs work</span>` : ""}${v.d ? `<span>${v.d}</span>` : ""}</div></li>`; };
+          return `<div class="ps"><p class="ps-formula">${slot("I help", i.who, "70px")}${slot("with", i.solution, "90px")}${slot("so they can", i.want, "80px")}${slot("without", i.avoid, "80px")}</p><blockquote class="vb-promise ps-line">${line || `${g("", "90%")}${g("", "55%")}`}</blockquote><div><span class="vb-lab">Check it against the three ways it goes wrong</span><ul class="of-works">${M.map(mk2).join("")}</ul></div></div>`;
+        },
         objection: i => `<div class="vb-obj${!i.q && i.a ? " solo" : ""}">${!i.q && i.a ? "" : `<div class="vb-obj-q"><span class="vb-lab">They might think</span><q>${i.q || g("", "80%")}</q></div>`}<div class="vb-obj-a"><span class="vb-lab">How we answer</span><p>${i.a || `${g("", "92%")}${g("", "75%")}${g("", "50%")}`}</p>${(i.points || []).length ? `<ul>${i.points.map(p => `<li>${p}</li>`).join("")}</ul>` : ""}</div></div>`
       };
-      const VB_EMPTY = i => !["archetype", "role", "d", "text", "believe", "against", "items", "q", "a", "points"].some(k => Array.isArray(i[k]) ? i[k].length : i[k]);
+      const VB_EMPTY = i => !["who", "solution", "want", "avoid", "line", "archetype", "role", "d", "text", "believe", "against", "items", "q", "a", "points"].some(k => Array.isArray(i[k]) ? i[k].length : i[k]);
       const item = (p, i) => {
         const empty = VB_EMPTY(i);
         return `<section class="bb-item vb-item${empty ? " ghost" : ""}" id="${idOf(p, i)}"><h3>${i.t}</h3>${i.note || (empty && i.hint) ? `<p class="bb-note">${i.note || i.hint}</p>` : ""}${(KIND[i.kind] || KIND.cards)(i)}</section>`;
@@ -334,6 +343,19 @@ function blockHTML(b) {
       return `${h}<div class="bb vb"><nav class="bb-toc" aria-label="Messaging contents">${toc}</nav><div class="bb-body">${b.parts.map(p => `<div class="bb-group"><h2 class="subhead">${p.t}</h2>${p.items.map(i => item(p, i)).join("")}</div>`).join("")}</div></div>`;
     }
     case "offer": return offerHTML(b, h);
+    case "herostory": {
+      const STEPS = [["You, the hero", "Who you were when it started"], ["The problem", "What you faced, and why it mattered enough to solve"], ["What helped", "The person, practice or discovery that showed up"], ["The moment you decided", "When you chose to do something about it"], ["What you did", "The actions you took, or are taking now"], ["What changed", "The results. Small wins count"], ["Life now", "How your life and work are different"]];
+      const H = !!b.hideEmpty, st = b.steps || [];
+      const items = STEPS.map(([t, hint], k) => { const v = st[k] || {}; const body = (v.body || []).map(x => `<p>${x}</p>`).join("") + (v.q ? `<blockquote class="hs-q">“${v.q}”</blockquote>` : ""); if (!body && H) return ""; return `<li class="hs-step${body ? "" : " ghost"}"><span class="hs-n">${k + 1}</span><div><h4>${t}</h4>${body || `<p class="hs-hint">${hint}</p>${OG("", "80%")}${OG("", "55%")}`}</div></li>`; }).join("");
+      return `${h}<div class="hs">${b.lead ? `<p class="hs-lead">${b.lead}</p>` : ""}<ol class="hs-list">${items}</ol><p class="hs-foot">Your story isn't about you. It shows the women watching that there's a way out, because you found one.</p></div>`;
+    }
+    case "bio": {
+      const H = !!b.hideEmpty, L = b.lines || {};
+      const ROWS = [["follow", "Follow to…", "Reach a goal, escape a pain or get something back. Never “follow for tips.”"], ["authority", "Why you", "One step ahead, “I was you”, or a result you can point to."], ["pillars", "Your pillars", "As benefits, not topics: “Quiet the doubt | Take action”, not “Mindset | Habits.”"], ["cta", "The call to action", "Your freebie, once it's live."]];
+      const phone = `<div class="bio-phone"><span class="bio-av" aria-hidden="true"></span><b class="bio-name">${b.name || OG("", "60%")}</b>${ROWS.map(([k]) => L[k] ? `<span class="bio-line">${L[k]}</span>` : H ? "" : `<span class="bio-line">${OG("", "85%")}</span>`).join("")}</div>`;
+      const guide = `<ol class="bio-guide"><li><b>Display name</b><span>Your first name + a phrase people search for (“Jordan | Online Business Coach”). Type phrases into TikTok search and use the ones it suggests.</span>${(b.nameOptions || []).length ? `<span class="bio-opts">${b.nameOptions.map(o => `<em>${o}</em>`).join("")}</span>` : ""}</li>${ROWS.map(([k, t, hint]) => `<li><b>${t}</b><span>${hint}</span></li>`).join("")}</ol>`;
+      return `${h}<div class="bio">${phone}${guide}</div>${b.note ? `<p class="of-note">${b.note}</p>` : ""}`;
+    }
     case "copy": return `${h}<div class="copies">${b.items.map(c => `<details class="copy"><summary><span class="copy-t">${c.t}</span>${c.meta ? `<span class="copy-meta">${c.meta}</span>` : ""}</summary><div class="copy-body">${c.text.split("\n").filter(Boolean).map(l => `<p>${l}</p>`).join("")}</div><button type="button" class="theme copybtn">Copy text</button></details>`).join("")}</div>`;
     case "pipeline": return `${h}<div class="pipeline">${b.stages.map(s => `<div><b>${s.t}</b><span>${s.d}</span><em>No contacts yet</em></div>`).join("")}</div>`;
     case "moodboard": {

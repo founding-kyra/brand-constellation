@@ -42,6 +42,8 @@
          { t: "Color", kind: "color", items: [{ t: "Palette", swatches: [{ name: "Ivory", hex: "#E6E0D6", role: "Backgrounds" }], rules: ["Rule"] }] }] }
      { type: "voicebook", parts: [   (the Messaging page; copy the part and item titles from shared/shell.js)
          { t: "Positioning", items: [
+           { t: "Positioning Line", kind: "positioning", who: "who you help", solution: "with what", want: "so they can", avoid: "without",
+             line: "Optional finished sentence", checks: [null, true, { ok: false, d: "Why it needs work" }] },   (checks: too vague, too clever, tied to one platform)
            { t: "Archetype", kind: "archetype", archetype: "The Creator", role: "Sanctuary", d: "One line on why" },
            { t: "Brand Promise", kind: "promise", text: "One sentence." },
            { t: "Beliefs", kind: "beliefs", believe: "What the brand believes.", against: ["Norm it opposes"] },
@@ -71,6 +73,11 @@
        funnel: [true, false],                                         (built or not, in the order of the built-in funnel steps)
        targets: [["Label", "Value"]] }                                (optional; each kind has defaults)
      Optional bumper sticker over the ladder: CONTENT.offers = { bumper: "I help ..." }
+     { type: "herostory", lead: "Optional opening line", steps: [{ body: ["Paragraph"], q: "A line in their words" }] }
+       (7 steps in order: you the hero, the problem, what helped, the moment you decided, what you did, what changed, life now)
+     { type: "bio", heading: "Your TikTok profile", name: "Name | searched phrase", nameOptions: ["Option"],
+       lines: { follow: "Follow to ...", authority: "Why you", pillars: "Pillar | Pillar", cta: "The freebie" }, note: "One line" }
+     Research pages always end with the 5 levels of awareness and the audience survey (built in).
      { type: "moodboard", path: "inspo/brand-", images: [[720, 900], [720, 720]] }
        (images are [width, height] for inspo/brand-01.jpg, inspo/brand-02.jpg, ...)
    ===================================================================== */
