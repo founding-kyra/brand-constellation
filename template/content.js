@@ -7,7 +7,7 @@
      Brand Core      messaging, identity, art, library, inspo
      Offers          freebie, low (Starter Offer), high (Signature Offer)
      Audience        research, crm
-     Marketing       platforms, plan, ads
+     Marketing       social (holds platforms, plan), email, ads
      Vision          big-picture, this-year, milestones, capacity
 
    Write every word TO the client ("you", "your"), never about them ("she", "the founder", their name).
@@ -16,7 +16,7 @@
    Each page: { s: "ready" | "progress" | "planning", blocks: [ ... ] }  (add draft: true to hide it from the client)
    Pages left out show "Not started yet".
    Extra client-only page in a section: CONTENT.marketing = { add: [{ id: "tiktok-launch", short: "TikTok Launch",
-     title: "14-Day TikTok Launch", note: "One line", after: "plan", wide: true, s: "progress", blocks: [ ... ] }] }
+     title: "14-Day TikTok Launch", note: "One line", after: "plan", parent: "social", wide: true, s: "progress", blocks: [ ... ] }] }
    Calendar posts can carry label: "1A" (shown instead of n) and aria: "Day 1, post 1"; keep every n unique.
 
    Block examples

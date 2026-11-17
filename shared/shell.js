@@ -61,14 +61,17 @@ const SHELL = {
       { id: "crm", short: "CRM", title: "CRM & Lead Tracker", note: "Contacts, leads and where each person is" }
     ] },
     { id: "marketing", short: "Marketing", title: "Marketing & Initiatives", blurb: "Where the brand shows up and what goes out when.", subs: [
-      { id: "platforms", short: "Platforms", title: "Platforms", note: "Where the brand shows up and why" },
-      { id: "plan", short: "30-Day Ramp-Up", title: "30-Day Ramp-Up", note: "The first month of content, day by day", wide: true,
-        placeholder: [{ type: "calendar", weeks: [
-          { t: "Week 1", days: [1, 2, 3, 4, 5, 6, 7].map(n => ({ n })) },
-          { t: "Week 2", days: [8, 9, 10, 11, 12, 13, 14].map(n => ({ n })) },
-          { t: "Week 3", days: [15, 16, 17, 18, 19, 20, 21].map(n => ({ n })) },
-          { t: "Week 4", days: [22, 23, 24, 25, 26, 27, 28].map(n => ({ n })) },
-          { t: "Days 29–30", days: [29, 30].map(n => ({ n })) }] }] },
+      { id: "social", short: "Social Media", title: "Social Media", note: "Where you show up, and the plans for each platform", children: [
+        { id: "platforms", short: "Platforms", title: "Platforms", note: "Where the brand shows up and why" },
+        { id: "plan", short: "30-Day Ramp-Up", title: "30-Day Ramp-Up", note: "The first month of content, day by day", wide: true,
+          placeholder: [{ type: "calendar", weeks: [
+            { t: "Week 1", days: [1, 2, 3, 4, 5, 6, 7].map(n => ({ n })) },
+            { t: "Week 2", days: [8, 9, 10, 11, 12, 13, 14].map(n => ({ n })) },
+            { t: "Week 3", days: [15, 16, 17, 18, 19, 20, 21].map(n => ({ n })) },
+            { t: "Week 4", days: [22, 23, 24, 25, 26, 27, 28].map(n => ({ n })) },
+            { t: "Days 29–30", days: [29, 30].map(n => ({ n })) }] }] }
+      ] },
+      { id: "email", short: "Email", title: "Email", note: "Your list: the welcome, weekly nurture and sales emails" },
       { id: "ads", short: "Paid Ads", title: "Paid Advertising", note: "Ad strategy, budget and results" }
     ] },
     { id: "vision", short: "Vision", title: "Vision", blurb: "Where the business is headed, from the long view to the next step.", subs: [
@@ -88,20 +91,31 @@ function buildFromShell(shell, content) {
     const own = content[u.id] && ((content[u.id].blocks || []).length || content[u.id].subs);
     const page = { s: "planning", blocks: u.placeholder || [], ...u, ...(content[u.id] || {}), filled: !!own };
     if (u.readyWhen && u.readyWhen(page.blocks || [])) page.s = "ready";
+    if (u.children) page.children = u.children.map(fill);
     return page;
   };
+  const place = (list, page) => { const i = list.findIndex(x => x.id === page.after); list.splice(i < 0 ? list.length : i + 1, 0, page); };
   const section = sec => {
     const c = content[sec.id] || {};
     const subs = (c.subs || sec.subs).map(u => c.subs ? { ...fill(u), filled: !!(u.blocks || []).length } : fill(u));
-    /* CONTENT[sectionId].add = [{ id, short, title, note, after, s, blocks }] adds client-only pages, placed after the page named in "after". */
+    /* CONTENT[sectionId].add = [{ id, short, title, note, after, parent?, s, blocks }] adds client-only pages,
+       placed after the page named in "after" (inside the page named in "parent", when given). */
     (c.add || []).forEach(u => {
       const page = { s: "planning", ...u, filled: !!(u.blocks || []).length };
-      const i = subs.findIndex(x => x.id === u.after);
-      subs.splice(i < 0 ? subs.length : i + 1, 0, page);
+      const host = u.parent && subs.find(x => x.id === u.parent && x.children);
+      place(host ? host.children : subs, page);
     });
+    subs.forEach(rollUp);
     return { ...sec, blocks: c.blocks, subs };
   };
   return { home: section(shell.home), sections: shell.sections.map(section) };
+}
+/* A page that holds other pages takes its status from them unless content.js sets one. */
+function rollUp(u) {
+  if (!u.children || !u.children.length || (CONTENT[u.id] && CONTENT[u.id].s)) return u;
+  const ss = u.children.map(c => c.s);
+  u.s = ss.every(x => x === "ready") ? "ready" : ss.some(x => x !== "planning") ? "progress" : "planning";
+  return u;
 }
 
 /* CLIENT VIEW: anything that doesn't exist yet is hidden from the client.
@@ -136,6 +150,11 @@ function clientBlocks(blocks) {
 function clientView(built) {
   const page = u => {
     if (u.draft) return null;
+    if (u.children) {
+      const kids = u.children.map(page).filter(Boolean);
+      const blocks = u.filled ? clientBlocks(u.blocks) : [];
+      return kids.length || blocks.length ? rollUp({ ...u, children: kids, blocks }) : null;
+    }
     if (u.keep) return { ...u, blocks: u.filled ? clientBlocks(u.blocks) : [] };  /* Inspo always shows, so clients can add their own */
     if (!u.filled) return null;
     const blocks = clientBlocks(u.blocks);

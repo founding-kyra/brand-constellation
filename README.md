@@ -23,7 +23,7 @@ resonant-living/        One client
 - **Brand Core & Identity**: Messaging (positioning, voice, words, stories, objections), Brand Book (logos, typography, color), Art & Photo Direction, Content Library, Inspo
 - **Offers & Funnel Architecture**: Freebie, Starter Offer, Signature Offer (built on Laptop Lifestyle Academy: one path from a free quick win to the full transformation). The section page shows the offers as a ladder; each offer page has its promise, what it solves and reveals, what's inside, price, a "what makes it work" checklist, the funnel behind it and targets.
 - **Target Audience**: Audience Research, CRM & Lead Tracker
-- **Marketing & Initiatives**: Platforms, 30-Day Ramp-Up (a day-by-day calendar), Paid Advertising
+- **Marketing & Initiatives**: Social Media (holds Platforms and the 30-Day Ramp-Up, plus any platform plans a client adds, like a 14-Day TikTok Launch), Email, Paid Ads. A page can hold other pages: they show as cards on it and as small moons beside it on the map.
 - **Vision**: Big Picture, This Year, Milestones, Capacity & Lifestyle
 
 Change a name or description here and it changes for every client.

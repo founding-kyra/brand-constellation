@@ -5,7 +5,7 @@ const NS = "http://www.w3.org/2000/svg";
 const STATUS = { ready: "Ready", progress: "In progress", planning: "Planning" };
 const ALL = [HOME, ...SECTIONS];
 const SEC = {}, PAGE = {};
-ALL.forEach(s => { SEC[s.id] = s; s.subs.forEach(u => PAGE[u.id] = { ...u, sec: s }); });
+ALL.forEach(s => { SEC[s.id] = s; s.subs.forEach(u => { PAGE[u.id] = { ...u, sec: s }; (u.children || []).forEach(c => PAGE[c.id] = { ...c, sec: s, parent: u }); }); });
 const app = document.getElementById("app");
 
 function mk(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
@@ -77,6 +77,13 @@ function renderOrbit(svg, compact, onHover) {
     const g = mk("g", { class: "node", "data-k": `s:${u.id}`, tabindex: compact ? -1 : 0, role: "link", "aria-label": `${u.title}, ${STATUS[u.s]}` }, nodes);
     mk("circle", { cx: Q.x, cy: Q.y, r: 22, fill: "transparent" }, g);
     glyphSVG(g, u.s, Q.x, Q.y, compact ? 8 : 6.5);
+    /* Pages inside this page: small moons just outside it. */
+    (u.children || []).forEach((c, k, arr) => {
+      const n = arr.length, spread = compact ? 0.11 : 0.08, a3 = Q.a + (k - (n - 1) / 2) * spread, rr = compact ? 30 : 26;
+      const cx2 = Q.x + rr * Math.cos(a3) - (compact ? 0 : 0), cy2 = Q.y + rr * Math.sin(a3);
+      mk("line", { x1: Q.x, y1: Q.y, x2: cx2, y2: cy2, class: "spoke2" }, g);
+      mk("circle", { cx: cx2, cy: cy2, r: compact ? 4.5 : 3.5, class: c.s === "planning" ? "st-dash moon" : "st-fill moon" }, g);
+    });
     if (!compact) {
       const c = Math.cos(Q.a), sn = Math.sin(Q.a), off = 18;
       const t = mk("text", { x: Q.x + c * off, y: Q.y + sn * off, class: "halo", "font-size": fs.sub,
@@ -446,21 +453,26 @@ function renderSection(s) {
 
 /* ---------- Page view ---------- */
 function renderPage(p) {
-  const s = p.sec, idx = s.subs.findIndex(u => u.id === p.id);
-  const prev = s.subs[idx - 1], next = s.subs[idx + 1];
+  const s = p.sec, up = p.parent || null, list = up ? up.children : s.subs, idx = list.findIndex(u => u.id === p.id);
+  const prev = list[idx - 1], next = list[idx + 1];
   const rel = linkedPages(p.id).map(id => PAGE[id]);
-  app.innerHTML = `${crumbs([{ id: s.id, label: s.short }, { label: p.short }], s.id)}
+  const kids = p.children || [];
+  const trail = up ? [{ id: s.id, label: s.short }, { id: up.id, label: up.short }, { label: p.short }] : [{ id: s.id, label: s.short }, { label: p.short }];
+  const kidCards = kids.length ? `<div class="cards">${kids.map(u => `<a class="card" href="#${u.id}">${glyph(u.s)}<b>${u.title}</b><span>${u.note}</span><span class="st ${u.s}">${STATUS[u.s]}</span></a>`).join("")}</div>` : "";
+  const body = p.blocks && p.blocks.length ? blocksHTML(p.blocks) : kids.length ? "" : p.keep ? '<div class="blocks"></div>' : blocksHTML([{ type: "pending", heading: "Not started yet", text: "This page fills in as the work happens." }]);
+  const home = up || s;
+  app.innerHTML = `${crumbs(trail, home.id)}
     <div class="layout${p.wide ? " wide" : ""}"><article class="main">
       <h1 class="title">${p.title}</h1>
       <div class="status">${glyph(p.s)}<span class="st ${p.s}">${STATUS[p.s]}</span></div>
       <p class="intro">${p.note}.</p>
-      ${p.blocks && p.blocks.length ? blocksHTML(p.blocks) : p.keep ? '<div class="blocks"></div>' : blocksHTML([{ type: "pending", heading: "Not started yet", text: "This page fills in as the work happens." }])}
-      <nav class="pager" aria-label="More in ${s.short}">
-        ${prev ? `<a href="#${prev.id}"><small>Previous</small><b>${prev.title}</b></a>` : `<a href="#${s.id}"><small>Back to</small><b>${s.title}</b></a>`}
+      ${kidCards}${kidCards && body ? '<div style="height:44px"></div>' : ""}${body}
+      <nav class="pager" aria-label="More in ${home.short}">
+        ${prev ? `<a href="#${prev.id}"><small>Previous</small><b>${prev.title}</b></a>` : `<a href="#${home.id}"><small>Back to</small><b>${home.title}</b></a>`}
         ${next ? `<a href="#${next.id}"><small>Next</small><b>${next.title}</b></a>` : ""}
       </nav>
     </article><aside class="side">${sideHTML(rel.length)}</aside></div>`;
-  const nbs = [{ id: s.id, label: s.short, kind: "part" }, ...rel.map(r => ({ id: r.id, label: r.short, kind: "rel" })), ...s.subs.filter(u => u.id !== p.id).map(u => ({ id: u.id, label: u.short, kind: "sib" }))];
+  const nbs = [{ id: home.id, label: home.short, kind: "part" }, ...kids.map(u => ({ id: u.id, label: u.short, kind: "sib" })), ...rel.map(r => ({ id: r.id, label: r.short, kind: "rel" })), ...list.filter(u => u.id !== p.id).map(u => ({ id: u.id, label: u.short, kind: "sib" }))];
   document.getElementById("ego").appendChild(egoMap(p.short, nbs));
 }
 
@@ -534,6 +546,7 @@ ALL.forEach(s => {
   s.subs.forEach(u => {
     const t2 = []; collectText([u.note, u.blocks], t2);
     SEARCH_INDEX.push({ id: u.id, title: u.title, where: s.short, text: t2.join(" · ") });
+    (u.children || []).forEach(c => { const t3 = []; collectText([c.note, c.blocks], t3); SEARCH_INDEX.push({ id: c.id, title: c.title, where: `${s.short} / ${u.short}`, text: t3.join(" · ") }); });
   });
 });
 function searchPages(q) {
