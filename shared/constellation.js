@@ -326,6 +326,7 @@ function blockHTML(b) {
       const toc = b.parts.map(p => `<div class="bb-g"><b>${p.t}</b>${p.items.map(i => `<button type="button" class="bb-link" data-target="${idOf(p, i)}">${i.t}</button>`).join("")}</div>`).join("");
       return `${h}<div class="bb vb"><nav class="bb-toc" aria-label="Messaging contents">${toc}</nav><div class="bb-body">${b.parts.map(p => `<div class="bb-group"><h2 class="subhead">${p.t}</h2>${p.items.map(i => item(p, i)).join("")}</div>`).join("")}</div></div>`;
     }
+    case "offer": return offerHTML(b, h);
     case "copy": return `${h}<div class="copies">${b.items.map(c => `<details class="copy"><summary><span class="copy-t">${c.t}</span>${c.meta ? `<span class="copy-meta">${c.meta}</span>` : ""}</summary><div class="copy-body">${c.text.split("\n").filter(Boolean).map(l => `<p>${l}</p>`).join("")}</div><button type="button" class="theme copybtn">Copy text</button></details>`).join("")}</div>`;
     case "pipeline": return `${h}<div class="pipeline">${b.stages.map(s => `<div><b>${s.t}</b><span>${s.d}</span><em>No contacts yet</em></div>`).join("")}</div>`;
     case "moodboard": {
@@ -335,6 +336,60 @@ function blockHTML(b) {
   }
   return "";
 }
+
+/* ---------- Offers: one path from free to signature ---------- */
+const OFFER_KIND = {
+  freebie: {
+    role: "The quick win",
+    works: ["Something they really want", "A quick win in 5 minutes or less", "Solves one problem and points to the next", "Matches your starter and signature offers", "A simple format, ideally a PDF"],
+    funnel: ["Capture page", "Thank-you page", "Delivery email", "Delivery page", "PDF hosted", "Automation on", "Tested 3 to 5 times"],
+    targets: [["Opt-in rate", "30–50% (average is 20%)"], ["Link-in-bio clicks", "60% or more"]]
+  },
+  starter: {
+    role: "The first yes",
+    works: ["The obvious next step after the freebie", "Under 60 minutes from start to finish", "Solves one problem and reveals the next", "A stepping stone, never required for the signature offer", "Feels like a steal at its price"],
+    funnel: ["Sales page with timer", "Sales video, 12–14 min", "Checkout page", "Thank-you page", "Confirmation and login emails", "Follow-up emails, 6 days", "Linked into the freebie funnel", "Tested"],
+    targets: [["Leads who buy", "8–12%"], ["Checkout completion", "50–60%"]]
+  },
+  signature: {
+    role: "The transformation",
+    works: ["One clear promise", "Modules that follow your framework, step by step", "5–7 bonuses that each remove an objection", "Support while they do it", "Everything they need, nothing they don't"],
+    funnel: ["Sales page", "Checkout with payment plan", "Thank-you page", "Confirmation emails", "Webinar sign-up page", "Webinar watch and replay pages", "Webinar emails", "Tested"],
+    targets: [["Webinar viewers who stay", "90%+ with an end-of-webinar gift"], ["Payment plan", "From $197 and up"]]
+  }
+};
+const OG = (x, w = "70%") => x ? x : `<i class="gb" style="width:${w}"></i>`;
+const oList = l => (l || []).map(x => typeof x === "string" ? { t: x } : x);
+function offerHTML(b, h) {
+  const K = OFFER_KIND[b.kind] || OFFER_KIND.freebie, H = !!b.hideEmpty;
+  const part = (title, inner, cls = "") => inner ? `<section class="of-part ${cls}"><h3 class="of-h">${title}</h3>${inner}</section>` : "";
+  const pr = b.price || {};
+  const chips = [b.format, b.time, pr.funnel || pr.text].filter(Boolean);
+  const hero = `<div class="of-hero"><span class="of-role">${K.role}</span><h2 class="of-name">${OG(b.name, "40%")}</h2><p class="of-promise">${b.promise || (H ? "" : `${OG("", "92%")}${OG("", "60%")}`)}</p>${b.hook && (b.hook.title || b.hook.line) ? `<p class="of-hook"><b>${b.hook.title || ""}</b>${b.hook.line ? ` ${b.hook.line}` : ""}</p>` : ""}${chips.length ? `<div class="of-chips">${chips.map(c => `<span>${c}</span>`).join("")}</div>` : H ? "" : `<div class="of-chips"><span>${OG("", "60px")}</span><span>${OG("", "50px")}</span><span>${OG("", "40px")}</span></div>`}</div>`;
+  const path = b.for || b.solves || b.reveals || !H ? `<div class="of-path"><div><span class="vb-lab">Who it's for</span><p>${b.for || OG("", "80%")}</p></div><div><span class="vb-lab">It solves</span><p>${b.solves || OG("", "75%")}</p></div><div class="of-next"><span class="vb-lab">And reveals next</span><p>${b.reveals || OG("", "70%")}</p></div></div>` : "";
+  const inside = b.inside || {};
+  const col = (t, l) => (l && l.length) || !H ? `<div><span class="vb-lab">${t}</span>${l && l.length ? `<ul>${oList(l).map(i => `<li><b>${i.t}</b>${i.d ? `<span>${i.d}</span>` : ""}</li>`).join("")}</ul>` : `<ul><li>${OG("", "70%")}</li><li>${OG("", "50%")}</li></ul>`}</div>` : "";
+  const insideHTML = [col("Core", inside.core), col("Resources", inside.resources), col("Bonuses", inside.bonuses)].join("");
+  const priceRows = [["In the funnel", pr.funnel], ["Public", pr.public], ["Guarantee", pr.guarantee], ["Payment plan", pr.plan]].filter(r => r[1] || (!H && r[0] !== "Payment plan"));
+  const priceHTML = pr.text && !pr.funnel ? `<p class="of-price-note">${pr.text}</p>` : "";
+  const facts = priceRows.length ? `<dl class="facts">${priceRows.map(([k, v]) => `<div><dt>${k}</dt><dd>${OG(v, "60%")}</dd></div>`).join("")}</dl>` : "";
+  const support = (b.support || []).length ? `<ol class="of-tiers">${b.support.map((s, i) => `<li><span class="vb-num">${String(i + 1).padStart(2, "0")}</span><b>${s.t}</b>${s.d ? `<p>${s.d}</p>` : ""}</li>`).join("")}</ol>${b.supportNote ? `<p class="of-note">${b.supportNote}</p>` : ""}` : "";
+  const web = b.webinar && (b.webinar.title || b.webinar.promise || b.webinar.status) ? `<div class="of-web">${b.webinar.title ? `<b>${b.webinar.title}</b>` : ""}${b.webinar.promise ? `<p>${b.webinar.promise}</p>` : ""}${b.webinar.status ? `<span class="of-status">${b.webinar.status}</span>` : ""}</div>` : (b.kind === "signature" && !H ? `<div class="of-web"><b>${OG("", "50%")}</b><p>${OG("", "85%")}</p></div>` : "");
+  const works = K.works.map((t, i) => { const o = (b.works || [])[i]; const v = o && typeof o === "object" ? o : { ok: o }; return { t: v.t || t, ok: v.ok, d: v.d }; });
+  const worksHTML = `<ul class="of-works">${works.map(w => `<li class="${w.ok === true ? "ok" : w.ok === false ? "no" : ""}"><i aria-hidden="true">${w.ok === true ? "✓" : w.ok === false ? "!" : ""}</i><div><b>${w.t}</b>${w.ok === false ? ` <span class="of-flag">Needs work</span>` : ""}${w.d ? `<span>${w.d}</span>` : ""}</div></li>`).join("")}</ul>`;
+  const fun = K.funnel.map((t, i) => { const o = (b.funnel || [])[i]; return { t, done: o === true || (o && o.done) }; });
+  const funHTML = `<p class="of-count"><b>${fun.filter(f => f.done).length}</b> of ${fun.length} built</p><ol class="of-funnel">${fun.map(f => `<li class="${f.done ? "done" : ""}"><i aria-hidden="true">${f.done ? "✓" : ""}</i>${f.t}</li>`).join("")}</ol>`;
+  const targets = `<dl class="facts">${(b.targets || K.targets).map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>`;
+  return `${h}<div class="of">${hero}${path}${part("What's inside", insideHTML ? `<div class="of-inside">${insideHTML}</div>` : "")}${part("Price", facts + priceHTML)}${part("Support while they do it", support)}${part("The webinar that sells it", web)}${part("What makes it work", worksHTML)}${part("The funnel behind it", funHTML)}${part("How you'll know it's working", targets)}</div>`;
+}
+function ladderHTML(s) {
+  const steps = s.subs.map(u => { const b = (u.blocks || []).find(x => x.type === "offer"); return b ? { u, b } : u.kind ? { u, b: { kind: u.kind } } : null; }).filter(Boolean);
+  if (!steps.length) return "";
+  const bump = (CONTENT[s.id] || {}).bumper;
+  const card = ({ u, b }) => { const K = OFFER_KIND[b.kind] || OFFER_KIND.freebie, pr = b.price || {}; return `<a class="ld-step" href="#${u.id}"><span class="of-role">${K.role}</span><b class="ld-name">${b.name || u.title}</b><span class="ld-price">${pr.short || pr.funnel || pr.text || ""}</span>${b.solves ? `<span class="ld-line"><em>Solves</em> ${b.solves}</span>` : ""}${b.reveals ? `<span class="ld-line"><em>Reveals</em> ${b.reveals}</span>` : ""}</a>`; };
+  return `<div class="ld">${bump ? `<p class="ld-bump"><span class="vb-lab">Every offer answers to</span>${bump}</p>` : CLIENT.showEmpty ? `<p class="ld-bump"><span class="vb-lab">Every offer answers to</span>${OG("", "60%")}</p>` : ""}<div class="ld-steps">${steps.map(card).join('<span class="ld-arrow" aria-hidden="true">→</span>')}</div><div class="ld-arrive"><span class="vb-lab">How people arrive</span><span class="ld-route">Your content <i>→</i> the freebie</span><span class="ld-route">Your webinar <i>→</i> the signature offer</span></div></div>`;
+}
+
 /* Full-size viewer for moodboard images */
 const LIGHTBOX = { list: [], i: 0, el: null };
 function openLightbox(i) {
@@ -381,6 +436,7 @@ function renderSection(s) {
   app.innerHTML = `${crumbs([{ label: s.short }], "home")}
     <div class="layout"><div class="main">
       <h1 class="title">${s.title}</h1><p class="intro">${s.blurb}</p>
+      ${s.ladder ? ladderHTML(s) : ""}
       ${s.blocks ? blocksHTML(s.blocks) + '<div style="height:44px"></div>' : ""}
       <div class="cards">${s.subs.map(u => `<a class="card" href="#${u.id}">${glyph(u.s)}<b>${u.title}</b><span>${u.note}</span><span class="st ${u.s}">${STATUS[u.s]}</span></a>`).join("")}</div>
     </div><aside class="side">${sideHTML(conn.length)}${legendHTML()}</aside></div>`;

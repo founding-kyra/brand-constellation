@@ -5,7 +5,7 @@
    Page ids
      Brand Home      origin, ethos, ethics
      Brand Core      messaging, identity, art, library, inspo
-     Offers          freebie, low, high, programs
+     Offers          freebie, low (Starter Offer), high (Signature Offer)
      Audience        research, crm
      Marketing       platforms, plan, ads
      Vision          big-picture, this-year, milestones, capacity
@@ -61,6 +61,16 @@
          { t: "Objections", items: [
            { t: "Price", kind: "objection", q: "What they might think", a: "How we answer", points: ["Point"] }] }] }
        (items left out or empty are hidden from the client)
+     { type: "offer", kind: "freebie" | "starter" | "signature",   (the Offers pages; the ladder on the Offers section builds itself from these)
+       name: "Offer name", promise: "One sentence", hook: { title: "Title", line: "The line under it" },
+       for: "Who it's for", solves: "What it solves", reveals: "The next problem it reveals",
+       format: "PDF", time: "5 minutes", price: { funnel: "$17", public: "$67", guarantee: "30 days, if they did the work", plan: "3 x $67", text: "or a free note" },
+       inside: { core: ["Item"], resources: [{ t: "Item", d: "Note" }], bonuses: ["Item"] },
+       support: [{ t: "Tier", d: "What happens" }], supportNote: "One line", webinar: { title: "", promise: "", status: "Not built yet" },
+       works: [true, null, { ok: false, d: "Why it needs work" }],   (in the order of the built-in checklist for that kind)
+       funnel: [true, false],                                         (built or not, in the order of the built-in funnel steps)
+       targets: [["Label", "Value"]] }                                (optional; each kind has defaults)
+     Optional bumper sticker over the ladder: CONTENT.offers = { bumper: "I help ..." }
      { type: "moodboard", path: "inspo/brand-", images: [[720, 900], [720, 720]] }
        (images are [width, height] for inspo/brand-01.jpg, inspo/brand-02.jpg, ...)
    ===================================================================== */

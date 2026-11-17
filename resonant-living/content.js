@@ -81,29 +81,17 @@ const CONTENT = {
   ] },
 
   freebie: { s: "planning", blocks: [
-    {"type":"facts","items":[{"k":"Offer","v":"1 Rep of Resonance"},{"k":"Price","v":"Free"},{"k":"Time","v":"5 minutes"},{"k":"Format","v":"PDF, audio or video"}]},
-    {"type":"text","heading":"What it is","body":["A short Get Unstuck orientation tool. It helps someone who is activated pause, scan their nervous system, notice their surroundings and make one conscious choice."]},
-    {"type":"text","heading":"Why it matters","body":["It gives an immediate win with no effort, and it's the first step into the funnel."]}
+    {"type": "offer", "kind": "freebie", "name": "1 Rep of Resonance", "promise": "A free five-minute experience of your approach: pause, scan your nervous system, notice your surroundings and make one conscious choice.", "hook": {"title": "Draft hook:", "line": "a 5-minute reset to get unstuck and back in your body, without forcing yourself."}, "for": "A woman who is activated and stuck right now, and knows what she needs but can't get to it.", "solves": "Getting unstuck in this moment, with no effort.", "reveals": "One rep helps, but she needs a daily way back to keep returning.", "format": "PDF linking to audio", "time": "5 minutes", "price": {"text": "Free"}, "inside": {"core": [{"t": "The Get Unstuck practice", "d": "Pause, scan, notice, choose."}]}, "works": [true, true, true, true, {"ok": null, "d": "Recommended: a one-page PDF that links to the audio, so it fits a simple opt-in."}]}
   ] },
 
   low: { s: "planning", blocks: [
-    {"type":"facts","items":[{"k":"Offer","v":"88 Reps of Resonance"},{"k":"Price","v":"$17 to $27"},{"k":"Length","v":"88 days"},{"k":"Delivery","v":"Email, SMS or private group"}]},
-    {"type":"text","heading":"What it is","body":["88 short daily invitations, delivered one at a time, to return to center with a minimum viable action."]},
-    {"type":"text","heading":"Why it matters","body":["It builds a low-pressure daily practice without big time commitments or triggering executive dysfunction."]}
+    {"type": "offer", "kind": "starter", "name": "88 Reps of Resonance", "promise": "88 short daily invitations to return to center with a minimum viable action.", "for": "Women who tried 1 Rep of Resonance and want a gentle daily practice.", "solves": "Building a low-pressure daily practice without big time commitments or triggering executive dysfunction.", "reveals": "Practice alone isn't the whole picture. Living it needs scaffolding and support.", "format": "Email, SMS or private group", "time": "88 days, a few minutes a day", "price": {"funnel": "$17 to $27", "public": "About $67 (recommended)", "guarantee": "30 days, if they did the reps"}, "works": [true, {"ok": false, "d": "An 88-day drip runs long for a first purchase. Keep the total under an hour, or offer \"your first 7 reps\" as the starter and keep 88 Reps as the follow-on."}, true, {"ok": true, "d": "Optional, not a required step."}, null]}
   ] },
 
   high: { s: "planning", blocks: [
-    {"type":"facts","items":[{"k":"Offer","v":"Resonant Living Course"},{"k":"Format","v":"4 self-paced modules"},{"k":"Support","v":"Live co-regulation labs"},{"k":"Price","v":"To be set"}]},
-    {"type":"list","heading":"What's included","items":[{"t":"Video and audio modules","d":"Self-paced lessons."},{"t":"Co-regulation labs","d":"Regular live practice sessions."},{"t":"Body doubling","d":"Working alongside others to lower activation energy."},{"t":"Feedback","d":"Voice notes, Loom breakdowns and Q&A."}]},
-    {"type":"text","heading":"What it solves","body":["The knowledge-execution gap. Clients learn to design their own life scaffolding, audit their capacity, manage their environment and build lasting self-trust."]}
+    {"type": "offer", "kind": "signature", "name": "Resonant Living Course", "promise": "Close the gap between knowing and doing: design your own life scaffolding, audit your capacity, shape your environment and build lasting self-trust.", "for": "Women who have done the reps and want the full system, with support.", "solves": "The knowledge-execution gap, for good.", "reveals": "", "format": "4 self-paced modules", "time": "Price and length to be set", "price": {"text": "Price to be set. Offer a payment plan if it's $197 or more.", "short": "Price to be set"}, "inside": {"core": [{"t": "Video and audio modules", "d": "Self-paced lessons."}], "resources": [{"t": "Feedback", "d": "Voice notes, Loom breakdowns and Q&A."}], "bonuses": []}, "support": [{"t": "I show, you witness", "d": "You demonstrate. The client watches with zero pressure."}, {"t": "We do together", "d": "Practice side by side, live or through body doubling. You're the anchor."}, {"t": "You do, I witness", "d": "The client leads while you watch and give feedback."}, {"t": "Independent", "d": "The client practices alone, with support available as needed."}], "supportNote": "A daily check-in lets clients move between high structure and independence without shame, so they stay in the program. Live co-regulation labs and body doubling run alongside.", "webinar": {"title": "Your signature webinar", "promise": "Its one belief to build: capacity and scaffolding, not discipline, are the key to living what you already know.", "status": "Planned after the TikTok launch"}, "works": [true, {"ok": null, "d": "Name the 4 modules as steps of your framework."}, {"ok": null, "d": "Bonuses not chosen yet."}, true, null]}
   ] },
 
-  programs: { s: "planning", blocks: [
-    {"type":"section","heading":"4-Stage Co-Regulation"},
-    {"type":"lead","text":"Four stages of support. Clients choose the stage that matches their capacity each day, and can move back at any time."},
-    {"type":"stages","items":[{"t":"I show, you witness","d":"The facilitator demonstrates. The client watches with zero pressure."},{"t":"We do together","d":"Practice side by side, live or through body doubling. The facilitator is the anchor."},{"t":"You do, I witness","d":"The client leads while the facilitator watches and gives feedback."},{"t":"Independent","d":"The client practices alone, with support available as needed."}]},
-    {"type":"text","heading":"Why it isn't linear","body":["A daily check-in lets clients move between high structure and independence without shame. That keeps people in the program instead of dropping out."]}
-  ] },
 
   research: { s: "progress", blocks: [
     {"type":"lead","text":"The Next 40: capable women, 30 to 50+, who refuse to spend the second half of life in survival mode."},

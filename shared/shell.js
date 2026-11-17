@@ -51,11 +51,10 @@ const SHELL = {
         readyWhen: blocks => blocks.some(b => b.type === "moodboard" && (b.images || []).length),
         placeholder: [{ type: "board", frames: ["Image", "Image", "Image", "Image", "Image", "Image"] }] }
     ] },
-    { id: "offers", short: "Offers", title: "Offers & Funnel Architecture", blurb: "Everything the brand sells, from free to premium.", subs: [
-      { id: "freebie", short: "Freebies", title: "Freebies & Lead Magnets", note: "Free offers that welcome new people in" },
-      { id: "low", short: "Low Ticket", title: "Low Ticket", note: "Small, easy first purchases" },
-      { id: "high", short: "High Ticket", title: "High Ticket", note: "Premium offers and signature work" },
-      { id: "programs", short: "Programs", title: "Programs", note: "Courses, coaching and group containers" }
+    { id: "offers", short: "Offers", title: "Offers & Funnel Architecture", blurb: "Everything you sell, as one path: a free quick win, a first yes, then the full transformation.", ladder: true, subs: [
+      { id: "freebie", short: "Freebie", title: "Freebie", note: "The free quick win that welcomes new people in", kind: "freebie", wide: true, placeholder: [{ type: "offer", kind: "freebie" }] },
+      { id: "low", short: "Starter Offer", title: "Starter Offer", note: "The small first purchase, offered right after the freebie", kind: "starter", wide: true, placeholder: [{ type: "offer", kind: "starter" }] },
+      { id: "high", short: "Signature Offer", title: "Signature Offer", note: "The full transformation, with the support around it", kind: "signature", wide: true, placeholder: [{ type: "offer", kind: "signature" }] }
     ] },
     { id: "audience", short: "Audience", title: "Target Audience", blurb: "Who the brand serves and where each person is.", subs: [
       { id: "research", short: "Research", title: "Audience Research", note: "Who they are, what they need, in their words" },
@@ -128,6 +127,7 @@ function clientBlocks(blocks) {
         const parts = b.parts.map(p => ({ ...p, items: p.items.filter(has) })).filter(p => p.items.length);
         return parts.length ? { ...b, parts } : null;
       }
+      case "offer": return { ...b, hideEmpty: true };
       case "text": return (b.body || []).join("").trim() && !/^to come\.?$/i.test((b.body || []).join(" ").trim()) ? b : null;
       default: return b;
     }

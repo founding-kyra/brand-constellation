@@ -21,7 +21,7 @@ resonant-living/        One client
 
 - **Brand Home** (centre): Origin Story, Ethos & Values, Ethical Framework
 - **Brand Core & Identity**: Messaging (positioning, voice, words, stories, objections), Brand Book (logos, typography, color), Art & Photo Direction, Content Library, Inspo
-- **Offers & Funnel Architecture**: Freebies & Lead Magnets, Low Ticket, High Ticket, Programs
+- **Offers & Funnel Architecture**: Freebie, Starter Offer, Signature Offer (built on Laptop Lifestyle Academy: one path from a free quick win to the full transformation). The section page shows the offers as a ladder; each offer page has its promise, what it solves and reveals, what's inside, price, a "what makes it work" checklist, the funnel behind it and targets.
 - **Target Audience**: Audience Research, CRM & Lead Tracker
 - **Marketing & Initiatives**: Platforms, 30-Day Ramp-Up (a day-by-day calendar), Paid Advertising
 - **Vision**: Big Picture, This Year, Milestones, Capacity & Lifestyle
