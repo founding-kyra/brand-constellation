@@ -39,6 +39,8 @@ Everything specific to a client lives in `content.js`:
 
 ## What clients see
 
+**Write to the client.** Every hub is read by the client, so its copy talks to them: "you" and "your", never "she", "her", "the founder" or their name. The exceptions are scripts and hooks the client says to their own audience, and descriptions of the client's ideal customer ("Who she is").
+
 Client hubs hide anything that doesn't exist yet: pages with no content, empty sections, "to come" placeholders, empty Brand Book and Messaging parts, empty calendar days and "still to do" boxes. Mark a page `draft: true` in `content.js` to keep its content but hide it. The template sets `CLIENT.showEmpty = true`, so it shows every placeholder.
 
 ## Add a new client

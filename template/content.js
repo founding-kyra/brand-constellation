@@ -10,6 +10,9 @@
      Marketing       platforms, plan, ads
      Vision          big-picture, this-year, milestones, capacity
 
+   Write every word TO the client ("you", "your"), never about them ("she", "the founder", their name).
+   Exceptions: scripts the client says to their audience, and descriptions of their ideal customer.
+
    Each page: { s: "ready" | "progress" | "planning", blocks: [ ... ] }  (add draft: true to hide it from the client)
    Pages left out show "Not started yet".
    Extra client-only page in a section: CONTENT.marketing = { add: [{ id: "tiktok-launch", short: "TikTok Launch",
