@@ -91,6 +91,10 @@ const CONTENT = {
     {"type": "pending", "heading": "Still to update", "text": "Your title is now Evolution Coach, so the logos with a tagline are being redrawn.", "needs": ["Primary, stacked and boxed logos with Evolution Coach", "A horizontal logo for website headers"]}
   ] },
 
+  inspo: { s: "ready", blocks: [
+    {"type": "moodboard", "heading": "", "path": "inspo/jourdi-bleu-", "images": [[540, 720], [405, 720], [576, 720], [405, 720], [232, 720], [576, 720], [576, 720], [576, 720], [405, 720], [576, 720], [576, 720], [458, 720], [539, 720], [576, 720], [579, 720], [508, 720], [711, 720], [540, 720], [405, 720], [480, 720], [405, 720], [720, 720], [720, 720], [576, 720], [540, 720], [509, 720], [405, 720], [540, 720], [720, 710], [491, 720], [542, 720], [555, 720], [405, 720], [591, 720], [480, 720], [720, 720], [400, 720], [585, 720], [576, 720], [480, 720], [720, 720], [405, 720], [405, 720], [576, 720], [405, 720], [480, 720], [691, 720], [576, 720], [426, 720], [343, 720], [405, 720], [509, 720], [432, 720], [480, 720], [343, 720], [576, 720], [540, 720], [720, 540], [405, 720], [480, 720], [479, 720], [542, 720], [405, 720], [514, 720], [358, 720], [576, 720], [405, 720], [480, 720], [479, 720], [720, 720], [506, 720], [592, 720], [480, 720], [405, 720], [405, 720], [480, 720], [702, 720], [556, 720], [578, 720], [552, 720], [509, 720], [720, 720], [720, 720], [405, 720]]}
+  ] },
+
   art: { s: "progress", blocks: [
     {"type": "tags", "heading": "Your practice", "items": ["Rebirthing breathwork", "Evolution coaching", "Alchemy sessions", "Parts work (IFS)", "Archetypes", "Cacao ceremony", "Ecstatic dance", "Sound healing", "Vedic meditation", "Drumming"]},
     {"type": "list", "heading": "The look of Meet Us Upstairs", "items": [
