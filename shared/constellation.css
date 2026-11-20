@@ -843,3 +843,7 @@ body.noscroll { overflow: hidden; }
 .sm-new > .sm-card { border-color: var(--accent); }
 .sm-new > .sm-card em { background: var(--accent); color: #fff; }
 .sm-card { min-width: 118px; max-width: 160px; padding: 9px 10px; }
+
+/* Download buttons */
+.dlx { display: grid; gap: 10px; }
+.dlx .bb-pack { margin: 0; }

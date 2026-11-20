@@ -233,6 +233,8 @@ function blockHTML(b) {
     case "quotes": return `${h}<div class="quotes">${b.items.map(q => `<p>“${q}”</p>`).join("")}</div>`;
     case "list": return `${h}<ul class="items">${b.items.map(i => `<li><b>${i.t}</b><span>${i.d}</span></li>`).join("")}</ul>`;
     case "tags": return `${h}<div class="tags">${b.items.map(t => `<span>${t}</span>`).join("")}</div>`;
+    /* Downloads: items: [{ t, d, href, size }]. Files on R2 (/m/…) download through ?dl=1. */
+    case "download": return `${h}<div class="dlx">${b.items.map(f => { const href = /\/m\//.test(f.href) ? `${f.href}${f.href.includes("?") ? "&" : "?"}dl=1` : f.href; return `<a class="bb-pack dlx-item" href="${href}" download><b>${f.t}</b> <span>${[f.d, f.size].filter(Boolean).join(" · ")}</span></a>`; }).join("")}</div>`;
     case "facts": return `${h}<dl class="facts">${b.items.map(f => `<div><dt>${f.k}</dt><dd>${f.v}</dd></div>`).join("")}</dl>`;
     case "compare": {
       const labelled = b.rows[0].length > b.cols.length;
