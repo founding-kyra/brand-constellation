@@ -723,3 +723,51 @@ body.noscroll { overflow: hidden; }
   .block > h3, .of-h { font-size: 16px; padding-top: 18px; }
   .bb-item h3 { font-size: 19px; }
 }
+
+/* ===== BRAND BOOK DOWNLOADS ===== */
+.bb-tile { position: relative; }
+.bb-dl { position: relative; justify-self: start; }
+.bb-dl summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-label); font-stretch: 112.5%; font-weight: 800; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; }
+.bb-dl summary::-webkit-details-marker { display: none; }
+.bb-dl summary::before { content: "↓"; font-family: inherit; }
+.bb-dl summary:hover, .bb-dl[open] summary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.bb-dl summary:focus-visible, .bb-dl-menu a:focus-visible, .bb-pack:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.bb-dl-menu { position: absolute; z-index: 20; top: calc(100% + 6px); left: 0; width: min(260px, 80vw); display: grid; padding: 6px; background: var(--bg); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 12px 32px rgba(0, 0, 0, .18); }
+.bb-dl-menu a { display: grid; gap: 2px; padding: 9px 10px; border-radius: 9px; color: var(--ink); text-decoration: none; }
+.bb-dl-menu a:hover { background: var(--surface); }
+.bb-dl-menu b { font-size: 14px; }
+.bb-dl-menu span { font-size: 13px; color: var(--ink-soft); line-height: 1.35; }
+.bb-pack { display: grid; gap: 2px; justify-self: start; margin: 4px 0 8px; padding: 14px 18px 14px 46px; border: 1.5px solid var(--ink); border-radius: 14px; color: var(--ink); text-decoration: none; position: relative; max-width: 460px; }
+.bb-pack::before { content: "↓"; position: absolute; left: 18px; top: 13px; font-size: 18px; font-weight: 700; }
+.bb-pack:hover { background: var(--ink); color: var(--bg); }
+.bb-pack b { font-size: 16px; }
+.bb-pack span { font-size: 14px; opacity: .75; }
+
+/* ===== PHOTO LIBRARY ===== */
+.ph { display: grid; gap: 44px; }
+.ph-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-bottom: 14px; }
+.ph-head h3 { margin: 0; font-family: var(--font-display); font-weight: 700; font-size: 19px; letter-spacing: .04em; text-transform: uppercase; }
+.ph-count { font-size: 14px; color: var(--ink-soft); }
+.ph-head p { flex-basis: 100%; margin: 0; color: var(--ink-soft); }
+.ph-zip { margin-left: auto; font-family: var(--font-label); font-stretch: 112.5%; font-weight: 800; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); text-decoration: none; border: 1px solid var(--line); border-radius: 999px; padding: 7px 13px; }
+.ph-zip::before { content: "↓ "; }
+.ph-zip:hover { background: var(--ink); color: var(--bg); }
+.ph-grid { columns: 3 220px; column-gap: 10px; }
+.ph-item { position: relative; margin: 0 0 10px; break-inside: avoid; border-radius: 12px; overflow: hidden; background: var(--surface); }
+.ph-item img { display: block; width: 100%; height: auto; }
+.ph-dl { position: absolute; right: 8px; bottom: 8px; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: rgba(255, 255, 255, .88); color: #1d1a18; text-decoration: none; font-weight: 700; opacity: 0; transition: opacity .15s; }
+.ph-item:hover .ph-dl, .ph-dl:focus-visible { opacity: 1; }
+@media (hover: none) { .ph-dl { opacity: 1; } }
+.ph-zip:focus-visible, .ph-item a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Photo Library uploads */
+.up-photos { margin-bottom: 8px; }
+.up-photos .up-saved { margin-top: 22px; }
+.ph-item figcaption { padding: 7px 10px 9px; font-size: 13px; color: var(--ink-soft); }
+.ph-rm { position: absolute; left: 8px; top: 8px; min-width: 30px; height: 30px; padding: 0 9px; border: 0; border-radius: 999px; background: rgba(255, 255, 255, .88); color: #1d1a18; font: 700 15px/1 var(--font-body, inherit); cursor: pointer; opacity: 0; transition: opacity .15s; }
+.ph-rm.armed { font-size: 12px; background: #b3261e; color: #fff; opacity: 1; }
+.ph-item:hover .ph-rm, .ph-rm:focus-visible { opacity: 1; }
+@media (hover: none) { .ph-rm { opacity: 1; } }
+.up-preview.many { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; padding: 8px; place-items: stretch; overflow-y: auto; }
+.up-preview.many img { width: 100%; height: 84px; object-fit: cover; border-radius: 8px; max-height: none; }
+.up-more { display: grid; place-items: center; font-size: 13px; }

@@ -20,7 +20,7 @@ resonant-living/        One client
 `shared/shell.js` holds the sections every client gets, with plain descriptions:
 
 - **Brand Home** (centre): Origin Story, Ethos & Values, Ethical Framework
-- **Brand Core & Identity**: Messaging (positioning, voice, words, stories, objections), Brand Book (logos, typography, color), Art & Photo Direction, Content Library, Inspo
+- **Brand Core & Identity**: Messaging (positioning, voice, words, stories, objections), Brand Book (logos, typography, color), Art & Photo Direction, Photo Library (albums with downloads), Content Library, Inspo
 - **Offers & Funnel Architecture**: Freebie, Starter Offer, Signature Offer (built on Laptop Lifestyle Academy: one path from a free quick win to the full transformation). The section page shows the offers as a ladder; each offer page has its promise, what it solves and reveals, what's inside, price, a "what makes it work" checklist, the funnel behind it and targets.
 - **Target Audience**: Audience Research, CRM & Lead Tracker
 - **Marketing & Initiatives**: Social Media (holds Platforms and the 30-Day Ramp-Up, plus any platform plans a client adds, like a 14-Day TikTok Launch), Email, Paid Ads. A page can hold other pages: they show as cards on it and as small moons beside it on the map.
@@ -63,3 +63,13 @@ The Inspo page has a **+ Add inspo** button. Clients pick a photo or screenshot,
 - Set a passcode for a new client (run from this folder):
   `npx wrangler pages secret put PASS_NEW_CLIENT --project-name brand-constellation`, then deploy with
   `npx wrangler pages deploy . --project-name brand-constellation --branch main`.
+
+## Logo downloads
+
+Every brand book can offer its logos for download. For each client:
+
+1. Copy the original logo files into `<client>/brand/files/<logo>/`, named `<client>-<logo>-<color>.png`, `.jpg`, `.svg`, `.pdf` (and `.eps` if there is one). Keep the client's own names for their logos.
+2. In `content.js`, give each color variation `files: "brand/files/<logo>/<client>-<logo>-<color>"` (no extension). It gets a Download button with one line on what each format is for.
+3. Zip the `files` folder into `<client>/brand/<client>-logo-pack.zip` and add `pack: { href: "brand/<client>-logo-pack.zip" }` to the Logos group.
+
+Don't include font files: they're licensed. Jourdi Bleu's hub is the working example.

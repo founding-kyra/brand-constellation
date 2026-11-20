@@ -249,6 +249,13 @@ function blockHTML(b) {
     case "swatches": return `${h}${b.note ? `<p class="swnote">${b.note}</p>` : ""}<div class="swatches">${b.items.map(c => `<div class="sw"><i style="--c:${c.hex}"></i><b>${c.name}</b><span>${c.hex}</span>${c.role ? `<em>${c.role}</em>` : ""}</div>`).join("")}${Array.from({ length: b.empty || 0 }, () => `<div class="sw"><i class="empty"></i><b>To come</b></div>`).join("")}</div>`;
     case "gallery": return `${h}<div class="gallery">${b.tiles.map(t => `<div><span>${t}</span></div>`).join("")}</div>
       <p class="gnote">${b.folder ? `<a href="${b.folder}" target="_blank" rel="noopener">Open the Drive folder</a>` : "Drive folder not linked yet. Thumbnails appear here once it's connected."}</p>`;
+    /* Photo Library: albums of web-sized photos. path + count builds path01.jpg … with path01-sm.jpg thumbnails;
+       or list images: ["photos/album/name.jpg", …]. zip adds a "Download the album" button. */
+    case "photos": return `${h}<div class="ph">${b.albums.map(a => {
+      const imgs = a.images || Array.from({ length: a.count || 0 }, (_, i) => `${a.path}${String(i + 1).padStart(2, "0")}.jpg`);
+      const sm = src => src.replace(/\.jpg$/, "-sm.jpg");
+      return `<section class="ph-album"><div class="ph-head"><h3>${a.t}</h3><span class="ph-count">${imgs.length} photos</span>${a.d ? `<p>${a.d}</p>` : ""}${a.zip ? `<a class="ph-zip" href="${a.zip}" download>Download the album</a>` : ""}</div><div class="ph-grid">${imgs.map((src, i) => `<figure class="ph-item"><a href="${src}" target="_blank" rel="noopener"><img src="${a.thumbs === false ? src : sm(src)}" alt="${a.t}, photo ${i + 1}" loading="lazy"></a><a class="ph-dl" href="${src}" download aria-label="Download ${a.t} photo ${i + 1}">↓</a></figure>`).join("")}</div></section>`;
+    }).join("")}</div>`;
     case "section": return `<h2 class="subhead">${b.heading}</h2>`;
     case "board": return `${h}<div class="board">${b.frames.map((f, i) => `<div class="frame f${i % 6}"><span>${f}</span></div>`).join("")}</div>
       <p class="gnote">${b.link ? `<a class="open" href="${b.link}" target="_blank" rel="noopener">Open the whiteboard</a>` : "Inspiration images will appear here once they’re added."}</p>`;
@@ -279,10 +286,24 @@ function blockHTML(b) {
         type: "Where it's used, sizes, case and spacing, and what it pairs with.",
         color: "When to use each color, and which pairings to avoid."
       };
-      const tile = (x, big) => x.img
-        ? `<figure class="bb-tile${big ? " big" : ""}" style="--tbg:${x.bg || "var(--surface)"}"><span class="bb-img"><img src="${x.img}" alt="${x.label || ""}" loading="lazy"></span>${x.label ? `<figcaption>${x.label}</figcaption>` : ""}</figure>`
+      /* Downloads: a tile with files: "brand/files/cat/name-orange" (no extension) or { png: "path", svg: "path" }
+         gets a Download menu. The item's formats list sets which ones (default png, jpg, svg, pdf). */
+      const FMT = {
+        png: ["PNG", "Transparent background. Websites, social posts, Canva."],
+        jpg: ["JPG", "Solid background. Email and quick sharing."],
+        svg: ["SVG", "Vector, sharp at any size. Websites, Canva, Cricut."],
+        pdf: ["PDF", "Vector. Printers, stickers, signage."],
+        eps: ["EPS", "Vector. For professional designers and printers."]
+      };
+      const dl = (x, formats) => {
+        if (!x.files) return "";
+        const list = typeof x.files === "string" ? (formats || ["png", "jpg", "svg", "pdf"]).map(f => [f, `${x.files}.${f}`]) : Object.entries(x.files);
+        return `<details class="bb-dl"><summary>Download</summary><div class="bb-dl-menu">${list.filter(([f]) => FMT[f]).map(([f, href]) => `<a href="${href}" download><b>${FMT[f][0]}</b><span>${FMT[f][1]}</span></a>`).join("")}</div></details>`;
+      };
+      const tile = (x, big, formats) => x.img
+        ? `<figure class="bb-tile${big ? " big" : ""}" style="--tbg:${x.bg || "var(--surface)"}"><span class="bb-img"><img src="${x.img}" alt="${x.label || ""}" loading="lazy"></span>${x.label ? `<figcaption>${x.label}</figcaption>` : ""}${dl(x, formats)}</figure>`
         : `<figure class="bb-tile empty${big ? " big" : ""}"${x.bg ? ` style="--tbg:${x.bg}"` : ""}><span class="bb-img"></span><figcaption>${x.label || "To come"}</figcaption></figure>`;
-      const tiles = (list, defaults) => (list && list.length) || !b.hideEmpty ? `<div class="bb-tiles">${(list && list.length ? list : defaults.map(l => ({ label: l }))).map(x => tile(x)).join("")}</div>` : "";
+      const tiles = (list, defaults, formats) => (list && list.length) || !b.hideEmpty ? `<div class="bb-tiles">${(list && list.length ? list : defaults.map(l => ({ label: l }))).map(x => tile(x, false, formats)).join("")}</div>` : "";
       const rules = (list, kind) => list && list.length
         ? `<ul class="bb-rules">${list.map(r => `<li>${r}</li>`).join("")}</ul>`
         : b.hideEmpty ? "" : `<p class="bb-hint">${HINT[kind]}</p>`;
@@ -291,13 +312,13 @@ function blockHTML(b) {
       const item = (g, i) => {
         const kind = g.kind || "logo";
         let body = "";
-        if (kind === "logo") body = (i.img ? tile({ img: i.img, bg: i.bg, label: "" }, true) : "") + part("Rules", rules(i.rules, kind)) + part("Color variations", tiles(i.variations, ["On light", "On dark", "One color", "Reversed"])) + part("Applications", tiles(i.applications, ["Website", "Social", "Print", "Email"]));
+        if (kind === "logo") body = (i.img ? tile({ img: i.img, bg: i.bg, label: "", files: i.files }, true, i.formats) : "") + part("Rules", rules(i.rules, kind)) + part("Color variations", tiles(i.variations, ["On light", "On dark", "One color", "Reversed"], i.formats)) + part("Applications", tiles(i.applications, ["Website", "Social", "Print", "Email"]));
         if (kind === "type") body = `${i.font ? `<p class="bb-font">${i.font}</p>` : H ? "" : `<p class="bb-font empty">Font to come</p>`}${i.role ? `<p class="bb-role">${i.role}</p>` : ""}` + (i.img ? tile({ img: i.img, bg: i.bg, label: "" }, true) : H ? "" : tile({ label: "Specimen to come" }, true)) + part("Rules", rules(i.rules, kind));
         if (kind === "color") body = `<div class="swatches">${(i.swatches && i.swatches.length ? i.swatches : H ? [] : [1, 2, 3, 4, 5].map(() => null)).map(c => c ? `<div class="sw"><i style="--c:${c.hex}"></i><b>${c.name}</b><span>${c.hex}</span>${c.role ? `<em>${c.role}</em>` : ""}</div>` : `<div class="sw"><i class="empty"></i><b>To come</b></div>`).join("")}</div>` + part("Rules", rules(i.rules, kind));
         return `<section class="bb-item" id="${idOf(g, i)}"><h3>${i.t}</h3>${i.note ? `<p class="bb-note">${i.note}</p>` : ""}${body}</section>`;
       };
       const toc = b.groups.map(g => `<div class="bb-g"><b>${g.t}</b>${g.items.map(i => `<button type="button" class="bb-link" data-target="${idOf(g, i)}">${i.t}</button>`).join("")}</div>`).join("");
-      return `${h}<div class="bb"><nav class="bb-toc" aria-label="Brand book contents">${toc}</nav><div class="bb-body">${b.groups.map(g => `<div class="bb-group"><h2 class="subhead">${g.t}</h2>${g.items.map(i => item(g, i)).join("")}</div>`).join("")}</div></div>`;
+      return `${h}<div class="bb"><nav class="bb-toc" aria-label="Brand book contents">${toc}</nav><div class="bb-body">${b.groups.map(g => `<div class="bb-group"><h2 class="subhead">${g.t}</h2>${g.pack ? `<a class="bb-pack" href="${g.pack.href || g.pack}" download><b>${g.pack.label || "Download all logos"}</b> <span>${g.pack.note || "Every logo below, in every format, in one .zip file"}</span></a>` : ""}${g.items.map(i => item(g, i)).join("")}</div>`).join("")}</div></div>`;
     }
     case "voicebook": {
       /* Messaging guide. Each item has a kind that sets its look. Empty items
@@ -744,93 +765,122 @@ document.addEventListener("click", e => {
   if (t) t.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
 });
 
-/* ---------- Client uploads to the Inspo board ---------- */
-const API = location.hostname.endsWith("brand-constellation.pages.dev") || location.port === "8788" ? "/api" : "https://brand-constellation.pages.dev/api";
+/* ---------- Client uploads: the Inspo board and the Photo Library ---------- */
+const API = location.hostname.endsWith("brand-constellation.pages.dev") || ["8788", "8789"].includes(location.port) ? "/api" : "https://brand-constellation.pages.dev/api";
 const HUB_ID = CLIENT.id || location.pathname.split("/").filter(Boolean).pop();
-const UP = { items: [], el: null, file: null };
+/* One uploader, two boards. max = longest side in px, bytes = size cap per image (the API allows 1.5 MB / 1.9 MB). */
+const BOARDS = {
+  inspo: { bar: "Love something you saw? Save it here.", add: "+ Add inspo", title: "Add inspo", pick: "Choose a photo or screenshot",
+    noteLabel: "A note (optional)", notePh: "What do you love about it?", send: "Add to the board", saved: "Saved by you", max: 1400, bytes: 1_400_000, multi: false },
+  photos: { bar: "Have brand photos of your own? Add them here.", add: "+ Upload photos", title: "Upload photos", pick: "Choose one photo or several",
+    noteLabel: "A caption (optional)", notePh: "Where or when it was taken", send: "Add to your photos", saved: "Added by you", max: 2400, bytes: 1_800_000, multi: true }
+};
+const UP = { items: [], el: null, files: [], board: "inspo" };
 const upSrc = it => `${API}/inspo/img?id=${encodeURIComponent(it.id)}`;
 const upKey = { get() { try { return localStorage.getItem(`bc:${HUB_ID}:key`) || ""; } catch (e) { return ""; } },
   set(v) { try { v ? localStorage.setItem(`bc:${HUB_ID}:key`, v) : localStorage.removeItem(`bc:${HUB_ID}:key`); } catch (e) {} } };
+const upEsc = t => String(t || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 function upInit() {
-  const page = document.querySelector('.main .blocks'); if (!page || (location.hash.slice(1) !== "inspo")) return;
-  const box = document.createElement("section"); box.className = "block up-area";
-  box.innerHTML = `<div class="up-bar"><p>Love something you saw? Save it here.</p><button type="button" class="open up-add">+ Add inspo</button></div><div class="up-saved" hidden><h3>Saved by you</h3><div class="mood up-grid"></div></div>`;
-  page.prepend(box);
+  const page = document.querySelector('.main .blocks'), board = location.hash.slice(1); if (!page || !BOARDS[board]) return;
+  const cfg = BOARDS[board]; UP.board = board;
+  const box = document.createElement("section"); box.className = `block up-area up-${board}`;
+  const saved = board === "photos"
+    ? `<section class="ph-album up-saved" hidden><div class="ph-head"><h3>${cfg.saved}</h3><span class="ph-count"></span></div><div class="ph-grid up-grid"></div></section>`
+    : `<div class="up-saved" hidden><h3>${cfg.saved}</h3><div class="mood up-grid"></div></div>`;
+  box.innerHTML = `<div class="up-bar"><p>${cfg.bar}</p><button type="button" class="open up-add">${cfg.add}</button></div>${saved}`;
+  const lead = board === "photos" && [...page.children].find(c => c.classList.contains("lead") || c.querySelector(".lead"));
+  if (lead) lead.after(box); else page.prepend(box);
   box.querySelector(".up-add").addEventListener("click", upOpen);
+  if (board === "photos") box.querySelector(".up-grid").addEventListener("click", e => { const b = e.target.closest(".ph-rm"); if (b) upRemovePhoto(b); });
   upLoad();
 }
 async function upLoad() {
+  const board = UP.board;
   try {
-    const r = await fetch(`${API}/inspo?client=${encodeURIComponent(HUB_ID)}`); if (!r.ok) return;
+    const r = await fetch(`${API}/inspo?client=${encodeURIComponent(HUB_ID)}&board=${board}`); if (!r.ok) return;
     UP.items = (await r.json()).items || [];
   } catch (e) { return; }
   const wrap = document.querySelector(".up-saved"); if (!wrap) return;
   wrap.hidden = !UP.items.length;
-  wrap.querySelector(".up-grid").innerHTML = UP.items.map((it, i) => `<button type="button" class="pin" data-group="up" data-i="${i}" style="--r:${(((i * 37) % 7) - 3) * 0.3}deg" aria-label="Open saved image ${i + 1}"><img src="${upSrc(it)}" ${it.w && it.h ? `width="${it.w}" height="${it.h}"` : ""} loading="lazy" alt="${(it.note || "").replace(/"/g, "&quot;")}"></button>`).join("");
+  if (board === "photos") {
+    wrap.querySelector(".ph-count").textContent = `${UP.items.length} photo${UP.items.length === 1 ? "" : "s"}`;
+    wrap.querySelector(".up-grid").innerHTML = UP.items.map((it, i) => `<figure class="ph-item"><a href="${upSrc(it)}" target="_blank" rel="noopener"><img src="${upSrc(it)}" ${it.w && it.h ? `width="${it.w}" height="${it.h}"` : ""} loading="lazy" alt="${upEsc(it.note) || `Your photo ${i + 1}`}"></a>${it.note ? `<figcaption>${upEsc(it.note)}</figcaption>` : ""}<a class="ph-dl" href="${upSrc(it)}&dl=1" aria-label="Download photo ${i + 1}">↓</a><button type="button" class="ph-rm" data-id="${upEsc(it.id)}" aria-label="Remove photo ${i + 1}">×</button></figure>`).join("");
+    return;
+  }
+  wrap.querySelector(".up-grid").innerHTML = UP.items.map((it, i) => `<button type="button" class="pin" data-group="up" data-i="${i}" style="--r:${(((i * 37) % 7) - 3) * 0.3}deg" aria-label="Open saved image ${i + 1}"><img src="${upSrc(it)}" ${it.w && it.h ? `width="${it.w}" height="${it.h}"` : ""} loading="lazy" alt="${upEsc(it.note)}"></button>`).join("");
 }
 function upOpen() {
+  const cfg = BOARDS[UP.board];
   if (!UP.el) {
     const el = document.createElement("div"); el.className = "cardview"; el.hidden = true;
-    el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", "Add inspo");
+    el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true");
     el.addEventListener("click", e => { if (e.target === el || e.target.closest(".cv-close")) upClose(); });
     document.body.appendChild(el); UP.el = el;
   }
-  UP.file = null;
+  UP.el.setAttribute("aria-label", cfg.title);
+  UP.files = [];
   UP.el.innerHTML = `<form class="cv-card up-form" novalidate>
-    <div class="cv-top"><h3 class="cv-hook">Add inspo</h3><button type="button" class="theme cv-close">Close</button></div>
-    <label class="up-drop"><input type="file" id="upFile" accept="image/*"><span class="up-preview"><span>Choose a photo or screenshot</span></span></label>
-    <label class="up-field"><span>A note (optional)</span><input type="text" id="upNote" maxlength="280" placeholder="What do you love about it?"></label>
+    <div class="cv-top"><h3 class="cv-hook">${cfg.title}</h3><button type="button" class="theme cv-close">Close</button></div>
+    <label class="up-drop"><input type="file" id="upFile" accept="image/*"${cfg.multi ? " multiple" : ""}><span class="up-preview"><span>${cfg.pick}</span></span></label>
+    <label class="up-field"><span>${cfg.noteLabel}</span><input type="text" id="upNote" maxlength="280" placeholder="${cfg.notePh}"></label>
     ${upKey.get() ? "" : `<label class="up-field"><span>Passcode</span><input type="password" id="upPass" autocomplete="current-password" placeholder="The passcode Kyra gave you"></label>`}
     <p class="up-msg" role="status"></p>
-    <button type="submit" class="open up-send">Add to the board</button>
+    <button type="submit" class="open up-send">${cfg.send}</button>
   </form>`;
   const form = UP.el.querySelector("form");
   form.querySelector("#upFile").addEventListener("change", e => {
-    UP.file = e.target.files[0] || null;
+    UP.files = [...e.target.files];
     const pv = form.querySelector(".up-preview");
-    pv.innerHTML = UP.file ? `<img src="${URL.createObjectURL(UP.file)}" alt="">` : `<span>Choose a photo or screenshot</span>`;
+    pv.classList.toggle("many", UP.files.length > 1);
+    pv.innerHTML = UP.files.length ? UP.files.slice(0, 12).map(f => `<img src="${URL.createObjectURL(f)}" alt="">`).join("") + (UP.files.length > 12 ? `<span class="up-more">+${UP.files.length - 12} more</span>` : "") : `<span>${cfg.pick}</span>`;
   });
   form.addEventListener("submit", upSend);
   UP.el.hidden = false; document.body.classList.add("noscroll");
 }
 function upClose() { if (UP.el) { UP.el.hidden = true; document.body.classList.remove("noscroll"); } }
-function upShrink(file) {
+/* Resize in the browser, then step the JPEG quality down until it fits under the size cap. */
+function upShrink(file, max, cap) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
-      const max = 1400, k = Math.min(1, max / Math.max(img.width, img.height));
+      const k = Math.min(1, max / Math.max(img.width, img.height));
       const c = document.createElement("canvas"); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
       c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-      resolve({ data: c.toDataURL("image/jpeg", 0.85).split(",")[1], w: c.width, h: c.height });
+      let q = 0.88, data = c.toDataURL("image/jpeg", q).split(",")[1];
+      while (data.length * 0.75 > cap && q > 0.5) { q -= 0.08; data = c.toDataURL("image/jpeg", q).split(",")[1]; }
+      resolve({ data, w: c.width, h: c.height });
     };
-    img.onerror = () => reject(new Error("That file isn't an image this browser can read."));
+    img.onerror = () => reject(new Error(`${file.name || "That file"} isn't an image this browser can read.`));
     img.src = URL.createObjectURL(file);
   });
 }
 async function upSend(e) {
   e.preventDefault();
-  const form = e.target, msg = form.querySelector(".up-msg"), btn = form.querySelector(".up-send");
+  const cfg = BOARDS[UP.board], form = e.target, msg = form.querySelector(".up-msg"), btn = form.querySelector(".up-send");
   const passEl = form.querySelector("#upPass"), key = passEl ? passEl.value.trim() : upKey.get();
-  if (!UP.file) { msg.textContent = "Choose a photo first."; return; }
+  if (!UP.files.length) { msg.textContent = "Choose a photo first."; return; }
   if (!key) { msg.textContent = "Enter the passcode Kyra gave you."; passEl && passEl.focus(); return; }
-  btn.disabled = true; btn.textContent = "Adding…"; msg.textContent = "";
-  try {
-    const img = await upShrink(UP.file);
-    const r = await fetch(`${API}/inspo`, { method: "POST", headers: { "Content-Type": "application/json", "X-Hub-Key": key },
-      body: JSON.stringify({ client: HUB_ID, note: form.querySelector("#upNote").value.trim(), mime: "image/jpeg", ...img }) });
-    const out = await r.json().catch(() => ({}));
-    if (!r.ok) {
-      if (r.status === 401) { upKey.set(""); }
-      msg.textContent = out.error || "That didn't save. Try again.";
-      if (r.status === 401 && !passEl) { upOpen(); UP.el.querySelector(".up-msg").textContent = out.error; }
-      btn.disabled = false; btn.textContent = "Add to the board"; return;
-    }
-    upKey.set(key); upClose(); await upLoad();
-    document.querySelector(".up-saved")?.scrollIntoView({ behavior: "smooth", block: "start" });
-  } catch (err) {
-    msg.textContent = err.message || "That didn't save. Check your connection and try again.";
-    btn.disabled = false; btn.textContent = "Add to the board";
+  btn.disabled = true; msg.textContent = "";
+  const note = form.querySelector("#upNote").value.trim(), failed = [];
+  for (let n = 0; n < UP.files.length; n++) {
+    btn.textContent = UP.files.length > 1 ? `Adding ${n + 1} of ${UP.files.length}…` : "Adding…";
+    try {
+      const img = await upShrink(UP.files[n], cfg.max, cfg.bytes);
+      const r = await fetch(`${API}/inspo`, { method: "POST", headers: { "Content-Type": "application/json", "X-Hub-Key": key },
+        body: JSON.stringify({ client: HUB_ID, board: UP.board, note, mime: "image/jpeg", ...img }) });
+      const out = await r.json().catch(() => ({}));
+      if (r.status === 401) {
+        upKey.set("");
+        if (!passEl) { upOpen(); UP.el.querySelector(".up-msg").textContent = out.error; return; }
+        msg.textContent = out.error; btn.disabled = false; btn.textContent = cfg.send; return;
+      }
+      if (!r.ok) failed.push(`${UP.files[n].name}: ${out.error || "didn't save"}`);
+    } catch (err) { failed.push(err.message || `${UP.files[n].name} didn't save`); }
   }
+  upKey.set(key); await upLoad();
+  if (failed.length) { msg.textContent = failed.join(" "); btn.disabled = false; btn.textContent = cfg.send; return; }
+  upClose();
+  document.querySelector(".up-saved")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 async function upRemove(btn) {
   const it = UP.items[LIGHTBOX.i]; if (!it) return;
@@ -842,7 +892,20 @@ async function upRemove(btn) {
   if (!r || !r.ok) { btn.textContent = "Couldn't remove it"; return; }
   closeLightbox(); await upLoad();
 }
+async function upRemovePhoto(btn) {
+  if (!btn.dataset.armed) { btn.dataset.armed = "1"; btn.classList.add("armed"); btn.textContent = "Remove?"; return; }
+  const key = upKey.get();
+  if (!key) { btn.textContent = "Upload a photo first to unlock removing"; return; }
+  btn.textContent = "Removing…";
+  const r = await fetch(`${API}/inspo?client=${encodeURIComponent(HUB_ID)}&id=${encodeURIComponent(btn.dataset.id)}`, { method: "DELETE", headers: { "X-Hub-Key": key } }).catch(() => null);
+  if (!r || !r.ok) { btn.textContent = "Couldn't remove it"; return; }
+  await upLoad();
+}
 
 /* Start */
 route();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (document.getElementById("orbit")) renderHome(); else route(); });
+
+/* Brand book downloads: one open menu at a time, closed by clicking elsewhere or Escape */
+document.addEventListener("click", e => { document.querySelectorAll("details.bb-dl[open]").forEach(d => { if (!d.contains(e.target)) d.open = false; }); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") document.querySelectorAll("details.bb-dl[open]").forEach(d => { d.open = false; d.querySelector("summary").focus(); }); });

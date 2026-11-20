@@ -40,6 +40,10 @@
            variations: [{ label: "On ivory", img: "brand/primary-ivory.png", bg: "#E6E0D6" }], applications: [{ label: "Website", img: "brand/web.png" }] }] },
          { t: "Typography", kind: "type", items: [{ t: "Primary", font: "Font name", role: "Headlines", img: "brand/type-primary.png", rules: ["Rule"] }] },
          { t: "Color", kind: "color", items: [{ t: "Palette", swatches: [{ name: "Ivory", hex: "#E6E0D6", role: "Backgrounds" }], rules: ["Rule"] }] }] }
+       Logo downloads: give a variation files: "brand/files/primary/client-primary-cream" (path without extension) and it gets a
+       Download menu (PNG, JPG, SVG, PDF by default; set formats: ["png", "svg", "pdf", "eps"] on the logo item to change it),
+       or files: { png: "path.png", svg: "path.svg" } for odd names. Put pack: { href: "brand/client-logo-pack.zip" } on the
+       Logos group for a "Download your logo pack" button. Keep the client's own names for files. Never ship font files.
      { type: "voicebook", parts: [   (the Messaging page; copy the part and item titles from shared/shell.js)
          { t: "Positioning", items: [
            { t: "Positioning Line", kind: "positioning", who: "who you help", solution: "with what", want: "so they can", avoid: "without",
