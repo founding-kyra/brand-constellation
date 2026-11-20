@@ -6,3 +6,8 @@ compatibility_date = "2026-11-01"
 binding = "DB"
 database_name = "brand-constellation"
 database_id = "6ed64fee-d791-44bc-9594-e6ce60301ad1"
+
+# Client video uploads (Photo Library > Videos). Needs R2 enabled on the Cloudflare account.
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "brand-constellation-media"

@@ -251,11 +251,21 @@ function blockHTML(b) {
       <p class="gnote">${b.folder ? `<a href="${b.folder}" target="_blank" rel="noopener">Open the Drive folder</a>` : "Drive folder not linked yet. Thumbnails appear here once it's connected."}</p>`;
     /* Photo Library: albums of web-sized photos. path + count builds path01.jpg … with path01-sm.jpg thumbnails;
        or list images: ["photos/album/name.jpg", …]. zip adds a "Download the album" button. */
-    case "photos": return `${h}<div class="ph">${b.albums.map(a => {
-      const imgs = a.images || Array.from({ length: a.count || 0 }, (_, i) => `${a.path}${String(i + 1).padStart(2, "0")}.jpg`);
-      const sm = src => src.replace(/\.jpg$/, "-sm.jpg");
-      return `<section class="ph-album"><div class="ph-head"><h3>${a.t}</h3><span class="ph-count">${imgs.length} photos</span>${a.d ? `<p>${a.d}</p>` : ""}${a.zip ? `<a class="ph-zip" href="${a.zip}" download>Download the album</a>` : ""}</div><div class="ph-grid">${imgs.map((src, i) => `<figure class="ph-item"><a href="${src}" target="_blank" rel="noopener"><img src="${a.thumbs === false ? src : sm(src)}" alt="${a.t}, photo ${i + 1}" loading="lazy"></a><a class="ph-dl" href="${src}" download aria-label="Download ${a.t} photo ${i + 1}">↓</a></figure>`).join("")}</div></section>`;
-    }).join("")}</div>`;
+    case "photos": {
+      const album = a => {
+        const imgs = a.images || Array.from({ length: a.count || 0 }, (_, i) => `${a.path}${String(i + 1).padStart(2, "0")}.jpg`);
+        const sm = src => src.replace(/\.jpg$/, "-sm.jpg");
+        return `<section class="ph-album"><div class="ph-head"><h3>${a.t}</h3><span class="ph-count">${imgs.length} photos</span>${a.d ? `<p>${a.d}</p>` : ""}${a.zip ? `<a class="ph-zip" href="${a.zip}" download>Download the album</a>` : ""}</div><div class="ph-grid">${imgs.map((src, i) => `<figure class="ph-item"><a href="${src}" target="_blank" rel="noopener"><img src="${a.thumbs === false ? src : sm(src)}" alt="${a.t}, photo ${i + 1}" loading="lazy"></a><a class="ph-dl" href="${src}" download aria-label="Download ${a.t} photo ${i + 1}">↓</a></figure>`).join("")}</div></section>`;
+      };
+      /* Video albums: videos: [{ t, items: [{ src: "videos/x.mp4", poster: "videos/x.jpg", t: "Title" }] }] */
+      const vAlbum = a => `<section class="ph-album"><div class="ph-head"><h3>${a.t}</h3><span class="ph-count">${a.items.length} video${a.items.length === 1 ? "" : "s"}</span>${a.d ? `<p>${a.d}</p>` : ""}</div><div class="ph-vgrid">${a.items.map((v, i) => `<figure class="ph-item ph-vid"><video controls playsinline preload="none"${v.poster ? ` poster="${v.poster}"` : ""} src="${v.src}" aria-label="${v.t || `${a.t} video ${i + 1}`}"></video>${v.t ? `<figcaption>${v.t}</figcaption>` : ""}<a class="ph-dl" href="${v.src}" download aria-label="Download ${v.t || `video ${i + 1}`}">↓</a></figure>`).join("")}</div></section>`;
+      const photos = `<div class="ph">${(b.albums || []).map(album).join("")}</div>`;
+      const vids = b.videos || [];
+      const nV = vids.reduce((n, a) => n + a.items.length, 0), nP = (b.albums || []).reduce((n, a) => n + (a.images ? a.images.length : a.count || 0), 0);
+      return `${h}<div class="ph-tabs" role="tablist" aria-label="Photo Library"><button type="button" role="tab" class="ph-tab on" aria-selected="true" aria-controls="ph-photos" id="ph-tab-photos">Photos <span class="ph-n">${nP}</span></button><button type="button" role="tab" class="ph-tab" aria-selected="false" aria-controls="ph-videos" id="ph-tab-videos" tabindex="-1">Videos <span class="ph-n">${nV}</span></button></div>
+        <div class="ph-panel" id="ph-photos" role="tabpanel" aria-labelledby="ph-tab-photos">${photos}</div>
+        <div class="ph-panel" id="ph-videos" role="tabpanel" aria-labelledby="ph-tab-videos" hidden><div class="ph">${vids.map(vAlbum).join("")}</div></div>`;
+    }
     case "section": return `<h2 class="subhead">${b.heading}</h2>`;
     case "board": return `${h}<div class="board">${b.frames.map((f, i) => `<div class="frame f${i % 6}"><span>${f}</span></div>`).join("")}</div>
       <p class="gnote">${b.link ? `<a class="open" href="${b.link}" target="_blank" rel="noopener">Open the whiteboard</a>` : "Inspiration images will appear here once they’re added."}</p>`;
@@ -788,8 +798,16 @@ function upInit() {
     ? `<section class="ph-album up-saved" hidden><div class="ph-head"><h3>${cfg.saved}</h3><span class="ph-count"></span></div><div class="ph-grid up-grid"></div></section>`
     : `<div class="up-saved" hidden><h3>${cfg.saved}</h3><div class="mood up-grid"></div></div>`;
   box.innerHTML = `<div class="up-bar"><p>${cfg.bar}</p><button type="button" class="open up-add">${cfg.add}</button></div>${saved}`;
+  if (board === "photos" && !page.querySelector("#ph-photos")) {
+    const shell = document.createElement("section"); shell.className = "block";
+    shell.innerHTML = blockHTML({ type: "photos", albums: [] });
+    const lead0 = [...page.children].find(c => c.classList.contains("lead") || c.querySelector(".lead"));
+    if (lead0) lead0.after(shell); else page.prepend(shell);
+  }
+  if (board === "photos") vidInit(page);
+  const panel = board === "photos" && page.querySelector("#ph-photos");
   const lead = board === "photos" && [...page.children].find(c => c.classList.contains("lead") || c.querySelector(".lead"));
-  if (lead) lead.after(box); else page.prepend(box);
+  if (panel) panel.prepend(box); else if (lead) lead.after(box); else page.prepend(box);
   box.querySelector(".up-add").addEventListener("click", upOpen);
   if (board === "photos") box.querySelector(".up-grid").addEventListener("click", e => { const b = e.target.closest(".ph-rm"); if (b) upRemovePhoto(b); });
   upLoad();
@@ -909,3 +927,108 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if
 /* Brand book downloads: one open menu at a time, closed by clicking elsewhere or Escape */
 document.addEventListener("click", e => { document.querySelectorAll("details.bb-dl[open]").forEach(d => { if (!d.contains(e.target)) d.open = false; }); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") document.querySelectorAll("details.bb-dl[open]").forEach(d => { d.open = false; d.querySelector("summary").focus(); }); });
+
+/* Photo Library tabs: Photos / Videos (arrow keys move between tabs) */
+function phTab(btn) {
+  const tabs = [...btn.parentElement.querySelectorAll(".ph-tab")];
+  tabs.forEach(t => { const on = t === btn; t.classList.toggle("on", on); t.setAttribute("aria-selected", on); t.tabIndex = on ? 0 : -1; document.getElementById(t.getAttribute("aria-controls")).hidden = !on; });
+  document.querySelectorAll("#ph-photos video, #ph-videos video").forEach(v => { if (v.closest("[hidden]")) v.pause(); });
+}
+document.addEventListener("click", e => { const t = e.target.closest(".ph-tab"); if (t) phTab(t); });
+document.addEventListener("keydown", e => {
+  const t = e.target.closest && e.target.closest(".ph-tab"); if (!t || !["ArrowLeft", "ArrowRight"].includes(e.key)) return;
+  const tabs = [...t.parentElement.querySelectorAll(".ph-tab")], n = tabs[(tabs.indexOf(t) + (e.key === "ArrowRight" ? 1 : -1) + tabs.length) % tabs.length];
+  phTab(n); n.focus();
+});
+
+/* ---------- Client video uploads (Photo Library > Videos). Files go to R2 through /api/media. ---------- */
+const VID = { items: [], files: [] };
+const vidSrc = it => `${API}/media/file?id=${encodeURIComponent(it.id)}`;
+function vidInit(page) {
+  const panel = page.querySelector("#ph-videos"); if (!panel || panel.querySelector(".up-videos")) return;
+  const box = document.createElement("section"); box.className = "block up-area up-videos";
+  box.innerHTML = `<div class="up-bar"><p>Have videos of your own? Add them here.</p><button type="button" class="open up-add">+ Upload videos</button></div>
+    <section class="ph-album up-vsaved" hidden><div class="ph-head"><h3>Added by you</h3><span class="ph-count"></span></div><div class="ph-vgrid up-vgrid"></div></section>`;
+  panel.prepend(box);
+  box.querySelector(".up-add").addEventListener("click", vidOpen);
+  box.querySelector(".up-vgrid").addEventListener("click", e => { const b = e.target.closest(".ph-rm"); if (b) vidRemove(b); });
+  vidLoad();
+}
+async function vidLoad() {
+  try { const r = await fetch(`${API}/media?client=${encodeURIComponent(HUB_ID)}`); if (!r.ok) return; VID.items = (await r.json()).items || []; } catch (e) { return; }
+  const wrap = document.querySelector(".up-vsaved"); if (!wrap) return;
+  wrap.hidden = !VID.items.length;
+  wrap.querySelector(".ph-count").textContent = `${VID.items.length} video${VID.items.length === 1 ? "" : "s"}`;
+  wrap.querySelector(".up-vgrid").innerHTML = VID.items.map((it, i) => `<figure class="ph-item ph-vid"><video controls playsinline preload="metadata" src="${vidSrc(it)}#t=0.1" aria-label="${upEsc(it.note) || `Your video ${i + 1}`}"></video>${it.note ? `<figcaption>${upEsc(it.note)}</figcaption>` : ""}<a class="ph-dl" href="${vidSrc(it)}&dl=1" aria-label="Download video ${i + 1}">↓</a><button type="button" class="ph-rm" data-id="${upEsc(it.id)}" aria-label="Remove video ${i + 1}">×</button></figure>`).join("");
+  const tab = document.querySelector("#ph-tab-videos .ph-n");
+  if (tab) tab.textContent = document.querySelectorAll("#ph-videos video").length;
+}
+function vidOpen() {
+  if (!UP.el) {
+    const el = document.createElement("div"); el.className = "cardview"; el.hidden = true;
+    el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true");
+    el.addEventListener("click", e => { if (e.target === el || e.target.closest(".cv-close")) upClose(); });
+    document.body.appendChild(el); UP.el = el;
+  }
+  UP.el.setAttribute("aria-label", "Upload videos");
+  VID.files = [];
+  UP.el.innerHTML = `<form class="cv-card up-form" novalidate>
+    <div class="cv-top"><h3 class="cv-hook">Upload videos</h3><button type="button" class="theme cv-close">Close</button></div>
+    <label class="up-drop"><input type="file" id="vidFile" accept="video/mp4,video/quicktime,video/webm,video/x-m4v" multiple><span class="up-preview"><span>Choose one video or several (up to 95 MB each)</span></span></label>
+    <label class="up-field"><span>A caption (optional)</span><input type="text" id="vidNote" maxlength="280" placeholder="Where or when it was filmed"></label>
+    ${upKey.get() ? "" : `<label class="up-field"><span>Passcode</span><input type="password" id="vidPass" autocomplete="current-password" placeholder="The passcode Kyra gave you"></label>`}
+    <div class="up-progress" hidden><i></i></div>
+    <p class="up-msg" role="status"></p>
+    <button type="submit" class="open up-send">Add to your videos</button>
+  </form>`;
+  const form = UP.el.querySelector("form");
+  form.querySelector("#vidFile").addEventListener("change", e => {
+    VID.files = [...e.target.files];
+    const pv = form.querySelector(".up-preview"); pv.classList.toggle("many", VID.files.length > 1);
+    pv.innerHTML = VID.files.length ? VID.files.map(f => `<video src="${URL.createObjectURL(f)}#t=0.1" muted playsinline preload="metadata"></video>`).join("") : `<span>Choose one video or several (up to 95 MB each)</span>`;
+  });
+  form.addEventListener("submit", vidSend);
+  UP.el.hidden = false; document.body.classList.add("noscroll");
+}
+function vidPut(file, key, note, onProgress) {
+  return new Promise(resolve => {
+    const x = new XMLHttpRequest();
+    x.open("POST", `${API}/media?client=${encodeURIComponent(HUB_ID)}&note=${encodeURIComponent(note)}&name=${encodeURIComponent(file.name)}`);
+    x.setRequestHeader("X-Hub-Key", key);
+    x.setRequestHeader("Content-Type", file.type || "video/mp4");
+    x.upload.onprogress = e => e.lengthComputable && onProgress(e.loaded / e.total);
+    x.onload = () => { let out = {}; try { out = JSON.parse(x.responseText); } catch (e) {} resolve({ status: x.status, ok: x.status < 300, out }); };
+    x.onerror = () => resolve({ status: 0, ok: false, out: { error: "The upload stopped. Check your connection and try again." } });
+    x.send(file);
+  });
+}
+async function vidSend(e) {
+  e.preventDefault();
+  const form = e.target, msg = form.querySelector(".up-msg"), btn = form.querySelector(".up-send"), bar = form.querySelector(".up-progress");
+  const passEl = form.querySelector("#vidPass"), key = passEl ? passEl.value.trim() : upKey.get();
+  if (!VID.files.length) { msg.textContent = "Choose a video first."; return; }
+  if (!key) { msg.textContent = "Enter the passcode Kyra gave you."; passEl && passEl.focus(); return; }
+  const big = VID.files.find(f => f.size > 95 * 1024 * 1024);
+  if (big) { msg.textContent = `${big.name} is over 95 MB. Send that one to Kyra instead.`; return; }
+  btn.disabled = true; msg.textContent = ""; bar.hidden = false;
+  const note = form.querySelector("#vidNote").value.trim(), failed = [];
+  for (let n = 0; n < VID.files.length; n++) {
+    const label = VID.files.length > 1 ? `Uploading ${n + 1} of ${VID.files.length}` : "Uploading";
+    const r = await vidPut(VID.files[n], key, note, k => { bar.firstElementChild.style.width = `${Math.round(k * 100)}%`; btn.textContent = `${label}… ${Math.round(k * 100)}%`; });
+    if (r.status === 401) { upKey.set(""); msg.textContent = r.out.error; btn.disabled = false; btn.textContent = "Add to your videos"; bar.hidden = true; if (!passEl) { vidOpen(); UP.el.querySelector(".up-msg").textContent = r.out.error; } return; }
+    if (!r.ok) failed.push(`${VID.files[n].name}: ${r.out.error || "didn't save"}`);
+  }
+  upKey.set(key); await vidLoad();
+  if (failed.length) { msg.textContent = failed.join(" "); btn.disabled = false; btn.textContent = "Add to your videos"; bar.hidden = true; return; }
+  upClose();
+  document.querySelector(".up-vsaved")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+async function vidRemove(btn) {
+  if (!btn.dataset.armed) { btn.dataset.armed = "1"; btn.classList.add("armed"); btn.textContent = "Remove?"; return; }
+  const key = upKey.get();
+  if (!key) { btn.textContent = "Upload something first to unlock removing"; return; }
+  btn.textContent = "Removing…";
+  const r = await fetch(`${API}/media?client=${encodeURIComponent(HUB_ID)}&id=${encodeURIComponent(btn.dataset.id)}`, { method: "DELETE", headers: { "X-Hub-Key": key } }).catch(() => null);
+  if (!r || !r.ok) { btn.textContent = "Couldn't remove it"; return; }
+  await vidLoad();
+}
