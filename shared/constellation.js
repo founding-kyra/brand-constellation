@@ -400,6 +400,19 @@ function blockHTML(b) {
       return `${h}<div class="bio">${phone}${guide}</div>${b.note ? `<p class="of-note">${b.note}</p>` : ""}`;
     }
     case "copy": return `${h}<div class="copies">${b.items.map(c => `<details class="copy"><summary><span class="copy-t">${c.t}</span>${c.meta ? `<span class="copy-meta">${c.meta}</span>` : ""}</summary><div class="copy-body">${c.text.split("\n").filter(Boolean).map(l => `<p>${l}</p>`).join("")}</div><button type="button" class="theme copybtn">Copy text</button></details>`).join("")}</div>`;
+    /* Post cards: items: [{ img, url, date, type, comments, likes, caption }]. The caption shows exactly as written,
+       with a Copy caption button. Long captions fold after a few lines. */
+    case "postcards": {
+      const esc = t => String(t || "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      return `${h}<div class="pc">${b.items.map((x, i) => `<article class="pc-card" style="--tilt:${[-2.2, 1.6, -1.2, 2.4, -1.8][i % 5]}deg">
+        <a class="pc-pic" href="${x.url}" target="_blank" rel="noopener" aria-label="Open post ${i + 1} on Instagram"><span class="pc-rank">${i + 1}</span><img src="${x.img}" alt="" loading="lazy"><span class="pc-type">${x.type}</span></a>
+        <div class="pc-body">
+          <div class="pc-meta"><b>${x.date}</b>${x.comments != null ? `<span>${x.comments.toLocaleString()} comments</span>` : ""}${x.likes ? `<span>${x.likes.toLocaleString()} likes</span>` : ""}</div>
+          <div class="pc-cap">${esc(x.caption)}</div>
+          <textarea class="pc-raw" hidden>${esc(x.caption)}</textarea>
+          <div class="pc-actions"><button type="button" class="pc-more">Show full caption</button><button type="button" class="theme pc-copy">Copy caption</button><a class="pc-open" href="${x.url}" target="_blank" rel="noopener">Open on Instagram ↗</a></div>
+        </div></article>`).join("")}</div>`;
+    }
     case "pipeline": return `${h}<div class="pipeline">${b.stages.map(s => `<div><b>${s.t}</b><span>${s.d}</span><em>No contacts yet</em></div>`).join("")}</div>`;
     case "moodboard": {
       LIGHTBOX.mood = b.images.map((_, i) => `${b.path}${String(i + 1).padStart(2, "0")}.jpg`);
@@ -1044,3 +1057,20 @@ async function vidRemove(btn) {
   if (!r || !r.ok) { btn.textContent = "Couldn't remove it"; return; }
   await vidLoad();
 }
+
+/* Post cards: copy the exact caption; unfold long captions */
+document.addEventListener("click", e => {
+  const c = e.target.closest(".pc-copy");
+  if (c) {
+    const card = c.closest(".pc-card"), text = card.querySelector(".pc-raw").value;
+    const done = () => { c.textContent = "Copied ✓"; setTimeout(() => { c.textContent = "Copy caption"; }, 1600); };
+    const fallback = () => { const t = card.querySelector(".pc-raw"); t.hidden = false; t.select(); try { document.execCommand("copy"); done(); } catch (err) {} t.hidden = true; };
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
+    return;
+  }
+  const m = e.target.closest(".pc-more");
+  if (m) { const card = m.closest(".pc-card"); const open = card.classList.toggle("open"); m.textContent = open ? "Fold caption" : "Show full caption"; }
+});
+/* Hide "Show full caption" where the caption already fits */
+function pcFit() { document.querySelectorAll(".pc-card").forEach(c => { const cap = c.querySelector(".pc-cap"); const btn = c.querySelector(".pc-more"); if (cap && btn && !c.classList.contains("open")) { const fits = cap.scrollHeight <= cap.clientHeight + 4; btn.hidden = fits; c.classList.toggle("fits", fits); } }); }
+new MutationObserver(() => requestAnimationFrame(pcFit)).observe(document.body, { childList: true, subtree: true });
