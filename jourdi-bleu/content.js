@@ -305,50 +305,26 @@ const CONTENT = {
     {"type": "pending", "heading": "Not yet", "text": "Your personal Instagram can't run ads since the hack.", "needs": ["An ad account on @meetusupstairs", "An offer to promote"]}
   ] },
 
-  "big-picture": { s: "progress", blocks: [
-    {"type": "quote", "text": "Ideally, my whole vision is that I'm going to… be a keynote speaker mostly and then have this online program on the side.", "by": "You, April 2026"},
-    {"type": "list", "heading": "Where this is going", "items": [
-      {"t": "International keynote speaker", "d": "“Cause that's really where I want this.” From $500 a talk toward $25,000 a keynote."},
-      {"t": "Meet Us Upstairs", "d": "Your life's work, running on the side."},
-      {"t": "Trainings around the world", "d": "European and American breathwork trainings with Kurt and Breath of the World."},
-      {"t": "A base that fits", "d": "Sydney, maybe Bali. “This plane is about to go international for a few years.”"}
-    ]}
+  "big-picture": { s: "progress", wide: true, blocks: [
+    {"type": "bigquote", "text": "Ideally, my whole vision is that I'm going to… be a keynote speaker mostly and then have this online program on the side.", "by": "You, April 2026"},
+    {"type": "vcards", "heading": "Where this is going", "items": [{"kicker": "The stage", "t": "International keynote speaker", "d": "“Cause that's really where I want this.” From $500 a talk toward $25,000 a keynote.", "tag": "Speaking"}, {"kicker": "Your life's work", "t": "Meet Us Upstairs", "d": "Cohorts climbing the floors together, running alongside the speaking.", "tag": "Signature offer"}, {"kicker": "The world", "t": "Trainings around the globe", "d": "European and American breathwork trainings with Kurt and Breath of the World.", "tag": "Teaching"}, {"kicker": "Home base", "t": "A life that fits", "d": "Sydney, maybe Bali. “This plane is about to go international for a few years.”", "tag": "Lifestyle"}]},
+    {"type": "bigquote", "text": "I always also have known that I'm made to be on a stage.", "by": "You, in our narrative workshop"}
   ] },
 
-  "this-year": { s: "progress", blocks: [
-    {"type": "stages", "heading": "Next, in order", "items": [
-      {"t": "Name the niche", "d": "Decide who Meet Us Upstairs is for."},
-      {"t": "Finish the floors", "d": "Send your floor notes so the sales page can be built."},
-      {"t": "Launch the masterclass", "d": "$11 to $22, with a live breath."},
-      {"t": "Open the first cohort", "d": "At least 8 weeks, together."},
-      {"t": "Grow the list", "d": "Freebies, hidden pages and ManyChat."},
-      {"t": "Two 6-month clients", "d": "“If I can just lock those two in for six months… I'm not going to have to worry about money.”"}
-    ]}
+  "this-year": { s: "progress", wide: true, blocks: [
+    {"type": "lead", "text": "Six steps, in order. Each one opens the door to the next."},
+    {"type": "timeline", "items": [{"n": 1, "date": "Now", "t": "Name your niche", "d": "Who Meet Us Upstairs is for, in one line. Everything else gets easier after this.", "when": "now"}, {"n": 2, "date": "Next", "t": "Finish the floors", "d": "Your floor notes, so the sales page can be built.", "when": "next"}, {"n": 3, "date": "Early 2027", "t": "Launch the masterclass", "d": "$11 to $22, with a live breath. “People don't show up for free.”", "when": "next", "tag": "Starter offer"}, {"n": 4, "date": "2027", "t": "Open the first cohort", "d": "At least 8 weeks, together, weekly Zoom and your WhatsApp group.", "when": "next", "tag": "Signature offer"}, {"n": 5, "date": "All year", "t": "Grow the list", "d": "Freebies, hidden pages and ManyChat, so every reel has somewhere to land.", "when": "next"}, {"n": 6, "date": "All year", "t": "Two 6-month clients", "d": "“If I can just lock those two in for six months… I'm not going to have to worry about money.”", "when": "next", "tag": "1:1"}]}
   ] },
 
-  milestones: { s: "progress", blocks: [
-    {"type": "list", "heading": "So far", "items": [
-      {"t": "Dec 2025", "d": "Your brand narrative workshop. December and January were your most abundant months yet."},
-      {"t": "Feb 2026", "d": "Mana Awakening in Maui. The Showit site goes live."},
-      {"t": "Mar 2026", "d": "Your most abundant month ever. Brand audit, research and voice guide delivered."},
-      {"t": "Apr 2026", "d": "Meet Me Upstairs is named. Your title becomes Breathwork Healer, Evolution Coach, International Speaker. Yoga goes."},
-      {"t": "Jun 2026", "d": "Energize Your Life filmed in one day. Your “everything is energy” reel passes 200,000 views."},
-      {"t": "Aug 2026", "d": "Meet Us Upstairs and @meetusupstairs. We start working together monthly."},
-      {"t": "Sep 2026", "d": "The floors. A reel at 340,000 views."},
-      {"t": "Oct to Nov 2026", "d": "Skydance, teaching the Bali training, and the Ananda Retreat."}
-    ]}
+  milestones: { s: "progress", wide: true, blocks: [
+    {"type": "lead", "text": "Where you've been, where you are, and where you're going. Scroll down the line."},
+    {"type": "timeline", "items": [{"era": "Where you've been"}, {"date": "Apr 2012", "t": "Your first Instagram post", "d": "The start of 1,651 posts and counting.", "when": "past"}, {"date": "2018", "t": "The yoga teacher era", "d": "Handstands, #namaslay, and captions that start telling your story.", "when": "past"}, {"date": "2021", "t": "Rebirthing breathwork finds you", "d": "Through your friend Destiny. Learning to love Addict Jourdi changes everything.", "when": "past"}, {"date": "Sep 2021", "t": "You launch your business", "d": "As Jourdi Bleu, Mindfulness Mentor.", "when": "past"}, {"date": "Oct 2022", "t": "Your last drink", "d": "“Complete sobriety is going to be my superpower.”", "when": "past", "tag": "Recovery"}, {"date": "Oct 2023", "t": "The Seven Sisters speech", "d": "Your biggest reach ever. “Never Stop Dancing” becomes your most-liked post.", "when": "past", "tag": "Speaking"}, {"date": "2024", "t": "Breathwork and Upstairs", "d": "You train in Bali and “Upstairs” enters your language.", "when": "past"}, {"date": "Jan 2025", "t": "Your first 10K month", "d": "“Guess I'm a Five Figure Wanker now too 😜”", "when": "past", "tag": "Business"}, {"date": "Dec 2025", "t": "Your brand narrative workshop", "d": "December and January become your most abundant months yet.", "when": "past"}, {"date": "Feb 2026", "t": "Mana Awakening in Maui", "d": "And your Showit site goes live.", "when": "past"}, {"date": "Mar 2026", "t": "Your most abundant month ever", "d": "Brand audit, research and voice guide delivered.", "when": "past"}, {"date": "Apr 2026", "t": "Meet Me Upstairs is named", "d": "Your title becomes Breathwork Healer, Evolution Coach, International Speaker. Yoga goes.", "when": "past"}, {"date": "May 2026", "t": "You share your recovery, raw", "d": "Your most-commented post of the year, after “Everything is energy”.", "when": "past", "tag": "Recovery"}, {"date": "Jun 2026", "t": "Energize Your Life, filmed in a day", "d": "And your “everything is energy” reel passes 200,000 views.", "when": "past"}, {"date": "Aug 2026", "t": "Meet Us Upstairs", "d": "The rename, @meetusupstairs, and we start working together monthly.", "when": "past"}, {"date": "Sep 2026", "t": "The floors", "d": "Meet Us Upstairs gets its structure. A reel reaches 340,000 views.", "when": "past"}, {"date": "Oct 2026", "t": "Skydance and Bali", "d": "You curate the Skydance sanctuary and teach on the Wild Love training.", "when": "past"}, {"era": "Now"}, {"date": "Nov 2026", "t": "Your Brand Constellation", "d": "Ananda Retreat. Your site's first SEO fixes go live, and your whole brand comes together in one place.", "when": "now"}, {"era": "Where you're going"}, {"date": "Late 2026", "t": "Name your niche", "d": "Who Meet Us Upstairs is for, in one line.", "when": "next"}, {"date": "Late 2026", "t": "Finish the floors", "d": "The structure and sales page for the first cohort.", "when": "next"}, {"date": "Q1 2027", "t": "Your website foundations", "d": "A simpler menu, your story page, FAQs and structured data.", "when": "next", "tag": "SEO & AEO"}, {"date": "Early 2027", "t": "The Upstairs Masterclass", "d": "$11 to $22, with a live breath. Your first yes.", "when": "next", "tag": "Starter offer"}, {"date": "2027", "t": "Meet Us Upstairs launches", "d": "Your first cohort climbs the floors together. “Officially launching in 2027 💫”", "when": "next", "tag": "Signature offer"}, {"date": "Mid 2027", "t": "Your Journal", "d": "One post a month from your speaking clips and transcripts.", "when": "next"}, {"date": "2027", "t": "Trainings around the world", "d": "European and American breathwork trainings with Breath of the World.", "when": "next"}, {"date": "Beyond", "t": "The keynote stage", "d": "From $500 a talk toward $25,000 a keynote. “I always also have known that I'm made to be on a stage.”", "when": "next", "tag": "Speaking"}]}
   ] },
 
-  capacity: { s: "progress", blocks: [
-    {"type": "quote", "text": "Every time I'm trying to like sit down and fucking do something big I'm met with this extraordinary resistance.", "by": "You, September 2026"},
-    {"type": "list", "heading": "What to build around", "items": [
-      {"t": "A regulated nervous system comes first", "d": "Three bursts of burnout taught you this."},
-      {"t": "Travel", "d": "Booking from the road goes through WhatsApp and email, not your calendar."},
-      {"t": "Tech", "d": "Kyra builds it. You decide, write and show up."},
-      {"t": "One place for requests", "d": "The shared Google Doc table, not WhatsApp."},
-      {"t": "Fewer, bigger clients", "d": "3- and 6-month packages over one-off sessions."}
-    ]}
-  ] }
+  capacity: { s: "progress", wide: true, blocks: [
+    {"type": "bigquote", "text": "Every time I'm trying to like sit down and fucking do something big I'm met with this extraordinary resistance.", "by": "You, September 2026"},
+    {"type": "vcards", "heading": "What to build around", "items": [{"kicker": "First", "t": "A regulated nervous system", "d": "Three bursts of burnout taught you this. “A regulated nervous system is EVERYTHING.”"}, {"kicker": "On the road", "t": "Travel", "d": "Booking from the road goes through WhatsApp and email, not your calendar."}, {"kicker": "Hand it off", "t": "Tech", "d": "Kyra builds it. You decide, write and show up."}, {"kicker": "One place", "t": "Requests", "d": "The shared Google Doc table, not WhatsApp."}, {"kicker": "Fewer, deeper", "t": "Bigger clients", "d": "3- and 6-month packages over one-off sessions."}, {"kicker": "Non-negotiable", "t": "Your daily practice", "d": "“My meditations are non negotiable when I travel… But it's always so worth it ✨”"}]}
+  ] },
 };
 
 /* Light connections between related pages. Add pairs like ["research", "messaging"]. */

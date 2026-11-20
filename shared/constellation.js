@@ -413,6 +413,20 @@ function blockHTML(b) {
           <div class="pc-actions"><button type="button" class="pc-more">Show full caption</button><button type="button" class="theme pc-copy">Copy caption</button><a class="pc-open" href="${x.url}" target="_blank" rel="noopener">Open on Instagram ↗</a></div>
         </div></article>`).join("")}</div>`;
     }
+    /* Timeline: a long vertical line with cards alternating left and right.
+       items: [{ date, t, d, when: "past" | "now" | "next", tag }]. A "now" item gets the You are here marker. */
+    case "timeline": {
+      let side = 0;
+      return `${h}<div class="tl">${b.items.map(x => {
+        if (x.era) return `<div class="tl-era"><span>${x.era}</span></div>`;
+        const s = side++ % 2 ? "r" : "l";
+        return `<div class="tl-row tl-${s} tl-${x.when || "past"}${x.n != null ? " tl-num" : ""}"><span class="tl-dot" aria-hidden="true">${x.n != null ? x.n : ""}</span><article class="tl-card">${x.when === "now" ? `<span class="tl-here">You are here</span>` : ""}<time>${x.date}</time><h4>${x.t}</h4>${x.d ? `<p>${x.d}</p>` : ""}${x.tag ? `<em>${x.tag}</em>` : ""}</article></div>`;
+      }).join("")}</div>`;
+    }
+    /* Big quote: a large pull quote that rises in. { text, by } */
+    case "bigquote": return `<figure class="bq rise"><blockquote>${b.text}</blockquote>${b.by ? `<figcaption>${b.by}</figcaption>` : ""}</figure>`;
+    /* Vision cards: a staggered two-column set that rises in. items: [{ kicker, t, d, tag }] */
+    case "vcards": return `${h}<div class="vc">${b.items.map((x, i) => `<article class="vc-card rise" style="--d:${(i % 2) * 80}ms"><span class="vc-n">${String(i + 1).padStart(2, "0")}</span>${x.kicker ? `<span class="vc-k">${x.kicker}</span>` : ""}<h4>${x.t}</h4>${x.d ? `<p>${x.d}</p>` : ""}${x.tag ? `<em>${x.tag}</em>` : ""}</article>`).join("")}</div>`;
     case "pipeline": return `${h}<div class="pipeline">${b.stages.map(s => `<div><b>${s.t}</b><span>${s.d}</span><em>No contacts yet</em></div>`).join("")}</div>`;
     case "moodboard": {
       LIGHTBOX.mood = b.images.map((_, i) => `${b.path}${String(i + 1).padStart(2, "0")}.jpg`);
@@ -1074,3 +1088,11 @@ document.addEventListener("click", e => {
 /* Hide "Show full caption" where the caption already fits */
 function pcFit() { document.querySelectorAll(".pc-card").forEach(c => { const cap = c.querySelector(".pc-cap"); const btn = c.querySelector(".pc-more"); if (cap && btn && !c.classList.contains("open")) { const fits = cap.scrollHeight <= cap.clientHeight + 4; btn.hidden = fits; c.classList.toggle("fits", fits); } }); }
 new MutationObserver(() => requestAnimationFrame(pcFit)).observe(document.body, { childList: true, subtree: true });
+
+/* Timeline cards rise in as they scroll into view */
+(function () {
+  if (!("IntersectionObserver" in window) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
+  const watch = () => document.querySelectorAll(".tl-row:not(.seen), .rise:not(.seen)").forEach(r => { r.classList.add("seen"); io.observe(r); });
+  new MutationObserver(watch).observe(document.body, { childList: true, subtree: true }); watch();
+})();
