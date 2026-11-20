@@ -270,6 +270,12 @@ function blockHTML(b) {
         <div class="ph-panel" id="ph-photos" role="tabpanel" aria-labelledby="ph-tab-photos">${photos}</div>
         <div class="ph-panel" id="ph-videos" role="tabpanel" aria-labelledby="ph-tab-videos" hidden><div class="ph">${vids.map(vAlbum).join("")}</div></div>`;
     }
+    /* Site map as a flow chart: nodes: [{ t, url, note, tag, children: [...] }]. The first node is the home page;
+       its children are the main navigation, their children the pages they lead to. tag: "hidden" | "off-nav" | "external" | "new" | "broken". */
+    case "sitemap": {
+      const node = n => `<li class="sm-n${n.tag ? ` sm-${n.tag}` : ""}"><div class="sm-card">${n.url ? `<a href="${n.url}" target="_blank" rel="noopener"><b>${n.t}</b></a>` : `<b>${n.t}</b>`}${n.path ? `<code>${n.path}</code>` : ""}${n.note ? `<span>${n.note}</span>` : ""}${n.tag ? `<em>${({ hidden: "Not in menu", "off-nav": "Not in sitemap", external: "Off-site", new: "New", broken: "Not found" })[n.tag] || n.tag}</em>` : ""}</div>${(n.children || []).length ? `<ul>${n.children.map(node).join("")}</ul>` : ""}</li>`;
+      return `${h}<div class="sm-wrap"><ul class="sm">${b.nodes.map(node).join("")}</ul></div>${b.legend ? `<p class="sm-legend">${b.legend}</p>` : ""}`;
+    }
     case "section": return `<h2 class="subhead">${b.heading}</h2>`;
     case "board": return `${h}<div class="board">${b.frames.map((f, i) => `<div class="frame f${i % 6}"><span>${f}</span></div>`).join("")}</div>
       <p class="gnote">${b.link ? `<a class="open" href="${b.link}" target="_blank" rel="noopener">Open the whiteboard</a>` : "Inspiration images will appear here once they’re added."}</p>`;

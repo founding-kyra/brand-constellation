@@ -89,7 +89,12 @@ const SHELL = {
             { t: "Week 4", days: [22, 23, 24, 25, 26, 27, 28].map(n => ({ n })) },
             { t: "Days 29–30", days: [29, 30].map(n => ({ n })) }] }] }
       ] },
+      { id: "website", short: "Website", title: "Website", note: "Your site as it stands: every page and how they connect", wide: true, children: [
+        { id: "copy", short: "Copy", title: "Website Copy", note: "Every word on the site now, page by page", wide: true },
+        { id: "seo", short: "SEO & AEO", title: "SEO & AEO Plan", note: "How people and AI answer engines find you", wide: true }
+      ] },
       { id: "email", short: "Email", title: "Email", note: "Your list: the welcome, weekly nurture and sales emails" },
+      { id: "tools", short: "Platforms", title: "Platforms", note: "The tools your business runs on: courses, community, email" },
       { id: "ads", short: "Paid Ads", title: "Paid Advertising", note: "Ad strategy, budget and results" }
     ] },
     { id: "vision", short: "Vision", title: "Vision", blurb: "Where the business is headed, from the long view to the next step.", subs: [
