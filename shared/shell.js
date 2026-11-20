@@ -64,16 +64,16 @@ const SHELL = {
         /* Built into every Research page: the awareness levels and the audience survey. */
         extra: [
           { type: "stages", heading: "The 5 levels of awareness", items: [
-            { t: "Unaware", d: "She doesn't know she has a problem. Not worth marketing to yet." },
-            { t: "Problem aware", d: "She knows the problem, not the solutions. Your ideal client starts here." },
-            { t: "Solution aware", d: "She knows solutions exist but hasn't chosen one. Your freebie brings her here." },
-            { t: "Product aware", d: "She knows your offer and wonders if it will work for her. Your starter offer's sales page moves her through this." },
-            { t: "Most aware", d: "She's ready and needs the specifics: price, what's inside, the guarantee." }] },
+            { t: "Unaware", d: "They don't know they have a problem. Not worth marketing to yet." },
+            { t: "Problem aware", d: "They know the problem, not the solutions. Your ideal client starts here." },
+            { t: "Solution aware", d: "They know solutions exist but haven't chosen one. Your freebie brings them here." },
+            { t: "Product aware", d: "They know your offer and wonder if it will work for them. Your starter offer's sales page moves them through this." },
+            { t: "Most aware", d: "They're ready and need the specifics: price, what's inside, the guarantee." }] },
           { type: "list", heading: "Ask your audience", items: [
-            { t: "What's the hardest part of this for you right now?", d: "Get the problem in her words." },
+            { t: "What's the hardest part of this for you right now?", d: "Get the problem in their words." },
             { t: "Why is that a problem for you?", d: "The reason under the reason." },
-            { t: "If it were solved, what would your life look like?", d: "The after, in her words." }] },
-          { type: "text", heading: "How to run the survey", body: ["Send it once to your whole list and post it in your stories and community. Even five answers are worth it.", "Lift her exact phrases into your sales pages, emails and hooks. If she says she hates something, use \"hate\", not your softer word."] }
+            { t: "If it were solved, what would your life look like?", d: "The after, in their words." }] },
+          { type: "text", heading: "How to run the survey", body: ["Send it once to your whole list and post it in your stories and community. Even five answers are worth it.", "Lift their exact phrases into your sales pages, emails and hooks. If they say they hate something, use \"hate\", not your softer word."] }
         ] },
       { id: "crm", short: "CRM", title: "CRM & Lead Tracker", note: "Contacts, leads and where each person is" }
     ] },
