@@ -20,7 +20,7 @@ resonant-living/        One client
 `shared/shell.js` holds the sections every client gets, with plain descriptions:
 
 - **Brand Home** (centre): Origin Story, Ethos & Values, Ethical Framework
-- **Brand Core & Identity**: Messaging (positioning, voice, words, stories, objections), Brand Book (logos, typography, color), Art & Photo Direction, Photo Library (albums with downloads), Content Library, Inspo
+- **Brand Core & Identity**: Messaging (positioning, voice, words, stories, objections), Brand Book (logos, typography, color), Content (visual direction), Photo and Video (albums with downloads), Content Library, Inspo
 - **Offers & Funnel Architecture**: Freebie, Starter Offer, Signature Offer (built on Laptop Lifestyle Academy: one path from a free quick win to the full transformation). The section page shows the offers as a ladder; each offer page has its promise, what it solves and reveals, what's inside, price, a "what makes it work" checklist, the funnel behind it and targets.
 - **Target Audience**: Audience Research, CRM & Lead Tracker
 - **Marketing & Initiatives**: Social Media (holds Platforms and the 30-Day Ramp-Up, plus any platform plans a client adds, like a 14-Day TikTok Launch), Email, Paid Ads. A page can hold other pages: they show as cards on it and as small moons beside it on the map.

@@ -46,8 +46,8 @@ const SHELL = {
           { t: "Logos", kind: "logo", items: ["Primary Logo", "Secondary Logo", "Type-Only Logo", "Badge", "Icons", "Favicon", "Watermark", "Graphics"].map(t => ({ t })) },
           { t: "Typography", kind: "type", items: ["Primary", "Secondary", "Body"].map(t => ({ t })) },
           { t: "Color", kind: "color", items: [{ t: "Palette" }] }] }] },
-      { id: "art", short: "Art & Photo", title: "Art & Photo Direction", note: "Visual mood, symbols and photo style" },
-      { id: "photos", short: "Photos", title: "Photo Library", note: "Your photos in albums, ready to download", wide: true, keep: true },   /* always shows, so clients can upload their own */
+      { id: "art", short: "Content", title: "Content", note: "Visual mood, symbols and content style" },
+      { id: "photos", short: "Photo and Video", title: "Photo and Video", note: "Your photos and videos in albums, ready to download", wide: true, keep: true },   /* always shows, so clients can upload their own */
       { id: "library", short: "Content Library", title: "Content Library", note: "Finished brand assets, ready to use" },
       { id: "inspo", short: "Inspo", title: "Inspo", note: "Reference images for the brand's look and feel", wide: true, keep: true,
         /* Rule: once the Pinterest board is uploaded, Inspo is marked Ready (finished). */
