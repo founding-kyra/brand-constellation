@@ -393,7 +393,7 @@ function offerHTML(b, h) {
   const K = OFFER_KIND[b.kind] || OFFER_KIND.freebie, H = !!b.hideEmpty;
   const part = (title, inner, cls = "") => inner ? `<section class="of-part ${cls}"><h3 class="of-h">${title}</h3>${inner}</section>` : "";
   const pr = b.price || {};
-  const chips = [b.format, b.time, pr.funnel || pr.text].filter(Boolean);
+  const chips = [b.format, b.time, pr.chip || pr.funnel || pr.text].filter(Boolean);
   const hero = `<div class="of-hero"><span class="of-role">${K.role}</span><h2 class="of-name">${OG(b.name, "40%")}</h2><p class="of-promise">${b.promise || (H ? "" : `${OG("", "92%")}${OG("", "60%")}`)}</p>${b.hook && (b.hook.title || b.hook.line) ? `<p class="of-hook"><b>${b.hook.title || ""}</b>${b.hook.line ? ` ${b.hook.line}` : ""}</p>` : ""}${chips.length ? `<div class="of-chips">${chips.map(c => `<span>${c}</span>`).join("")}</div>` : H ? "" : `<div class="of-chips"><span>${OG("", "60px")}</span><span>${OG("", "50px")}</span><span>${OG("", "40px")}</span></div>`}</div>`;
   const path = b.for || b.solves || b.reveals || !H ? `<div class="of-path"><div><span class="vb-lab">Who it's for</span><p>${b.for || OG("", "80%")}</p></div><div><span class="vb-lab">It solves</span><p>${b.solves || OG("", "75%")}</p></div><div class="of-next"><span class="vb-lab">And reveals next</span><p>${b.reveals || OG("", "70%")}</p></div></div>` : "";
   const inside = b.inside || {};
