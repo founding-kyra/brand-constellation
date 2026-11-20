@@ -113,7 +113,8 @@ function buildFromShell(shell, content) {
     if (u.extra) page.blocks = [...(page.blocks || []), ...u.extra];
     return page;
   };
-  const place = (list, page) => { const i = list.findIndex(x => x.id === page.after); list.splice(i < 0 ? list.length : i + 1, 0, page); };
+  /* after: "<page id>" places it after that page; after: "start" makes it the first page; anything else goes last. */
+  const place = (list, page) => { const i = page.after === "start" ? -1 : list.findIndex(x => x.id === page.after); list.splice(page.after === "start" ? 0 : i < 0 ? list.length : i + 1, 0, page); };
   const section = sec => {
     const c = content[sec.id] || {};
     const subs = (c.subs || sec.subs).map(u => c.subs ? { ...fill(u), filled: !!(u.blocks || []).length } : fill(u));
