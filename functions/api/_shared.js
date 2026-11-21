@@ -1,7 +1,7 @@
 /* Shared helpers for the Brand Constellation API (Cloudflare Pages Functions). */
 
 // Hubs on GitHub Pages and on Cloudflare can both call the API.
-const ALLOWED = ["https://founding-kyra.github.io", "https://brand-constellation.pages.dev", "http://localhost:8765"];
+const ALLOWED = ["https://founding-kyra.github.io", "https://brand-constellation.pages.dev", "http://localhost:8765", "http://localhost:8645"];  /* 8645 = Trancendance HQ preview */
 
 export function cors(request) {
   const origin = request.headers.get("Origin") || "";
