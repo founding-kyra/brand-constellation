@@ -206,6 +206,9 @@ a:focus-visible, button:focus-visible, .node:focus-visible { outline: 2px solid 
 .stages li::before { content: counter(s); font-family: var(--font-display); font-weight: 700; font-size: 30px; line-height: 1.1; color: var(--accent); grid-row: span 2; }
 .stages b { font-size: 17px; }
 .stages span { color: var(--ink-soft); font-size: 15px; }
+.stages li > .copy { grid-column: 2; margin-top: 12px; }
+.stages .copy span { color: var(--ink); font-size: 16px; }
+.stages .copy .copy-meta { color: var(--ink-soft); font-size: 15px; }
 .pending { border: 1.5px dashed var(--line); border-radius: 18px; padding: 24px 26px; }
 .pending h3 { display: flex; align-items: center; gap: 10px; }
 .pending h3 svg { width: 15px; height: 15px; }
@@ -384,11 +387,30 @@ body.noscroll { overflow: hidden; }
 .copy summary::-webkit-details-marker { display: none; }
 .copy summary::after { content: "+"; font-family: var(--font-display); font-weight: 700; color: var(--accent); margin-left: auto; }
 .copy[open] summary::after { content: "–"; }
+/* Header with a Copy button: label over its note on the left, button and +/– on the right */
+.copy summary:has(.copybtn) { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: "t b p" "m b p"; align-items: center; gap: 2px 14px; }
+.copy summary:has(.copybtn) .copy-t { grid-area: t; }
+.copy summary:has(.copybtn) .copy-meta { grid-area: m; }
+.copy summary:has(.copybtn)::after { grid-area: p; margin: 0; }
+.copy summary .copybtn { grid-area: b; margin: 0; padding: 6px 12px; font-size: 12px; }
+@media (max-width: 520px) { .block.boxed .stages li { grid-template-columns: 34px minmax(0, 1fr); gap: 4px 12px; } .block.boxed .copy { padding: 0 14px; } }
+@media (max-width: 520px) {
+  .stages li > .copy { grid-column: 1 / -1; }
+  .copy summary:has(.copybtn) { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "t p" "m m" "b b"; gap: 4px 12px; }
+  .copy summary .copybtn { justify-self: start; margin-top: 8px; }
+}
 .copy-t { font-weight: 700; font-size: 16px; }
 .copy-meta { color: var(--ink-soft); font-size: 15px; }
 .copy-body { border-top: 1px solid var(--line-faint); padding-top: 16px; max-width: 62ch; }
 .copy-body p { margin: 0 0 10px; }
 .copybtn { margin: 8px 0 20px; }
+/* A block set in its own card (card: true) */
+.block.boxed { background: var(--surface); border-radius: 22px; padding: 28px 28px 10px; }
+.block.boxed .copy { background: var(--bg); }
+.block.boxed .stages li:last-child { border-bottom: 0; }
+.block.boxed > h3 { border-top: 0; padding-top: 0; }
+@media (max-width: 520px) { .block.boxed { padding: 22px 18px 6px; } }
+.theme.copybtn { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 
 /* Brand book */
 .bb { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 56px; align-items: start; }
@@ -938,3 +960,8 @@ body.noscroll { overflow: hidden; }
   .bq { padding: 28px 22px; }
   .tl-num .tl-dot { left: 15px; }
 }
+
+/* Embed block: a live design in a frame that keeps its shape */
+.embed { position: relative; width: 100%; max-width: 760px; aspect-ratio: 1 / var(--ratio); border-radius: 14px; overflow: hidden; background: var(--surface); box-shadow: 0 2px 10px rgba(0, 0, 0, .12); }
+.embed iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.block .embed-link { margin: 32px 0 0; }

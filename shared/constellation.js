@@ -235,6 +235,8 @@ function blockHTML(b) {
     case "tags": return `${h}<div class="tags">${b.items.map(t => `<span>${t}</span>`).join("")}</div>`;
     /* Downloads: items: [{ t, d, href, size }]. Files on R2 (/m/…) download through ?dl=1. */
     case "download": return `${h}<div class="dlx">${b.items.map(f => { const href = /\/m\//.test(f.href) ? `${f.href}${f.href.includes("?") ? "&" : "?"}dl=1` : f.href; return `<a class="bb-pack dlx-item" href="${href}" download><b>${f.t}</b> <span>${[f.d, f.size].filter(Boolean).join(" · ")}</span></a>`; }).join("")}</div>`;
+    /* Embed: a live design or page in a frame. { src, ratio: height ÷ width (1.294 for US Letter), link, linkText } */
+    case "embed": return `${h}<div class="embed" style="--ratio:${b.ratio || 0.5625}"><iframe src="${b.src}" loading="lazy" allow="fullscreen" allowfullscreen title="${b.heading || "Embedded design"}"></iframe></div>${b.link ? `<p class="embed-link"><a class="open" href="${b.link}" target="_blank" rel="noopener">${b.linkText || "Open ↗"}</a></p>` : ""}`;
     case "facts": return `${h}<dl class="facts">${b.items.map(f => `<div><dt>${f.k}</dt><dd>${f.v}</dd></div>`).join("")}</dl>`;
     case "compare": {
       const labelled = b.rows[0].length > b.cols.length;
@@ -246,7 +248,8 @@ function blockHTML(b) {
       }).join("");
       return `${h}<div class="compare" style="--cols:${cols}">${head}${rows}</div>`;
     }
-    case "stages": return `${h}<ol class="stages">${b.items.map(i => `<li><b>${i.t}</b><span>${i.d}</span></li>`).join("")}</ol>`;
+    /* A step can carry a fold-open prompt with a Copy button: copy: { t, meta, text } */
+    case "stages": return `${h}<ol class="stages">${b.items.map(i => `<li><b>${i.t}</b><span>${i.d}</span>${i.copy ? copyCard(i.copy) : ""}</li>`).join("")}</ol>`;
     case "pending": return `<div class="pending"><h3>${glyph("planning")}${b.heading}</h3><p>${b.text}</p>${b.needs ? `<ul>${b.needs.map(n => `<li>${n}</li>`).join("")}</ul>` : ""}</div>`;
     case "swatches": return `${h}${b.note ? `<p class="swnote">${b.note}</p>` : ""}<div class="swatches">${b.items.map(c => `<div class="sw"><i style="--c:${c.hex}"></i><b>${c.name}</b><span>${c.hex}</span>${c.role ? `<em>${c.role}</em>` : ""}</div>`).join("")}${Array.from({ length: b.empty || 0 }, () => `<div class="sw"><i class="empty"></i><b>To come</b></div>`).join("")}</div>`;
     case "gallery": return `${h}<div class="gallery">${b.tiles.map(t => `<div><span>${t}</span></div>`).join("")}</div>
@@ -399,7 +402,7 @@ function blockHTML(b) {
       const guide = `<ol class="bio-guide"><li><b>Display name</b><span>Your first name + a phrase people search for (“Jordan | Online Business Coach”). Type phrases into TikTok search and use the ones it suggests.</span>${(b.nameOptions || []).length ? `<span class="bio-opts">${b.nameOptions.map(o => `<em>${o}</em>`).join("")}</span>` : ""}</li>${ROWS.map(([k, t, hint]) => `<li><b>${t}</b><span>${hint}</span></li>`).join("")}</ol>`;
       return `${h}<div class="bio">${phone}${guide}</div>${b.note ? `<p class="of-note">${b.note}</p>` : ""}`;
     }
-    case "copy": return `${h}<div class="copies">${b.items.map(c => `<details class="copy"><summary><span class="copy-t">${c.t}</span>${c.meta ? `<span class="copy-meta">${c.meta}</span>` : ""}</summary><div class="copy-body">${c.text.split("\n").filter(Boolean).map(l => `<p>${l}</p>`).join("")}</div><button type="button" class="theme copybtn">Copy text</button></details>`).join("")}</div>`;
+    case "copy": return `${h}<div class="copies">${b.items.map(copyCard).join("")}</div>`;
     /* Post cards: items: [{ img, url, date, type, comments, likes, caption }]. The caption shows exactly as written,
        with a Copy caption button. Long captions fold after a few lines. */
     case "postcards": {
@@ -524,7 +527,10 @@ document.addEventListener("click", e => {
   openLightbox(+pin.dataset.i);
 });
 
-const blocksHTML = blocks => blocks && blocks.length ? `<div class="blocks">${blocks.map(b => `<section class="block">${blockHTML(b)}</section>`).join("")}</div>` : "";
+/* A fold-open text card with a Copy text button (copy blocks, and prompts inside steps). */
+const copyCard = c => `<details class="copy"><summary><span class="copy-t">${c.t}</span>${c.meta ? `<span class="copy-meta">${c.meta}</span>` : ""}<button type="button" class="theme copybtn">Copy text</button></summary><div class="copy-body">${c.text.split("\n").filter(Boolean).map(l => `<p>${l}</p>`).join("")}</div><button type="button" class="theme copybtn">Copy text</button></details>`;
+/* card: true on any block sets it inside its own card. */
+const blocksHTML = blocks => blocks && blocks.length ? `<div class="blocks">${blocks.map(b => `<section class="block${b.card ? " boxed" : ""}">${blockHTML(b)}</section>`).join("")}</div>` : "";
 
 /* ---------- Section view ---------- */
 function crumbs(parts, backId) {
@@ -551,7 +557,7 @@ function renderPage(p) {
   const kids = p.children || [];
   const trail = up ? [{ id: s.id, label: s.short }, { id: up.id, label: up.short }, { label: p.short }] : [{ id: s.id, label: s.short }, { label: p.short }];
   const kidCards = kids.length ? `<div class="cards">${kids.map(u => `<a class="card" href="#${u.id}">${glyph(u.s)}<b>${u.title}</b><span>${u.note}</span><span class="st ${u.s}">${STATUS[u.s]}</span></a>`).join("")}</div>` : "";
-  const body = p.blocks && p.blocks.length ? blocksHTML(p.blocks) : kids.length ? "" : p.keep ? '<div class="blocks"></div>' : blocksHTML([{ type: "pending", heading: "Not started yet", text: "This page fills in as the work happens." }]);
+  const body = p.blocks && p.blocks.length ? blocksHTML(p.blocks) : p.keep ? '<div class="blocks"></div>' : kids.length ? "" : blocksHTML([{ type: "pending", heading: "Not started yet", text: "This page fills in as the work happens." }]);
   const home = up || s;
   app.innerHTML = `${crumbs(trail, home.id)}
     <div class="layout${p.wide ? " wide" : ""}"><article class="main">
@@ -788,7 +794,7 @@ document.addEventListener("click", e => {
     else cal.querySelectorAll(".chip-f[data-kind]").forEach(b => b.classList.toggle("on", b === f));
     calRefresh(cal); return;
   }
-  const c = e.target.closest(".copy .copybtn"); if (c) copyFrom(c, c.closest(".copy").querySelector(".copy-body"));
+  const c = e.target.closest(".copy .copybtn"); if (c) { if (c.closest("summary")) e.preventDefault(); copyFrom(c, c.closest(".copy").querySelector(".copy-body")); }
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && CAL.el && !CAL.el.hidden) calClose(); });
 

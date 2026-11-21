@@ -127,7 +127,8 @@ function buildFromShell(shell, content) {
        placed after the page named in "after" (inside the page named in "parent", when given). */
     (c.add || []).forEach(u => {
       const page = { s: "planning", ...u, filled: !!(u.blocks || []).length };
-      const host = u.parent && subs.find(x => x.id === u.parent && x.children);
+      const host = u.parent && subs.find(x => x.id === u.parent);
+      if (host && !host.children) host.children = [];   /* a client can give any page its own sub-pages */
       place(host ? host.children : subs, page);
     });
     subs.forEach(rollUp);
