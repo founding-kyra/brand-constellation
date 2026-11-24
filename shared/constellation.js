@@ -235,6 +235,68 @@ function blockHTML(b) {
     case "tags": return `${h}<div class="tags">${b.items.map(t => `<span>${t}</span>`).join("")}</div>`;
     /* Downloads: items: [{ t, d, href, size }]. Files on R2 (/m/…) download through ?dl=1. */
     case "download": return `${h}<div class="dlx">${b.items.map(f => { const href = /\/m\//.test(f.href) ? `${f.href}${f.href.includes("?") ? "&" : "?"}dl=1` : f.href; return `<a class="bb-pack dlx-item" href="${href}" download><b>${f.t}</b> <span>${[f.d, f.size].filter(Boolean).join(" · ")}</span></a>`; }).join("")}</div>`;
+    /* ---- Outreach visuals (reusable) ---- */
+    /* People sky: one dot per person, in rings around the client. { text, photo, you, rings: [{ t, n, d, c }], note } */
+    case "sky": {
+      const R = [72, 124, 168, 206], C = 230;
+      const dots = b.rings.map((r, k) => `<g class="sky-ring" data-ring="${k}" style="--c:${r.c}"><circle class="sky-orbit" cx="${C}" cy="${C}" r="${R[k]}"/>${Array.from({ length: r.n }, (_, i) => { const a = (i / r.n) * Math.PI * 2 + k * .4; return `<circle class="sky-dot" style="--d:${((i * 7 + k * 5) % 23) * 160}ms" cx="${(C + R[k] * Math.cos(a)).toFixed(1)}" cy="${(C + R[k] * Math.sin(a)).toFixed(1)}" r="${[5.2, 4.4, 5.4, 5.4][k]}"/>`; }).join("")}</g>`).join("");
+      return `<div class="sky"><i class="vis-photo" style="background-image:url('${b.photo}')" aria-hidden="true"></i><div class="sky-copy"><p class="sky-lead">${b.text}</p><div class="sky-keys">${b.rings.map((r, k) => `<button type="button" class="sky-key" data-ring="${k}" aria-pressed="false" style="--c:${r.c}"><b>${r.n}</b><span><strong>${r.t}</strong>${r.d}</span></button>`).join("")}</div>${b.note ? `<p class="sky-note">${b.note}</p>` : ""}</div>
+        <svg class="sky-map" viewBox="0 0 460 460" role="img" aria-label="${b.rings.map(r => `${r.n} ${r.t}`).join(", ")}">${dots}<circle class="sky-you" cx="${C}" cy="${C}" r="36"/><text x="${C}" y="${C + 5}" text-anchor="middle">${b.you}</text></svg></div>`;
+    }
+    /* Proportional circles: items: [{ n, t }], note */
+    case "flow": return `${h}<ol class="flow">${b.items.map((x, i) => `<li class="rise" style="--s:${Math.sqrt(x.n / b.items[0].n).toFixed(3)};--d:${i * 110}ms"><span class="flow-c">${x.n}</span><b>${x.t}</b></li>`).join("")}</ol>${b.note ? `<p class="flow-note">${b.note}</p>` : ""}`;
+    /* A week at a glance: days: [{ t, dots, tag, note }], foot */
+    case "week": return `${h}<ol class="wk">${b.days.map(d => `<li class="${d.tag ? "wk-on" : ""}${d.dots ? "" : " wk-rest"}"><b>${d.t}</b><span class="wk-dots" aria-hidden="true">${"<i></i>".repeat(d.dots || 0)}</span><span class="wk-n">${d.note}</span>${d.tag ? `<em>${d.tag}</em>` : ""}</li>`).join("")}</ol>${b.foot ? `<p class="wk-foot">${b.foot}</p>` : ""}`;
+    /* Winding path with photo medallions: items: [{ date, t, d, img, goal }] */
+    case "journey": return `${h}<ol class="jy">${b.items.map((x, i) => `<li><span class="jy-pic" style="background-image:url('${x.img}')"><i>${i + 1}</i></span><div class="jy-tx"><time>${x.date}</time><b>${x.t}</b><p>${x.d}</p>${x.goal ? `<em>${x.goal}</em>` : ""}</div></li>`).join("")}</ol>`;
+    /* Messages as bubbles: items: [{ t, meta, text }]; [brackets] are highlighted as blanks to fill */
+    case "bubbles": return `${h}${b.note ? `<p class="bu-note">${b.note}</p>` : ""}<div class="bu">${b.items.map((x, i) => `<article class="copy bu-i rise" style="--d:${(i % 3) * 90}ms"><header><span class="bu-k">${i + 1}</span><div><b>${x.t}</b><small>${x.meta}</small></div></header><div class="copy-body bu-b">${x.text.split("\n").filter(Boolean).map(l => `<p>${l.replace(/\[[^\]]+\]/g, m => `<mark>${m}</mark>`)}</p>`).join("")}</div><button type="button" class="theme copybtn">Copy text</button></article>`).join("")}</div>`;
+    /* Color-block posts, as they'd look when posted: { note, items: [{ text, c }] } */
+    case "postblocks": return `${h}${b.note ? `<p class="bu-note">${b.note}</p>` : ""}<div class="pb">${b.items.map((x, i) => `<article class="copy pb-i rise" style="--c:${x.c};--d:${i * 110}ms"><div class="copy-body"><p>${x.text}</p></div><button type="button" class="theme copybtn">Copy text</button></article>`).join("")}</div>`;
+    /* Two panels: yes / no lists */
+    case "panels": return `${h}<div class="pn"><section class="pn-yes"><h4>${b.cols[0]}</h4><ul>${b.yes.map(x => `<li>${x}</li>`).join("")}</ul></section><section class="pn-no"><h4>${b.cols[1]}</h4><ul>${b.no.map(x => `<li>${x}</li>`).join("")}</ul></section></div>`;
+    /* Stages moving toward the centre: items: [{ t, d }] */
+    case "inward": { const N = b.items.length; return `${h}<ol class="inw">${b.items.map((x, i) => `<li class="rise" style="--d:${i * 80}ms"><svg viewBox="0 0 100 100" aria-hidden="true">${Array.from({ length: N }, (_, k) => `<circle cx="50" cy="50" r="${(46 - k * (46 / N)).toFixed(1)}" class="${k <= i ? "on" : ""}"/>`).join("")}</svg><b>${x.t}</b><span>${x.d}</span></li>`).join("")}</ol>`; }
+    /* A check-in date with if / then cards: { date, t, items: [{ if, then }] } */
+    case "checkin": return `<div class="ck"><div class="ck-date"><span>${b.t}</span><b>${b.date}</b></div>${b.items.map(x => `<div class="ck-c"><small>If</small><p>${x.if}</p><small>Then</small><p><b>${x.then}</b></p></div>`).join("")}</div>`;
+    /* Open questions: items: [{ t, d }] */
+    case "open": return `${h}<div class="opn">${b.items.map(x => `<div><i aria-hidden="true">?</i><b>${x.t}</b><span>${x.d}</span></div>`).join("")}</div>`;
+    /* ---- Offers section visuals. Offer details come from each offer page, so they stay in step. ---- */
+    /* Three arched doorways, growing: items: [{ id, n, img }], after: { t, d, price } */
+    case "portals": {
+      const of = id => ((PAGE[id] || {}).blocks || []).find(x => x.type === "offer") || {};
+      return `<div class="po">${b.items.map((x, i) => { const o = of(x.id), K = OFFER_KIND[o.kind] || OFFER_KIND.freebie, pr = o.price || {};
+        return `<a class="po-i po-${i + 1}" href="#${x.id}"><span class="po-arch"><i class="vis-photo" style="background-image:url('${x.img}')" aria-hidden="true"></i><span class="po-n">${x.n}</span></span><span class="po-tx"><em>${K.role}</em><b>${o.name || ""}</b><strong>${pr.short || pr.text || pr.funnel || ""}</strong></span><span class="po-dots" aria-hidden="true">${"<i></i>".repeat(x.n)}</span></a>`; }).join("")}</div>${b.after ? `<div class="po-after"><span>Then, for as long as she likes</span><b>${b.after.t}</b><p>${b.after.d}</p><strong>${b.after.price}</strong></div>` : ""}`;
+    }
+    /* What each offer solves and the door it opens: items: [{ id, n }] */
+    case "doors": {
+      const of = id => ((PAGE[id] || {}).blocks || []).find(x => x.type === "offer") || {};
+      return `${h}<ol class="dr">${b.items.map((x, i) => { const o = of(x.id); return `<li class="rise"><span class="dr-n" aria-hidden="true">${x.n}</span><div class="dr-a"><a href="#${x.id}">${o.name}</a><p>${o.promise || ""}</p><ul>${[o.format, o.time].filter(Boolean).map(t => `<li>${t}</li>`).join("")}</ul></div><div class="dr-b"><small>It solves</small><p>${o.solves || ""}</p></div><div class="dr-c"><small>Then she sees</small><p>${o.reveals || ""}</p></div></li>`; }).join("")}</ol>`;
+    }
+    /* The funnel as a rail: items: [{ t, d, go, tag }] */
+    case "rail": return `${h}<ol class="rl">${b.items.map((x, i) => `<li class="rise" style="--d:${i * 90}ms"><i aria-hidden="true"></i><b>${x.go ? `<a href="#${x.go}">${x.t}</a>` : x.t}</b><p>${x.d}</p>${x.tag ? `<em>${x.tag}</em>` : ""}</li>`).join("")}</ol>${b.note ? `<p class="flow-note">${b.note}</p>` : ""}`;
+    /* Search terms: groups: [{ t, d, c, items }]; tapping a term copies it */
+    case "terms": return `${h}${b.note ? `<p class="bu-note">${b.note}</p>` : ""}<div class="tm">${b.groups.map(g => `<section style="--c:${g.c}"><h4>${g.t}</h4><p>${g.d}</p><div>${g.items.map(t => `<button type="button" class="tm-b" data-copy="${t.replace(/"/g, "&quot;")}">${t}</button>`).join("")}</div></section>`).join("")}</div>`;
+    /* Profile cards, the reverse of the page (dark on light, white on dark): { id, note, groups: [{ t, items: [{ at, name, url, n, d, sells, sellUrl, c, start }] }] } */
+    case "accounts": return `${h}<div class="ac-all"${b.id ? ` id="${b.id}"` : ""}>${b.note ? `<p class="bu-note">${b.note}</p>` : ""}${b.groups.map(g => `<h4 class="ac-h">${g.t}</h4><div class="ac">${g.items.map((x, i) => `<article class="rise" style="--c:${x.c};--d:${(i % 3) * 80}ms"><div class="ac-ban">${x.start ? "<span>Start here</span>" : ""}</div><i class="ac-av" aria-hidden="true">${x.name.replace(/[^a-z]/gi, "")[0].toUpperCase()}</i><b class="ac-name">${x.name}</b><span class="ac-at">@${x.at}</span><p>${x.d}</p><div class="ac-n"><b>${x.n}</b> followers</div>${x.sells ? `<ul>${x.sells.map(t => `<li>${t}</li>`).join("")}</ul>` : ""}<div class="ac-go"><a href="${x.url}" target="_blank" rel="noopener">View on TikTok ↗</a>${x.sellUrl ? `<a class="ac-2" href="${x.sellUrl}" target="_blank" rel="noopener">See their offers ↗</a>` : ""}</div></article>`).join("")}</div>`).join("")}</div>`;
+    /* Numbered questions: items: [text] */
+    case "asks": return `${h}${b.note ? `<p class="bu-note">${b.note}</p>` : ""}<ol class="ak">${b.items.map((t, i) => `<li class="rise" style="--d:${(i % 2) * 80}ms"><i aria-hidden="true">${i + 1}</i><span>${t}</span></li>`).join("")}</ol>`;
+    /* ---- Planner: one next step stands out; the rest of the week sits beside it. Goals are dots to fill in. Saved in this browser only.
+       { id, by, weeks: [{ from, to, label, t, lead, tasks: [{ t, d, time, tool, go, copy }] }], goals: [{ t, n }] } */
+    case "planner": {
+      const st = planState(b.id), now = new Date(), iso = new Date(now.getTime() - now.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+      let cur = b.weeks.findIndex(w => iso <= w.to); if (cur < 0) cur = b.weeks.length - 1;
+      return `<div class="pl" data-plan="${b.id}">
+        <div class="pl-tabs" role="tablist" aria-label="Weeks">${b.weeks.map((w, i) => `<button type="button" role="tab" id="pl-t${i}" aria-controls="pl-p${i}" aria-selected="${i === cur}"${i === cur ? "" : ' tabindex="-1"'}>Week ${i + 1}<span>${w.label}</span></button>`).join("")}</div>
+        <div class="pl-weeks">${b.weeks.map((w, i) => `<section role="tabpanel" id="pl-p${i}" aria-labelledby="pl-t${i}" ${i === cur ? "" : "hidden"}><h2>${w.t}</h2><p class="pl-lead">${w.lead}</p><div class="pl-cards">${w.tasks.map((x, k) => { const id = `w${i}t${k}`; return `<article class="pl-c" data-n="${k + 1}"><div class="pl-top"><span class="pl-k">${k + 1}</span><span class="pl-now">Your next step</span>${x.time ? `<em>${x.time}</em>` : ""}</div><b>${x.t}</b><p>${x.d}</p><div class="pl-act">${x.tool ? `<button type="button" class="theme copybtn" data-tool="${x.tool}">Open ${x.toolName}</button>` : ""}${x.go ? `<a class="theme copybtn" href="#${x.go}">Open ${x.goName}</a>` : ""}${x.copy ? `<button type="button" class="theme copybtn tm-c" data-copy="${x.copy.replace(/"/g, "&quot;")}" data-label="${x.copyName}">${x.copyName}</button>` : ""}<label><input type="checkbox" data-task="${id}"${st.done[id] ? " checked" : ""}><span class="pl-box" aria-hidden="true"></span><span class="pl-dn">Done</span></label></div></article>`; }).join("")}</div><p class="pl-all" hidden>That's the week. Rest, or look ahead.</p></section>`).join("")}</div>
+        <div class="pl-goals"><h3>What you're gathering by ${b.by}</h3>${b.goals.map((g, i) => { const v = Math.min(st.n[i] || 0, g.n); return `<div class="pl-g" data-goal="${i}" data-max="${g.n}"><div class="pl-gt"><b>${g.t}</b><span><span class="pl-v">${v}</span> of ${g.n}</span></div><div class="pl-dots" aria-hidden="true">${Array.from({ length: g.n }, (_, k) => `<i data-dot="${k + 1}" class="${k < v ? "on" : ""}"></i>`).join("")}</div><div class="pl-pm"><button type="button" data-step="-1" aria-label="One fewer: ${g.t}">–</button><button type="button" data-step="1" aria-label="One more: ${g.t}">+</button></div></div>`; }).join("")}<p>Tap the dots as you go. Saved on this device.</p></div></div>`;
+    }
+    /* Toolkit: one tab open at a time, each holding other blocks: tabs: [{ id, t, d, blocks }] */
+    case "toolkit": return `${h}<div class="tk" id="toolkit"><div class="tk-tabs" style="--n:${b.tabs.length}" role="tablist" aria-label="${b.heading || "Tools"}">${b.tabs.map((t, i) => `<button type="button" role="tab" id="tk-t-${t.id}" aria-controls="tk-p-${t.id}" data-tk="${t.id}" aria-selected="${!i}"${i ? ' tabindex="-1"' : ""}><b>${t.t}</b><span>${t.d}</span></button>`).join("")}</div>${b.tabs.map((t, i) => `<div class="tk-p" role="tabpanel" id="tk-p-${t.id}" aria-labelledby="tk-t-${t.id}" ${i ? "hidden" : ""}>${t.blocks.map(x => `<div class="tk-b">${blockHTML(x)}</div>`).join("")}</div>`).join("")}</div>`;
+    /* Portrait: who she is at a glance: { photo, quote, by, gap, words } */
+    case "portrait": return `${h}<div class="pt"><figure><i class="vis-photo" style="background-image:url('${b.photo}')" aria-hidden="true"></i><blockquote>${b.quote}</blockquote></figure><div><p class="pt-who">${b.who}</p><p>${b.gap}</p><ul>${b.traits.map(x => `<li>${x}</li>`).join("")}</ul></div></div>`;
+    /* Folds: reference kept out of the way: items: [{ t, d, blocks }] */
+    case "folds": return `${h}<div class="fd">${b.items.map(x => `<details><summary><b>${x.t}</b><span>${x.d}</span></summary><div>${x.blocks.map(y => `<div class="tk-b">${blockHTML(y)}</div>`).join("")}</div></details>`).join("")}</div>`;
     /* Embed: a live design or page in a frame. { src, ratio: height ÷ width (1.294 for US Letter), link, linkText } */
     case "embed": return `${h}<div class="embed" style="--ratio:${b.ratio || 0.5625}"><iframe src="${b.src}" loading="lazy" allow="fullscreen" allowfullscreen title="${b.heading || "Embedded design"}"></iframe></div>${b.link ? `<p class="embed-link"><a class="open" href="${b.link}" target="_blank" rel="noopener">${b.linkText || "Open ↗"}</a></p>` : ""}`;
     case "facts": return `${h}<dl class="facts">${b.items.map(f => `<div><dt>${f.k}</dt><dd>${f.v}</dd></div>`).join("")}</dl>`;
@@ -482,6 +544,21 @@ function offerHTML(b, h) {
   const fun = K.funnel.map((t, i) => { const o = (b.funnel || [])[i]; return { t, done: o === true || (o && o.done) }; });
   const funHTML = `<p class="of-count"><b>${fun.filter(f => f.done).length}</b> of ${fun.length} built</p><ol class="of-funnel">${fun.map(f => `<li class="${f.done ? "done" : ""}"><i aria-hidden="true">${f.done ? "✓" : ""}</i>${f.t}</li>`).join("")}</ol>`;
   const targets = `<dl class="facts">${(b.targets || K.targets).map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>`;
+  /* quiet: { reps, line, ways: [{ t, d }], pdf: { src, ratio, link, linkText }, door: { quote, go, goName } }: a spare page that
+     pulls the best parts forward and folds the rest. */
+  if (b.quiet) {
+    const q = b.quiet, fold = (t, d, inner) => inner ? `<details><summary><b>${t}</b><span>${d}</span></summary><div>${inner}</div></details>` : "";
+    return `${h}<div class="qt">
+      <header class="qt-hero"><span class="qt-reps qt-r${q.reps || 1}" aria-hidden="true">${"<i></i>".repeat(q.reps || 1)}</span><h2>${b.name || ""}</h2><p>${q.line || b.promise || ""}</p><span class="qt-meta">${chips.map(c => `<span>${c}</span>`).join("")}</span></header>
+      ${q.ways ? `<section class="qt-ways">${q.ways.map(w => `<div class="rise"><b>${w.t}</b><p>${w.d}</p></div>`).join("")}</section>` : ""}
+      ${q.pdf ? `<section class="qt-pdf"><div class="embed" style="--ratio:${q.pdf.ratio || 1.2941}"><iframe src="${q.pdf.src}" loading="lazy" allow="fullscreen" allowfullscreen title="${b.name}"></iframe></div><a href="${q.pdf.link}" target="_blank" rel="noopener">${q.pdf.linkText || "Open in Canva ↗"}</a></section>` : ""}
+      ${q.rhythm ? `<section class="qt-rhythm rise"><div aria-hidden="true">${Array.from({ length: q.rhythm.n * 2 - 1 }, (_, i) => `<i class="${i % 2 ? "rest" : ""}"></i>`).join("")}</div><p>${q.rhythm.t}</p></section>` : ""}
+      ${q.steps ? `<ol class="qt-steps">${q.steps.map((x, i) => `<li class="rise"><i aria-hidden="true">${i + 1}</i><b>${x.t}</b><p>${x.d}</p></li>`).join("")}</ol>` : ""}
+      ${q.words ? `<section class="qt-words rise"><p>${q.words.t}</p><div>${q.words.items.map(w => `<span>${w}</span>`).join("")}</div></section>` : ""}
+      ${q.price ? `<section class="qt-price rise"><b>${q.price.n}</b><p>${q.price.t}</p></section>` : ""}
+      ${q.door ? `<section class="qt-door rise"><p>${q.door.quote}</p><a href="#${q.door.go}">${q.door.goName} <span aria-hidden="true">→</span></a></section>` : ""}
+      <div class="fd qt-fd">${fold("Who it's for", "And what it solves", path)}${b.hook && b.kind !== "freebie" ? fold("Still to decide", "One open question", `<p>${b.hook.line.charAt(0).toUpperCase() + b.hook.line.slice(1)}</p>`) : ""}${b.kind === "freebie" ? "" : fold("Price", "The details", (facts || priceHTML) ? facts + priceHTML : "")}${fold("What's inside", "Every piece", b.kind === "freebie" || !insideHTML ? "" : `<div class="of"><div class="of-inside">${insideHTML}</div></div>`)}${b.supportNote ? fold("How sessions run", "Group and one-to-one", `<p>${b.supportNote}</p>`) : ""}${web ? fold("The webinar", "That sells it, later", `<div class="of">${web}</div>`) : ""}${fold("What's left to build", `${fun.filter(f => f.done).length} of ${fun.length} built`, `<div class="of">${funHTML}</div>`)}${fold("Why it works", "The checklist", `<div class="of">${worksHTML}</div>`)}${fold("How you'll know it's working", "Numbers to watch", targets)}</div></div>`;
+  }
   return `${h}<div class="of">${hero}${path}${part("What's inside", insideHTML ? `<div class="of-inside">${insideHTML}</div>` : "")}${part("Price", facts + priceHTML)}${part("Support while they do it", support)}${part("The webinar that sells it", web)}${part("What makes it work", worksHTML)}${part("The funnel behind it", funHTML)}${part("How you'll know it's working", targets)}</div>`;
 }
 function ladderHTML(s) {
@@ -538,6 +615,11 @@ function crumbs(parts, backId) {
 }
 function renderSection(s) {
   const conn = s.id === HOME.id ? [] : connectedSections(s.id);
+  /* art: true in content.js gives a section its own full-width visual page, in place of the ladder and cards. */
+  if ((CONTENT[s.id] || {}).art && s.blocks) {
+    app.innerHTML = `${crumbs([{ label: s.short }], "home")}<div class="layout wide"><div class="main"><h1 class="title">${s.title}</h1><p class="intro">${s.blurb}</p>${blocksHTML(s.blocks)}</div></div>`;
+    return;
+  }
   app.innerHTML = `${crumbs([{ label: s.short }], "home")}
     <div class="layout"><div class="main">
       <h1 class="title">${s.title}</h1><p class="intro">${s.blurb}</p>
@@ -582,6 +664,7 @@ function route() {
   else renderHome();
   document.getElementById("hint").style.visibility = document.getElementById("orbit") ? "visible" : "hidden";
   bbInit();
+  planNext();
   upInit();
   document.title = id === "home" || !(SEC[id] || PAGE[id]) ? `${CLIENT.name} · Brand Constellation` : `${(SEC[id] || PAGE[id]).title} · ${CLIENT.name}`;
   window.scrollTo(0, 0);
@@ -786,6 +869,14 @@ function copyFrom(btn, body) {
   if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
 }
 document.addEventListener("click", e => {
+  const tb = e.target.closest(".tm-b, .tm-c"); if (tb) { if (navigator.clipboard) navigator.clipboard.writeText(tb.dataset.copy).then(() => { tb.classList.add("done"); tb.textContent = "Copied"; setTimeout(() => { tb.textContent = tb.dataset.label || tb.dataset.copy; tb.classList.remove("done"); }, 1100); }); return; }
+  const k = e.target.closest(".sky-key"); if (k) {
+    const sky = k.closest(".sky"), on = k.getAttribute("aria-pressed") !== "true";
+    sky.querySelectorAll(".sky-key").forEach(x => x.setAttribute("aria-pressed", String(on && x === k)));
+    sky.querySelector(".sky-map").classList.toggle("focus", on);
+    sky.querySelectorAll(".sky-ring").forEach(r => r.classList.toggle("on", on && r.dataset.ring === k.dataset.ring));
+    return;
+  }
   const card = e.target.closest(".day[data-n]"); if (card) { calOpen(+card.dataset.n); return; }
   const f = e.target.closest(".chip-f");
   if (f) {
@@ -797,6 +888,42 @@ document.addEventListener("click", e => {
   const c = e.target.closest(".copy .copybtn"); if (c) { if (c.closest("summary")) e.preventDefault(); copyFrom(c, c.closest(".copy").querySelector(".copy-body")); }
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape" && CAL.el && !CAL.el.hidden) calClose(); });
+
+/* ---------- Planner and toolkit ---------- */
+function planKey(id) { return `bc-plan:${location.pathname}:${id}`; }
+function planState(id) { let s = {}; try { s = JSON.parse(localStorage.getItem(planKey(id))) || {}; } catch (e) {} return { done: s.done || {}, n: s.n || {} }; }
+function planSave(id, s) { try { localStorage.setItem(planKey(id), JSON.stringify(s)); } catch (e) {} }
+/* The first task not yet done becomes the big one. */
+function planNext() {
+  document.querySelectorAll(".pl-cards").forEach(w => {
+    const cards = [...w.children], open = cards.filter(c => !c.querySelector("[data-task]").checked);
+    cards.forEach(c => { c.classList.toggle("is-done", !open.includes(c)); c.classList.toggle("is-next", c === open[0]); });
+    w.classList.toggle("all", !open.length); w.parentElement.querySelector(".pl-all").hidden = !!open.length;
+  });
+}
+function tabPick(list, btn, panel) {
+  list.querySelectorAll('[role="tab"]').forEach(t => { const on = t === btn; t.setAttribute("aria-selected", String(on)); t.tabIndex = on ? 0 : -1; });
+  [...panel.parentElement.querySelectorAll(':scope > [role="tabpanel"]')].forEach(p => { p.hidden = p !== panel; });
+}
+const tabOpen = btn => tabPick(btn.closest('[role="tablist"]'), btn, document.getElementById(btn.getAttribute("aria-controls")));
+document.addEventListener("change", e => {
+  const c = e.target.closest("[data-task]"); if (!c) return;
+  const id = c.closest(".pl").dataset.plan, s = planState(id); s.done[c.dataset.task] = c.checked; planSave(id, s); planNext();
+});
+document.addEventListener("click", e => {
+  const t = e.target.closest('.pl-tabs [role="tab"], .tk-tabs [role="tab"]'); if (t) { tabOpen(t); return; }
+  const go = e.target.closest("[data-tool]"); if (go) { const b = document.getElementById("tk-t-" + go.dataset.tool); const own = !b && document.getElementById(go.dataset.tool); if (own) own.closest(".block").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); if (b) { tabOpen(b); document.getElementById("toolkit").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }); b.focus({ preventScroll: true }); } return; }
+  const st = e.target.closest("[data-step], [data-dot]"); if (st) {
+    const g = st.closest(".pl-g"), id = st.closest(".pl").dataset.plan, s = planState(id), k = g.dataset.goal, max = +g.dataset.max, was = s.n[k] || 0;
+    const v = st.dataset.dot ? (+st.dataset.dot === was ? was - 1 : +st.dataset.dot) : was + +st.dataset.step;
+    s.n[k] = Math.max(0, Math.min(max, v)); planSave(id, s);
+    g.querySelector(".pl-v").textContent = s.n[k]; g.querySelectorAll(".pl-dots i").forEach((d, i) => d.classList.toggle("on", i < s.n[k]));
+  }
+});
+document.addEventListener("keydown", e => {
+  const t = e.target.closest && e.target.closest('.pl-tabs [role="tab"], .tk-tabs [role="tab"]'); if (!t || !["ArrowLeft", "ArrowRight"].includes(e.key)) return;
+  const all = [...t.parentElement.children], n = all[(all.indexOf(t) + (e.key === "ArrowRight" ? 1 : all.length - 1)) % all.length]; e.preventDefault(); tabOpen(n); n.focus();
+});
 
 /* ---------- Brand book: contents links and active section ---------- */
 let BB_OBS = null;

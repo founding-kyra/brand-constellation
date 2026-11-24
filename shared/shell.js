@@ -115,7 +115,7 @@ function buildFromShell(shell, content) {
     const page = { s: "planning", blocks: u.placeholder || [], ...u, ...(content[u.id] || {}), filled: !!own };
     if (u.readyWhen && u.readyWhen(page.blocks || [])) page.s = "ready";
     if (u.children) page.children = u.children.map(fill);
-    if (u.extra) page.blocks = [...(page.blocks || []), ...u.extra];
+    if (u.extra && !page.noExtra) page.blocks = [...(page.blocks || []), ...u.extra];
     return page;
   };
   /* after: "<page id>" places it after that page; after: "start" makes it the first page; anything else goes last. */
