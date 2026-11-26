@@ -54,6 +54,13 @@ Client hubs hide anything that doesn't exist yet: pages with no content, empty s
 
 This is on public GitHub Pages for now. Pages ask search engines not to index them (`noindex` and `robots.txt`), but anyone with a link can open them. Before real client use, move it behind a login (planned: Cloudflare Pages + Cloudflare Access).
 
+**Private hubs** (Jourdi Bleu, Megan Rising) live only on Cloudflare Pages, behind Cloudflare Access: the client types their email and gets a one-time code. Their folders are not in git (see `.gitignore`), so they never reach the public repo or GitHub Pages.
+
+- Open them at `https://brand-constellation.pages.dev/<folder>/`.
+- Deploy from this working folder (`wrangler pages deploy . --project-name brand-constellation --branch main`), never from a clean checkout: a checkout has no private folders, and deploying it removes them from Cloudflare.
+- Each private hub has its own Access application in Cloudflare Zero Trust (team `kyraaulani.cloudflareaccess.com`), covering `brand-constellation.pages.dev/<folder>` and `*.brand-constellation.pages.dev/<folder>`, with the allowed emails in its policy.
+- The only copy of a private hub's files is this folder (and the live deploy). Back it up.
+
 ## Client uploads (Add inspo)
 
 The Inspo page has a **+ Add inspo** button. Clients pick a photo or screenshot, add an optional note and enter their passcode once; the image appears under "Saved by you". Tap a saved image, then Remove twice, to delete it.

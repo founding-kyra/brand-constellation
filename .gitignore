@@ -1,3 +1,6 @@
 .DS_Store
 .dev.vars
 .wrangler/
+
+# Private hubs: on Cloudflare only, behind the email-code sign-in. Never committed.
+jourdi-bleu/
